@@ -16,7 +16,6 @@ return new class extends Migration
             $table->string("name");
             $table->longText("description")->nullable();
             $table->string("picture");
-            $table->integer("xp_gain");
             $table->integer("user_completion");
             $table->timestamps();
             $table->softDeletes();

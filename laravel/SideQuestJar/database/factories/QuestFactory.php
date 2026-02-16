@@ -17,7 +17,11 @@ class QuestFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            "name" => fake()->name(),
+            "description" => fake()->paragraph(30, true),
+            "completions" => fake()->numberBetween(1,100),
+            "jar_id" => fake()->numberBetween(1,100),
+            "xp_gain" => fake()->numberBetween(1, 100)
         ];
     }
 }

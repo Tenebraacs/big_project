@@ -16,8 +16,11 @@ class CustomizationFactory extends Factory
      */
     public function definition(): array
     {
+        $types = ["pic_border", "name_style", "profile_bg"];
         return [
-            //
+            "type" => fake()->randomElement($types),
+            "picture" => fake()->imageUrl(640,480),
+            "css" => fake()->url()
         ];
     }
 }

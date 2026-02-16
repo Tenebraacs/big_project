@@ -30,6 +30,9 @@ class UserFactory extends Factory
             'password' => static::$password ??= Hash::make('password'),
             'profile_picture' => fake()->imageUrl(640, 480),
             'age' => fake()->numberBetween(1,100),
+            'joined_date' => fake()->dateTime(),
+            'user_xp' => fake()->numberBetween(0,1000000),
+            'is_customized' => fake()->boolean(50),
             'remember_token' => Str::random(10),
         ];
     }

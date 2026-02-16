@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string("name");
             $table->longText("description");
             $table->integer("completions");
+            $table->integer("xp_gain");
             $table->foreignId("jar_id")->constrained()->onDelete("cascade");
             $table->timestamps();
             $table->softDeletes();

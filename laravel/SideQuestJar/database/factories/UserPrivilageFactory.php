@@ -16,8 +16,11 @@ class UserPrivilageFactory extends Factory
      */
     public function definition(): array
     {
+        $roles = ["user", "moderator", "admin"];
         return [
-            //
+            "user_id" => fake()->numberBetween(1,100),
+            "role" => fake()->randomElement($roles),
+            "jar_id" => fake()->numberBetween(1,100)
         ];
     }
 }

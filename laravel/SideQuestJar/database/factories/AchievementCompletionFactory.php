@@ -17,7 +17,8 @@ class AchievementCompletionFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            "user_id" => fake()->numberBetween(1,100),
+            "achievement_id" => fake()->numberBetween(1,100)
         ];
     }
 }
