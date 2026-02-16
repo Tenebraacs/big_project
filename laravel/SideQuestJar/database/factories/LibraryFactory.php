@@ -17,7 +17,8 @@ class LibraryFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            "user_id" => fake()->numberBetween(1,100),
+            "jar_id" => fake()->numberBetween(1,100)
         ];
     }
 }

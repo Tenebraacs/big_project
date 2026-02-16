@@ -16,8 +16,12 @@ class LikeFactory extends Factory
      */
     public function definition(): array
     {
+        $types = ["jar", "quest"];
         return [
-            //
+            "user_id" => fake()->numberBetween(1,100),
+            "type" => fake()->randomElement($types),
+            "quest_id" => fake()->numberBetween(1,100),
+            "jar_id" => fake()->numberBetween(1,100)
         ];
     }
 }

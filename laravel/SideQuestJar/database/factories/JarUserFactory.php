@@ -17,7 +17,9 @@ class JarUserFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            "jar_id" => fake()->numberBetween(1,100),
+            "user_id" => fake()->numberBetween(1,100),
+            "streak" => fake()->numberBetween(1,365)
         ];
     }
 }
