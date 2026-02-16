@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Customization;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -12,6 +13,6 @@ class CustomizationSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        Customization::factory(100)->create();
     }
 }

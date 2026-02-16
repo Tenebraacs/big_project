@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Achievement;
 use App\Models\Jar;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -19,7 +20,17 @@ class DatabaseSeeder extends Seeder
         User::factory(100)->create();
 
         $this->call([
-            JarSeeder::class
+            JarSeeder::class,
+            AchievementSeeder::class,
+            AchievementCompletionSeeder::class,
+            JarUserSeeder::class,
+            LibrarySeeder::class,
+            QuestSeeder::class,
+            QuestCompletionSeeder::class,
+            LikeSeeder::class,
+            CustomizationSeeder::class,
+            UserCustomSeeder::class,
+            UserRolesSeeder::class
         ]);
     }
 }

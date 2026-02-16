@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\JarUser;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -12,6 +13,7 @@ class JarUserSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        JarUser::factory(100)->create();
+
     }
 }

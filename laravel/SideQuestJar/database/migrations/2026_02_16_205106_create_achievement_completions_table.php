@@ -16,7 +16,6 @@ return new class extends Migration
             $table->foreignId("user_id")->constrained()->onDelete("cascade");
             $table->foreignId("achievement_id")->constrained()->onDelete("cascade");
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 
@@ -28,3 +27,7 @@ return new class extends Migration
         Schema::dropIfExists('achievement_completions');
     }
 };
+
+
+
+

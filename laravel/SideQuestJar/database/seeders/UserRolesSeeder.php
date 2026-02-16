@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\UserRoles;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -12,6 +13,6 @@ class UserRolesSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        UserRoles::factory(100)->create();
     }
 }

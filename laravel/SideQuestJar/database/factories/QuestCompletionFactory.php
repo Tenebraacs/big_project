@@ -16,10 +16,8 @@ class QuestCompletionFactory extends Factory
      */
     public function definition(): array
     {
-        $post_types = ["friends_only", "public", "private"];
         return [
             "completion_date" => fake()->dateTime(),
-            "post_type" => fake()->randomElement($post_types),
             "picture" => fake()->imageUrl(),
             "description" => fake()->paragraph(30, true),
             "user_id" => fake()->numberBetween(1,100),
