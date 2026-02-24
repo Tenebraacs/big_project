@@ -13,7 +13,8 @@ class JarController extends Controller
      */
     public function index()
     {
-        //
+        $jar = Jar::all();
+        return response()->json(["jar" => $jar]);
     }
 
     /**
@@ -29,7 +30,8 @@ class JarController extends Controller
      */
     public function store(StoreJarRequest $request)
     {
-        //
+        $jar = Jar::create($request->all());
+        return response()->json(["msg" => "New Jar was added successfully", "jar" => $jar]);
     }
 
     /**
@@ -37,7 +39,7 @@ class JarController extends Controller
      */
     public function show(Jar $jar)
     {
-        //
+        return response()->json(["jar" => $jar]);
     }
 
     /**
@@ -53,7 +55,8 @@ class JarController extends Controller
      */
     public function update(UpdateJarRequest $request, Jar $jar)
     {
-        //
+        $jar->update($request->all());
+        return response()->json(["msg" => "New document was updated successfully"]);
     }
 
     /**
@@ -61,6 +64,7 @@ class JarController extends Controller
      */
     public function destroy(Jar $jar)
     {
-        //
+        $jar->delete();
+        return response()->json(["msg" => "New document was deleted successfully"]);
     }
 }

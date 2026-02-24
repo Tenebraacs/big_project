@@ -22,7 +22,7 @@ class StoreJarRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            //TODO: 14-19 videok
         ];
     }
 }
