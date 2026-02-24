@@ -7,6 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class Like extends Model
 {
-    /** @use HasFactory<\Database\Factories\LikeFactory> */
-    use HasFactory;
+    public function user(){
+        return $this->hasOne(User::class);
+    }
+
+    public function quest(){
+        return $this->hasOne(Quest::class);
+    }
+
+    public function jar(){
+        return $this->hasOne(Jar::class);
+    }
 }

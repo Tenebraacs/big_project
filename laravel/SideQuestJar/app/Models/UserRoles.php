@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class UserRoles extends Model
 {
-    /** @use HasFactory<\Database\Factories\UserRolesFactory> */
-    use HasFactory;
+    public function users(){
+        return $this->hasMany(User::class);
+    }
 }

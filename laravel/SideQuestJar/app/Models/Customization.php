@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Customization extends Model
 {
-    /** @use HasFactory<\Database\Factories\CustomizationFactory> */
-    use HasFactory;
+    public function users(){
+        return $this->belongsToMany(User::class);
+    }
 }

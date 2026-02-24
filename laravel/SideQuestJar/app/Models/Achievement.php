@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Achievement extends Model
 {
-    /** @use HasFactory<\Database\Factories\AchievementFactory> */
-    use HasFactory;
+    public function users(){
+        return $this->belongsToMany(User::class);
+    }
 }

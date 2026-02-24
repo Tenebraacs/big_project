@@ -7,6 +7,16 @@ use Illuminate\Database\Eloquent\Model;
 
 class Quest extends Model
 {
-    /** @use HasFactory<\Database\Factories\QuestFactory> */
-    use HasFactory;
+    public function jar(){
+        return $this->hasOne(Jar::class);
+    }
+
+    public function quest_completion(){
+        return $this->belongsTo(QuestCompletion::class);
+    }
+
+    public function like(){
+        return $this->belongsTo(Like::class);
+    }
 }
+

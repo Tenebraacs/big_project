@@ -7,6 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class QuestCompletion extends Model
 {
-    /** @use HasFactory<\Database\Factories\QuestCompletionFactory> */
-    use HasFactory;
+    public function quest(){
+        return $this->hasOne(Quest::class);
+    }
+
+    public function user(){
+        return $this->hasOne(User::class);
+    }
 }

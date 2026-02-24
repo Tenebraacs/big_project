@@ -46,4 +46,32 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function quest_completion(){
+        return $this->belongsTo(QuestCompletion::class);
+    }
+
+    public function user_role(){
+        return $this->belongsTo(UserRoles::class);
+    }
+
+    public function achievements(){
+        return $this->belongsToMany(Achievement::class);
+    }
+
+    public function customizations(){
+        return $this->belongsToMany(Customization::class);
+    }
+
+    public function like(){
+        return $this->belongsTo(Like::class);
+    }
+
+    public function jar_user(){
+        return $this->belongsTo(JarUser::class);
+    }
+
+    public function jars(){
+        return $this->hasMany(Jar::class);
+    }
 }
