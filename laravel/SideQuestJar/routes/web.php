@@ -7,10 +7,13 @@ use App\Http\Controllers\QuestController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('home');
 });
 Route::resource('/quest', QuestController::class);
 Route::resource('/jar', JarController::class);
 Route::resource('/library', LibraryController::class);
 Route::resource('/achievement', AchievementController::class);
 //TODO (frontend needed)
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
