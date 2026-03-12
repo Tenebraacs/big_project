@@ -1,0 +1,48 @@
+## .NET MAUI & Visual Studio Ignore Rules ##
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.userprefs
+
+# Visual Studio cache/options directory
+.vs/
+
+# Build results (Crucial!)
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# macOS / Apple specific
+.DS_Store
+*.xcworkspace/
+xcuserdata/
+
+# Mobile specific packages
+*.apk
+*.aab
+*.ipa
+*.dSYM/
+*.mobileprovision
+
+# SQLite Databases (if you decide to use local caching later)
+*.db
+*.db3
+*.sqlite
+*.sqlite3
+
+# Env files (just in case you add secrets later)
+.env
