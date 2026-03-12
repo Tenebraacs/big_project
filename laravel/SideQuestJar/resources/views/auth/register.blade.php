@@ -3,7 +3,8 @@
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-8">
+        <div class="col-md-10">
+
             <div class="card">
                 <div class="card-header">{{ __('Register') }}</div>
 
@@ -25,6 +26,20 @@
                             </div>
                         </div>
 
+                        <div class="row mb-3">
+                            <label for="birth_date" class="col-md-4 col-form-label text-md-end">{{ __('Birth Date') }}</label>
+
+                            <div class="col-md-6">
+                                <input id="birth_date" type="date" class="form-control @error('birth_date') is-invalid @enderror" name="birth_date" value="{{ old('birth_date') }}" max="{{ date( 'Y-m-d') }}" autocomplete="birth_date" autofocus>
+
+                                @error('birth_date')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                        </div>
+                      
                         <div class="row mb-3">
                             <label for="email" class="col-md-4 col-form-label text-md-end">{{ __('Email Address') }}</label>
 
@@ -71,6 +86,8 @@
                     </form>
                 </div>
             </div>
+
+            
         </div>
     </div>
 </div>
