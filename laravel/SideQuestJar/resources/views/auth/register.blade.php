@@ -4,7 +4,7 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col"> 
-                <div class="row bg-black p-4 align-item-center">
+                <div class="row bg-black p-4 align-item-center ">
                     <div class="col-md-6">
                         
                     </div>
