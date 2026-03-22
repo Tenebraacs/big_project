@@ -6,6 +6,8 @@ use App\Models\Jar;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
 
+
+
 class JarPolicy
 {
     /**
