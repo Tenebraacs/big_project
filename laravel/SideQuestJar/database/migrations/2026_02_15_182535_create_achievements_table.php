@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string("name");
             $table->longText("description")->nullable();
-            $table->string("picture");
+            $table->string("picture")->default("");
             $table->integer("user_completion");
             $table->timestamps();
             $table->softDeletes();

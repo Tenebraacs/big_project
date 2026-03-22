@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('quest_completions', function (Blueprint $table) {
             $table->id();
             $table->dateTime("completion_date");
-            $table->string("picture");
+            $table->string("picture")->default("");
             $table->longText("description")->nullable();
             $table->foreignId("user_id")->constrained()->onDelete("cascade");
             $table->foreignId("quest_id")->constrained()->onDelete("cascade");

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('quests', function (Blueprint $table) {
             $table->id();
             $table->string("name");
-            $table->longText("description");
+            $table->longText("description")->nullable();
             $table->integer("completions");
             $table->integer("xp_gain");
             $table->foreignId("jar_id")->constrained()->onDelete("cascade");

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string("name");
             $table->longText("description")->nullable();
-            $table->string("picture")->nullable();
+            $table->string("picture")->default("");
             $table->foreignId("user_id")->constrained()->onDelete("cascade");
             $table->enum("type", ["public", "private", "friends_only", "invite_only", "offical"]);
             $table->timestamps();

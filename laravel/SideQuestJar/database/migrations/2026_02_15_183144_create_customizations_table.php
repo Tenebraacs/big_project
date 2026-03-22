@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('customizations', function (Blueprint $table) {
             $table->id();
             $table->enum("type", ["pic_border", "name_style", "profile_bg"]);
-            $table->string("picture");
+            $table->string("picture")->default("");
             $table->string("css");
             $table->timestamps();
             $table->softDeletes();
