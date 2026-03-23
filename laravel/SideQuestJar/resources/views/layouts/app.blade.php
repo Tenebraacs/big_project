@@ -28,9 +28,14 @@
                 </button>
 
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <!-- Left Side Of Navbar -->
-                    <ul class="navbar-nav me-auto">
+                    
 
+                    <ul class="navbar-nav me-auto">
+                        @can('create', App\Models\Jar::class)
+                            <li class="nav-item">
+                                    <a class="nav-link" href="">CreateNewJar</a>
+                            </li>
+                         @endcan
                     </ul>
 
                     <!-- Right Side Of Navbar -->

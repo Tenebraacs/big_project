@@ -2,7 +2,10 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Jar;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
+
 
 class StoreJarRequest extends FormRequest
 {
@@ -11,7 +14,13 @@ class StoreJarRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        if(Auth::check() && Auth::user()->can('create', Jar::class)){
+            return true;
+        }
+        else{
+            return false;
+        }
+        
     }
 
     /**

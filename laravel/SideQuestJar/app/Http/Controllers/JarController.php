@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Jar;
 use App\Http\Requests\StoreJarRequest;
 use App\Http\Requests\UpdateJarRequest;
+use Illuminate\Http\Request;
+
 
 class JarController extends Controller
 {
@@ -20,9 +22,12 @@ class JarController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
-        //TODO ZOLI
+        
+        $this->authorize('create', Jar::class);
+        return view("jars.create");
+
     }
 
     /**
