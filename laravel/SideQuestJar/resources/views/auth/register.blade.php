@@ -105,7 +105,8 @@
 
                                 <div class="row mb-0">
                                     <div class="col">
-                                        <button type="submit" class="btn btn-primary w-100 ">
+                                        <button type="submit" class="btn btn-primary w-100" style="
+                                        --#{$perifx}btn-color: ">
                                             {{ __('Register') }}
                                         </button>
                                     </div>
