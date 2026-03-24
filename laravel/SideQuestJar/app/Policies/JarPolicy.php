@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Models\Jar;
 use App\Models\User;
+use App\Models\UserRoles;
 use Illuminate\Auth\Access\Response;
 
 
@@ -71,7 +72,13 @@ class JarPolicy
     }
 
 
+    //Minen elott megnezi hogy a user admin e ha igen -> enged mindent || ha nem akkor tovabb megy a tobbi ellenorzessel
     public function before(User $user): bool|null {
-        
+        if ($user->isAdmin()){
+            return true;
+        }
+        return null;
     }
+
+    
 }

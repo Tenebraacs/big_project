@@ -55,7 +55,7 @@ class User extends Authenticatable
         return $this->belongsTo(QuestCompletion::class);
     }
 
-    public function user_role(){
+    public function user_roles(){
         return $this->belongsTo(UserRoles::class);
     }
 
@@ -78,4 +78,9 @@ class User extends Authenticatable
     public function jars(){
         return $this->hasMany(Jar::class);
     }
+
+    public function isAdmin(): bool{
+        return $this->user_roles()->where('role', 'admin')->exists();
+    }
+
 }
