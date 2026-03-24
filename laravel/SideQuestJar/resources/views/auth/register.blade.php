@@ -4,15 +4,17 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col"> 
-                <div class="row bg-black p-4 align-item-center ">
+                <div class="row bg-block-blue p-4 align-item-center ">
                     <div class="col-md-6">
                         
                     </div>
                     <div class="col-md-6">
-                        <div class="card">
-                        <div class="card-header">{{ __('Register') }}</div>
+                        <div class="card block-radius">
+                        <div class="card-header">
+                            <h1>{{ __('Register') }}</h1>
+                    </div>
 
-                        <div class="card-body">
+                        <div class="card-body form-text">
                             <form method="POST" action="{{ route('register') }}">
                                 @csrf
 
@@ -105,8 +107,7 @@
 
                                 <div class="row mb-0">
                                     <div class="col">
-                                        <button type="submit" class="btn btn-primary w-100" style="
-                                        --#{$perifx}btn-color: ">
+                                        <button type="submit" class="btn btn-primary w-100 reg-log-button rounded-pill">
                                             {{ __('Register') }}
                                         </button>
                                     </div>
