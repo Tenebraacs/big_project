@@ -23,6 +23,7 @@ return new class extends Migration
             $table->dateTime("joined_date")->nullable();
             $table->integer("user_xp")->default(0);
             $table->boolean("is_customized")->default(false);
+            $table->boolean("is_admin")->default(false);
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();

@@ -9,3 +9,6 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::get('/jars', [JarController::class, "index"]);
+Route::post('/jars', [JarController::class, "store"]);
+Route::put("/jars/{jar}", [JarController::class, "update"]);
+Route::delete("/jars/{jar}", [JarController::class, "destroy"]);

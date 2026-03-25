@@ -29,7 +29,7 @@ class DatabaseSeeder extends Seeder
             LikeSeeder::class,
             CustomizationSeeder::class,
             UserCustomSeeder::class,
-            UserRolesSeeder::class
+            
         ]);
     }
 }

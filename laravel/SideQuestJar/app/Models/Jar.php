@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use App\Observers\JarObserver;
 use App\Policies\JarPolicy;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Attributes\UsePolicy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+#[ObservedBy(JarObserver::class)]
 #[UsePolicy(JarPolicy::class)]
 class Jar extends Model
 {

@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string("picture")->default("");
             $table->foreignId("user_id")->constrained()->onDelete("cascade");
             $table->enum("type", ["public", "private", "friends_only", "invite_only", "offical"])->default("public");
+            $table->foreignId("created_by")->nullable()->constrained('users','id');
             $table->timestamps();
             $table->softDeletes();
         });

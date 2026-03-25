@@ -1,0 +1,12 @@
+opencollection: 1.0.0
+info:
+  name: "TheBigProjectApiTesting"
+  type: workspace
+
+collections:
+  - name: "Jar Function Testing"
+    path: "collections/Jar Function Testing"
+
+specs:
+
+docs: ''
