@@ -12,7 +12,7 @@ class JarObserver
      */
     public function creating(Jar $jar): void
     {
-        $jar->created_by = Auth::user()->id;
+       // $jar->created_by = Auth::user()->id;
     }
 
     /**

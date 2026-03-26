@@ -16,6 +16,8 @@ return new class extends Migration
             $table->dateTime("completion_date");
             $table->string("picture")->default("");
             $table->longText("description")->nullable();
+            $table->integer("likes")->default(0);
+            $table->enum("type", ["public_post", "private_post", "friends_only_post"])->default("public_post");
             $table->foreignId("user_id")->constrained()->onDelete("cascade");
             $table->foreignId("quest_id")->constrained()->onDelete("cascade");
             $table->timestamps();

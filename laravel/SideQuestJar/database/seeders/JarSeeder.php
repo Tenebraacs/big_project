@@ -20,7 +20,7 @@ class JarSeeder extends Seeder
         Jar::create([
             "name" => "JAR",
             "description" => "This is the Main Jar used on the front page and is supposed to be the soul and base of this wole thing (i need ideas for this)",
-            "user_id" => $zoli->id
+            "type" => "official_jar"
         ]);
 
         Jar::factory(100)->create();

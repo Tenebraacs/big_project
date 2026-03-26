@@ -17,6 +17,15 @@ class Jar extends Model
     /** @use HasFactory<\Database\Factories\JarFactory> */
     use HasFactory, SoftDeletes;
 
+    protected $fillable = [
+        'name',
+        'description',
+        'picture',
+        'type'
+    ];
+
+
+
     public function quest(){
         return $this->belongsTo(Quest::class);
     }

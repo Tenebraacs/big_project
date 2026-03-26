@@ -10,7 +10,7 @@ Route::get('/', function () {
     return view('home');
 });
 Route::resource('/quest', QuestController::class);
-Route::resource('/jar', JarController::class);
+Route::resource('/jars', JarController::class);
 Route::resource('/library', LibraryController::class);
 Route::resource('/achievement', AchievementController::class);
 //TODO (frontend needed)

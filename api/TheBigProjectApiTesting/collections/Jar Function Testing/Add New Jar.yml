@@ -1,0 +1,29 @@
+info:
+  name: Add New Jar
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: http://localhost:8000/api/jars
+  headers:
+    - name: Accept
+      value: application/json
+  body:
+    type: json
+    data: |+
+      
+      {
+        "name": "Jar3",
+        "description": "Jar3 test",
+        "picture": "Zoli.png"
+      }
+
+
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,26 @@
+info:
+  name: Update Jar
+  type: http
+  seq: 3
+
+http:
+  method: PUT
+  url: http://localhost:8000/api/jars/105
+  headers:
+    - name: Accept
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "name": "Jar33",
+        "description": "Jar33 test",
+        "picture": "ZoliProli.png"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
