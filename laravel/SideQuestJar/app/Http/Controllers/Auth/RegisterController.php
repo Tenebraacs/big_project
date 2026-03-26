@@ -56,7 +56,7 @@ class RegisterController extends Controller
             'birth_date' => ['required', 'date', 'before_or_equal:'.now()->subYear(16)->format('Y-m-d')],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'confirmed',
-            Password::min(12)->letters()->mixedCase()->numbers()->symbols()->uncompromised()],
+            Password::min(12)->letters()->mixedCase()->numbers()->symbols()->uncompromised()]
         ]);
     }
 

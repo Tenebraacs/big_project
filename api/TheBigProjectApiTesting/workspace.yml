@@ -6,6 +6,8 @@ info:
 collections:
   - name: "Jar Function Testing"
     path: "collections/Jar Function Testing"
+  - name: "User Auth Testing"
+    path: "collections/User Auth Testing"
 
 specs:
 
