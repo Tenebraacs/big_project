@@ -14,4 +14,6 @@ Route::post('/jars', [JarController::class, "store"]);
 Route::put("/jars/{jar}", [JarController::class, "update"]);
 Route::delete("/jars/{jar}", [JarController::class, "destroy"]);
 
-Route::post("register", [UserController::class, "register"]);
+Route::post("/register", [UserController::class, "register"]);
+Route::post("/login", [UserController::class, "login"]);
+Route::post("/logout", [UserController::class, "logout"])->middleware('auth:sanctum');

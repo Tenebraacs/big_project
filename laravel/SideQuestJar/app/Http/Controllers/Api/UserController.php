@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
@@ -29,12 +30,40 @@ class UserController extends Controller
             'password' => Hash::make($validated["password"])
         ]);
 
-        $token = $user->createToken('api-token')->plainTextToken;
+        $token = $user->createToken($request->userAgent(), ['*'], now()->addWeek())->plainTextToken;
 
         return response()->json([
             'message' => 'User registered successfully.',
             'user' => $user,
             'token' => $token
         ], 201);
+    }
+
+
+    public function login(Request $request){
+        $credentials = $request->validate([
+            "email" => ["required", "email"],
+            "password" => ["required", "string"]
+            ]          
+        );
+
+        if(Auth::attempt($credentials) === false){
+            return response()->json(["msg" => "Invalid Credentials"], 418);
+        }
+
+        $user = auth()->user();
+
+        $token = $user->createToken($request->userAgent(), ['*'], now()->addWeek())->plainTextToken;
+
+        return response()->json([
+            'user' => $user,
+            'token' => $token
+        ]);
+    }
+
+
+    public function logout(Request $request){
+        $request->user()->currentAccessToken()->delete();
+        return response()->json(["msg" => "Logout succesful"]);
     }
 }

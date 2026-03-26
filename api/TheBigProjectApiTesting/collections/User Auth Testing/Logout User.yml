@@ -1,0 +1,20 @@
+info:
+  name: Logout User
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: http://localhost:8000/api/logout
+  headers:
+    - name: Accept
+      value: application/json
+  auth:
+    type: bearer
+    token: 4|rGpM43O0H2lIeJD953GgkPyjbGhSp9769JlVdBt40660e65d
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,28 @@
+info:
+  name: Login User
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: http://localhost:8000/api/login
+  headers:
+    - name: Accept
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        
+        "email": "ZoliProliApi@gmail.com",
+        "password": "123//ZoliProli//123"
+
+        
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
