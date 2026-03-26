@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using SideQuestJar.Data;
 
 namespace SideQuestJar
 {
@@ -14,6 +15,8 @@ namespace SideQuestJar
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
+
+            builder.Services.AddDbContext<AppDbContext>();
 
 #if DEBUG
     		builder.Logging.AddDebug();
