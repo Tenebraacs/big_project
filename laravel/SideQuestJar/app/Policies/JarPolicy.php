@@ -32,14 +32,14 @@ class JarPolicy
     public function create(User $user): bool
     {
 
-        return false;
-        /*
+        
+        
         if($user->username == "ZoliProli"){
             return true;
         }
-            return false;
+        return false;
         
-        */
+        
     }
 
     /**

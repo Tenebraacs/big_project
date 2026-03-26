@@ -17,7 +17,7 @@ return new class extends Migration
             $table->enum("type", ["jar", "quest", "completion"]);
             $table->foreignId("quest_id")->nullable()->constrained()->onDelete("cascade");
             $table->foreignId("jar_id")->nullable()->constrained()->onDelete("cascade");
-            $table->foreignId("completion_id")->nullable()->constrained()->onDelete("cascade");
+            $table->foreignId("quest_completion_id")->nullable()->constrained('quest_completions')->onDelete("cascade");
             $table->timestamps();
             $table->softDeletes();
         });

@@ -15,7 +15,8 @@ http:
       {
         
         "email": "ZoliProliApi@gmail.com",
-        "password": "123//ZoliProli//123"
+        "password": "123//ZoliProli//123",
+        "device_id": "ZoliPc22"
 
         
       }
