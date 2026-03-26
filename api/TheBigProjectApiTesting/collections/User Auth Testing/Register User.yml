@@ -1,0 +1,32 @@
+info:
+  name: Register User
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: http://localhost:8000/api/register
+  headers:
+    - name: Accept
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        
+        "username": "ZoliProliApi",
+        "first_name": "ZoliApi",
+        "last_name": "Proli",
+        "email": "ZoliProliApi@gmail.com",
+        "password": "123//ZoliProli//123",
+        "password_confirmation": "123//ZoliProli//123",
+        "birth_date": "2001-09-11"
+        
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
