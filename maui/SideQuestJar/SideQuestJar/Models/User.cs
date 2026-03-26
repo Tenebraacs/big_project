@@ -12,7 +12,7 @@ namespace SideQuestJar.Models
         public string? Nickname { get; set; }
         public required string Fullname { get; set; }
         public required string Email { get; set; }
-        public string? ProfilePicture { get; set; }
+        public required string ProfilePicture { get; set; }
         public DateTime BirthDate { get; set; }
         public DateTime JoinedDate { get; set; }
         public int UserXp { get; set; }
