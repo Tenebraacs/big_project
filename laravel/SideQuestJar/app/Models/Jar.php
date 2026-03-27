@@ -38,7 +38,5 @@ class Jar extends Model
         return $this->belongsTo(JarUser::class);
     }
 
-    public function users(){
-        return $this->hasMany(User::class);
-    }
+
 }

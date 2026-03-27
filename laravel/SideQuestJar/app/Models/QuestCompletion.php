@@ -11,11 +11,14 @@ class QuestCompletion extends Model
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory;
     use SoftDeletes;
+
+    public function user(){
+        return $this->belongsTo(User::class);
+    }
+
     public function quest(){
         return $this->hasOne(Quest::class);
     }
 
-    public function user(){
-        return $this->hasOne(User::class);
-    }
+    
 }

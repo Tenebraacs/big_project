@@ -15,8 +15,8 @@ class JarController extends Controller
      */
     public function index()
     {
-        $jar = Jar::all();
-        return response()->json(["jar" => $jar]);
+        $jars = Jar::all();
+        return view("jars.index", ["jars" => $jars]);
     }
 
     /**

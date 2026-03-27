@@ -53,7 +53,7 @@ class User extends Authenticatable
     }
 
     public function quest_completion(){
-        return $this->belongsTo(QuestCompletion::class);
+        return $this->hasMany(QuestCompletion::class);
     }
 
 
@@ -66,7 +66,7 @@ class User extends Authenticatable
     }
 
     public function like(){
-        return $this->belongsTo(Like::class);
+        return $this->hasMany(Like::class);
     }
 
     public function jar_user(){
