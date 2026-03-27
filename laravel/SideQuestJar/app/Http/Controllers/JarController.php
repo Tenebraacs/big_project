@@ -19,6 +19,11 @@ class JarController extends Controller
         return view("jars.index", ["jars" => $jars]);
     }
 
+    public function mainJar(){
+        $jar = Jar::where('type', 'official_jar')->first();
+        return view('home', compact('jar'));
+    }
+
     /**
      * Show the form for creating a new resource.
      */

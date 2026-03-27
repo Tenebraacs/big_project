@@ -52,26 +52,26 @@ class User extends Authenticatable
         ];
     }
 
-    public function quest_completion(){
+    public function quest_completions(){
         return $this->hasMany(QuestCompletion::class);
     }
 
 
     public function achievements(){
-        return $this->belongsToMany(Achievement::class);
+        return $this->belongsTo(Achievement::class);
     }
 
     public function customizations(){
-        return $this->belongsToMany(Customization::class);
+        return $this->belongsToMany(Customization::class, 'user_customs');
+        //Many to many connection to the users table via the user_customizations pivot table
     }
 
-    public function like(){
+    public function likes(){
         return $this->hasMany(Like::class);
     }
 
-    public function jar_user(){
-        return $this->belongsTo(JarUser::class);
-    }
+    //Todo JarUsers Connection type (plusz nem helyes a tabla meg)
+
 
     public function jars(){
         return $this->hasMany(Jar::class);

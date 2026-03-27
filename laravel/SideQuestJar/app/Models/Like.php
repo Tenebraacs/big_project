@@ -16,10 +16,14 @@ class Like extends Model
     }
 
     public function quest(){
-        return $this->hasOne(Quest::class);
+        return $this->belongsTo(Quest::class);
+    }
+
+    public function questCompletion(){
+        return $this->belongsTo(QuestCompletion::class);
     }
 
     public function jar(){
-        return $this->hasOne(Jar::class);
+        return $this->belongsTo(Jar::class);
     }
 }

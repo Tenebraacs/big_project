@@ -12,6 +12,7 @@ class Customization extends Model
     use HasFactory;
     use SoftDeletes;
     public function users(){
-        return $this->belongsToMany(User::class);
+        return $this->belongsToMany(User::class, 'user_customs');
+        //Many to many connection to the customizations table via the user_customizations pivot table
     }
 }
