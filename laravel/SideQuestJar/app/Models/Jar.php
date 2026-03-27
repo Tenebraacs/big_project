@@ -25,6 +25,8 @@ class Jar extends Model
     ];
 
 
+    
+
 
     public function quest(){
         return $this->belongsTo(Quest::class);

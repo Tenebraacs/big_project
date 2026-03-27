@@ -17,6 +17,8 @@ return new class extends Migration
             $table->foreignId("customization_id")->constrained()->onDelete("cascade");
             $table->timestamps();
             $table->softDeletes();
+
+            //Should be a good pivot table
         });
     }
 

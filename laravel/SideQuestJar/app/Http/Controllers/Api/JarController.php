@@ -30,6 +30,14 @@ class JarController extends Controller
         return response()->json(["msg" => "Jar was deleted"]);
     }
 
+    public function mainJar(){
+        $jar = Jar::where('type', 'official_jar')->first();
+        
+        return response()->json([
+            'jar'=>$jar
+        ]);
+    }
+
 
 
 
