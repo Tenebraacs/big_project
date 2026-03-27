@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:SideQuestJar.ViewModels"
+             xmlns:components="clr-namespace:SideQuestJar.Components"
+             x:Class="SideQuestJar.Views.AuthPage"
+             x:DataType="viewmodels:AuthViewModel"
+             Title="SideQuestJar">
+
+    <Grid RowDefinitions="Auto, *">
+
+        <components:NavbarView Grid.Row="0" BindingContext="{Binding AppState}" />
+
+        <Grid Grid.Row="1" ColumnDefinitions="*, *">
+
+            <VerticalStackLayout Grid.Column="0" BackgroundColor="#DDDDDD" Padding="30" VerticalOptions="Center">
+                <Label Text="SIDE QUEST JAR" FontSize="32" FontAttributes="Bold" HorizontalOptions="Center"/>
+                <Label Text="Life begins at the end of your comfort zone." HorizontalOptions="Center" Margin="0,10,0,0"/>
+            </VerticalStackLayout>
+
+            <Grid Grid.Column="1" Padding="30">
+
+                <VerticalStackLayout Spacing="15" IsVisible="{Binding AppState.IsLoginViewActive}">
+                    <Label Text="Login" FontSize="24" FontAttributes="Bold" />
+
+                    <Entry Text="{Binding Email}" Placeholder="Email" Keyboard="Email" />
+                    <Entry Text="{Binding Password}" IsPassword="True" Placeholder="Password" />
+
+                    <Label Text="{Binding GenericErrorMessage}" TextColor="Red" />
+
+                    <Button Text="LOGIN" Command="{Binding PerformLoginCommand}" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="15" IsVisible="{Binding AppState.IsRegisterViewActive}">
+                    <Label Text="Register" FontSize="24" FontAttributes="Bold" />
+
+                    <Entry Text="{Binding Username}" Placeholder="Username" />
+                    <Label Text="{Binding UsernameError}" TextColor="Red" FontSize="12" Margin="0,-10,0,0" />
+
+                    <Entry Text="{Binding FirstName}" Placeholder="First Name" />
+                    <Entry Text="{Binding LastName}" Placeholder="Last Name" />
+
+                    <Entry Text="{Binding Email}" Placeholder="Email" Keyboard="Email" />
+                    <Label Text="{Binding EmailError}" TextColor="Red" FontSize="12" Margin="0,-10,0,0" />
+
+                    <Entry Text="{Binding Password}" IsPassword="True" Placeholder="Password" />
+                    <Label Text="{Binding PasswordError}" TextColor="Red" FontSize="12" Margin="0,-10,0,0" />
+
+                    <Entry Text="{Binding PasswordConfirmation}" IsPassword="True" Placeholder="Confirm Password" />
+
+                    <Label Text="{Binding GenericErrorMessage}" TextColor="Red" />
+
+                    <Button Text="REGISTER" Command="{Binding PerformRegisterCommand}" />
+                </VerticalStackLayout>
+
+            </Grid>
+        </Grid>
+    </Grid>
+</ContentPage>

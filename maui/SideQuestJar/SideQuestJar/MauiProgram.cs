@@ -1,5 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
 using SideQuestJar.Data;
+using SideQuestJar.Services;
+using SideQuestJar.ViewModels;
+using SideQuestJar.Views;
 
 namespace SideQuestJar
 {
@@ -18,8 +21,15 @@ namespace SideQuestJar
 
             builder.Services.AddDbContext<AppDbContext>();
 
+            builder.Services.AddSingleton<AuthService>();
+            builder.Services.AddSingleton<GlobalAppState>();
+
+            builder.Services.AddTransient<HomePage>();
+            builder.Services.AddTransient<AuthViewModel>();
+            builder.Services.AddTransient<AuthPage>();
+
 #if DEBUG
-    		builder.Logging.AddDebug();
+            builder.Logging.AddDebug();
 #endif
 
             return builder.Build();
