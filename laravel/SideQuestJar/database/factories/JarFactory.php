@@ -16,11 +16,10 @@ class JarFactory extends Factory
      */
     public function definition(): array
     {
-        $types = ["public_jar", "private_jar", "friends_only_jar", "invite_only_jar", "official_jar"];
+        $types = ["public_jar", "private_jar", "friends_only_jar", "invite_only_jar"];
         return [
             "name" => fake()->name(),
-            "description" => fake()->paragraph(30, true),
-            "picture" => fake()->imageUrl(640, 480),
+            
             "type" => fake()->randomElement($types)
         ];
     }

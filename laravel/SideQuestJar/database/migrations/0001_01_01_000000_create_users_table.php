@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('fullname');
             $table->string('email')->unique();
             $table->string('password');
-            $table->string("profile_picture")->default("");
+            $table->string("profile_picture")->default(""); //"https://i.ibb.co/Ngk3xx10/Godly-Pfp.png" Zoli kep
             $table->date("birth_date");
             $table->dateTime("joined_date")->nullable();
             $table->integer("user_xp")->default(0);

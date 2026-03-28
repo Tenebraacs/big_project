@@ -20,8 +20,10 @@ class JarController extends Controller
     }
 
     public function mainJar(){
+        //Lekeri az elso type == official_jar adatait
         $jar = Jar::where('type', 'official_jar')->first();
-        return view('home', compact('jar'));
+        $content = $jar->contents()->inRandomOrder()->first();
+        return view('home', compact('jar', 'content'));
     }
 
     /**

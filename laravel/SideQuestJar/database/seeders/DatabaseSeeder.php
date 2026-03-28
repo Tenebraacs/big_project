@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             UserSeeder::class,
             JarSeeder::class,
+            JarContentSeeder::class,
             AchievementSeeder::class,
             AchievementCompletionSeeder::class,
             JarUserSeeder::class,

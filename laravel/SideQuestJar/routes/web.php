@@ -6,9 +6,11 @@ use App\Http\Controllers\LibraryController;
 use App\Http\Controllers\QuestController;
 use Illuminate\Support\Facades\Route;
 
+/*
 Route::get('/', function () {
     return view('home');
 });
+*/
 //Route::resource('/quest', QuestController::class);
 Route::resource('/jars', JarController::class);
 //Route::resource('/library', LibraryController::class);

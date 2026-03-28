@@ -16,11 +16,10 @@ class JarSeeder extends Seeder
     {
 
         //$zoli = User::where('username', 'ZoliProli')->first();
-
+        
         Jar::create([
-            "name" => "JAR",
-            "picture" => "https://i.ibb.co/Ngk3xx10/Godly-Pfp.png",
-            "description" => "This is the Main Jar used on the front page and is supposed to be the soul and base of this wole thing (i need ideas for this)",
+            "name" => "Today's Adventure",
+            "likes" => 333,
             "type" => "official_jar"
         ]);
 

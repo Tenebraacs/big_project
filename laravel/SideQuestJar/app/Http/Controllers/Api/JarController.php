@@ -31,10 +31,13 @@ class JarController extends Controller
     }
 
     public function mainJar(){
+        //Lekeri az elso type == official_jar adatait Api-hoz
         $jar = Jar::where('type', 'official_jar')->first();
+        $randomContent = $jar->contents()->inRandomOrder()->first();
         
         return response()->json([
-            'jar'=>$jar
+            'jar'=>$jar,
+            'content' => $randomContent
         ]);
     }
 

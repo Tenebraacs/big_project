@@ -19,9 +19,9 @@ class Jar extends Model
 
     protected $fillable = [
         'name',
-        'description',
-        'picture',
-        'type'
+        'likes',
+        'type',
+        'created_by'
     ];
 
 
@@ -40,5 +40,8 @@ class Jar extends Model
         return $this->belongsTo(JarUser::class);
     }
 
+    public function contents(){
+        return $this->hasMany(JarContent::class, 'jar_id');
+    }
 
 }
