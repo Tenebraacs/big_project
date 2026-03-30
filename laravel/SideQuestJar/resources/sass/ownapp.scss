@@ -1,5 +1,10 @@
 // Fonts
 @import url('https://fonts.bunny.net/css?family=Nunito');
+@import url('https://fonts.googleapis.com/css2?family=Rubik+Mono+One&display=swap'); //Rubik One
+@import url('https://fonts.googleapis.com/css2?family=Rubik+Bubbles&display=swap'); //Rubik Bubbles
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap'); //Fredoka
+@import url('https://fonts.googleapis.com/css2?family=Knewave&display=swap'); //Knewave
+
 
 // Variables
 @import 'variables';
@@ -7,11 +12,13 @@
 // Bootstrap
 @import 'bootstrap/scss/bootstrap';
 
-
-
-
 .min-vh-80{
     min-height: 80vh;
+}
+
+.background{
+    background: no-repeat center fixed radial-gradient(#7D5252 40%, #2D4356);
+    background-size: cover;
 }
 
 .block-radius{
@@ -34,6 +41,7 @@
     color: black;
     font-weight: bolder;
     font-size: medium;
+    font-family: "Fredoka", sans-serif;
 }
 
 .navbar-base{
@@ -53,7 +61,39 @@
     background-blend-mode: multiply;
 }
 
- 
+.logo-first{
+    font-family: "Rubik Mono One", monospace;
+    text-align: center;
+    color: white;
+    font-weight: bolder;
+    letter-spacing: 0px;
+    margin: -15px;
+}
+
+.logo-second{
+    font-family: 'Rubik Bubbles', system-ui;
+    text-align: center;
+    color: #EAB2A0;
+    font-size: 100px;
+    text-shadow: 0px 10px black;
+}
+
+.welcome-text{
+    font-family: "Knewave", system-ui;
+    text-align: center;
+    word-wrap: break-word;  
+    font-size: xx-large;
+    color: #EAB2A0;
+    text-shadow: 0px 5px black;
+    transform: rotate(5deg);
+    margin: 0;
+    padding: 0;
+}
+
+.footer-base{
+    background-color: #A76F6F;
+    color: black;
+}
 
 
 

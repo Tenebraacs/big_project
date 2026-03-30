@@ -6,12 +6,15 @@
         <div class="col"> 
                 <div class="row bg-block-blue p-4 align-item-center ">
                     <div class="col-md-6">
-                        
+                        <h2 class="logo-first">SIDE QUEST</h2>
+                        <h1 class="logo-second">JAR</h1>
+                        <br>
+                        <p class="welcome-text">Welcome to The Amazing Digital Side Quest Jar!</p>
                     </div>
                     <div class="col-md-6">
                         <div class="card block-radius">
-                        <div class="card-header">
-                            <h1>{{ __('Register') }}</h1>
+                        <div class="card-header form-text">
+                            <h3>{{ __('Register') }}</h3>
                     </div>
 
                         <div class="card-body form-text">

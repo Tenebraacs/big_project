@@ -4,16 +4,19 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col">
-            <div class="row bg-black p-4 align-item-center">
+            <div class="row bg-block-blue p-4 align-item-center">
                 <div class="col-md-6">
-
+                    <h2 class="logo-first">SIDE QUEST</h2>
+                    <h1 class="logo-second">JAR</h1>
+                    <br>
+                    <p class="welcome-text">Welcome to The Amazing Digital Side Quest Jar!</p>
                 </div>
                 <div class="col-md-6">
-                    <div class="card">
+                    <div class="card block-radius">
 
-                    <div class="card-header">{{ __('Login') }}</div>
+                    <div class="card-header form-text"><h3>{{ __('Login') }}</h3></div>
 
-                    <div class="card-body">
+                    <div class="card-body form-text">
                         <form method="POST" action="{{ route('login') }}">
                             @csrf
 
@@ -58,12 +61,12 @@
                             </div>
 
                             <div class="row">
-                                    <button type="submit" class="btn btn-primary">
+                                    <button type="submit" class="btn btn-primary w-100 reg-log-button rounded-pill">
                                         {{ __('Login') }}
                                     </button>
 
                                     @if (Route::has('password.request'))
-                                        <a class="btn btn-link" href="{{ route('password.request') }}">
+                                        <a class="btn btn-link text-black" href="{{ route('password.request') }}">
                                             {{ __('Forgot Your Password?') }}
                                         </a>
                                     @endif

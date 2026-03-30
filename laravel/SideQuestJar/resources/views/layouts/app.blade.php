@@ -16,7 +16,7 @@
     <!-- Scripts -->
     @vite(['resources/sass/ownapp.scss','resources/sass/app.scss', 'resources/js/app.js'])
 </head>
-<body>
+<body class="background">
     <div id="app">
         <nav class="navbar-base navbar navbar-expand-md navbar-light shadow-sm">
             <div class="container">
@@ -80,6 +80,13 @@
         <main class="py-4">
             @yield('content')
         </main>
+
+        <footer class="footer-base">
+            <div>
+                <p>+36 20 261 9875</p>
+                <p>sidequestjar@gmail.com</p>
+            </div>
+        </footer>
     </div>
 </body>
 </html>
