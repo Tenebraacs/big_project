@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,10 +18,12 @@ class JarFactory extends Factory
     public function definition(): array
     {
         $types = ["public_jar", "private_jar", "friends_only_jar", "invite_only_jar"];
+        
         return [
-            "name" => fake()->name(),
-            
-            "type" => fake()->randomElement($types)
+            "name" => fake()->name(),     
+            "type" => fake()->randomElement($types),
+            "likes" => fake()->numberBetween(20,1000),
+            "created_by" => User::inRandomOrder()->value('id')
         ];
     }
 }

@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\Customization;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,8 +19,8 @@ class UserCustomFactory extends Factory
     public function definition(): array
     {
         return [
-            "user_id" => fake()->numberBetween(1,100),
-            "customization_id" => fake()->numberBetween(1,100)
+            "user_id" => User::inRandomOrder()->value('id'),
+            "customization_id" => Customization::inRandomOrder()->valueOrFail('id')
         ];
     }
 }

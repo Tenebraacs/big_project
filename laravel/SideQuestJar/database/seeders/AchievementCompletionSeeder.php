@@ -13,6 +13,6 @@ class AchievementCompletionSeeder extends Seeder
      */
     public function run(): void
     {
-        AchievementCompletion::factory(100)->create();
+        AchievementCompletion::factory(20)->create();
     }
 }

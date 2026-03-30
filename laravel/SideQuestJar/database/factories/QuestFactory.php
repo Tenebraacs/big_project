@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Jar;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -21,7 +22,7 @@ class QuestFactory extends Factory
             "name" => fake()->name(),
             "description" => fake()->paragraph(30, true),
             "completions" => fake()->numberBetween(1,100),
-            "jar_id" => fake()->numberBetween(1,100),
+            "jar_id" => Jar::inRandomOrder()->value('id'),
             "xp_gain" => fake()->randomElement($xpgain)
         ];
     }

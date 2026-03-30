@@ -13,6 +13,6 @@ class QuestSeeder extends Seeder
      */
     public function run(): void
     {
-        Quest::factory(100)->create();
+        Quest::factory(20)->create();
     }
 }

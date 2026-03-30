@@ -23,9 +23,12 @@ class JarContent extends Model
 
 
     public function jar(){
-        return $this->belongsTo(Jar::class, 'jar_id');
+        return $this->belongsTo(Jar::class);
     }
 
+    public function user(){
+        return $this->belongsTo(User::class, 'created_by');
+    }
 
 
 

@@ -23,6 +23,6 @@ class JarSeeder extends Seeder
             "type" => "official_jar"
         ]);
 
-        Jar::factory(100)->create();
+        Jar::factory(20)->create();
     }
 }

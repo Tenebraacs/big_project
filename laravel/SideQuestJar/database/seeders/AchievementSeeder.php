@@ -13,7 +13,7 @@ class AchievementSeeder extends Seeder
      */
     public function run(): void
     {
-        Achievement::factory(100)->create();
+        Achievement::factory(20)->create();
 
     }
 }

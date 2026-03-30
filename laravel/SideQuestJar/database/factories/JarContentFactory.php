@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\Jar;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -16,8 +18,16 @@ class JarContentFactory extends Factory
      */
     public function definition(): array
     {
+
+        $pictures = ["https://i.ibb.co/JjJczBgX/Hug-ATree.png", "https://i.ibb.co/wN9GKctB/Rope-AJump.png"];
+        
         return [
-            //
+            "jar_id" => Jar::inRandomOrder()->value('id'),
+            "title" => fake()->unique()->jobTitle(),
+            "description" => fake()->text(),
+            "picture" => fake()->randomElement($pictures),
+            "likes" => fake()->numberBetween(20,1000),
+            "created_by" => User::inRandomOrder()->value('id')
         ];
     }
 }

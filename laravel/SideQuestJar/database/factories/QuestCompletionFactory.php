@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\Quest;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -20,8 +22,8 @@ class QuestCompletionFactory extends Factory
             "completion_date" => fake()->dateTime(),
             "picture" => fake()->imageUrl(),
             "description" => fake()->paragraph(30, true),
-            "user_id" => fake()->numberBetween(1,100),
-            "quest_id" => fake()->numberBetween(1,100)
+            "user_id" => User::inRandomOrder()->value('id'),
+            "quest_id" => Quest::inRandomOrder()->value('id')
         ];
     }
 }

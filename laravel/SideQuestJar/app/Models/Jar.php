@@ -37,11 +37,21 @@ class Jar extends Model
     }
 
     public function jar_user(){
-        return $this->belongsTo(JarUser::class);
+        return $this->hasMany(JarUser::class);
     }
 
     public function contents(){
-        return $this->hasMany(JarContent::class, 'jar_id');
+        return $this->hasMany(JarContent::class);
     }
+
+    public function user(){
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+
+
+
+
+
 
 }

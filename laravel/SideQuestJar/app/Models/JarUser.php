@@ -13,10 +13,10 @@ class JarUser extends Model
     use HasFactory;
     use SoftDeletes;
     public function user(){
-        return $this->hasOne(User::class);
+        return $this->belongsTo(User::class);
     }
 
     public function jars(){
-        return $this->hasMany(Jar::class);
+        return $this->belongsTo(Jar::class);
     }
 }

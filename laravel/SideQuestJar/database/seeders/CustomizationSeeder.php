@@ -13,6 +13,6 @@ class CustomizationSeeder extends Seeder
      */
     public function run(): void
     {
-        Customization::factory(100)->create();
+        Customization::factory(20)->create();
     }
 }

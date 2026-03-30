@@ -13,7 +13,7 @@ class JarUserSeeder extends Seeder
      */
     public function run(): void
     {
-        JarUser::factory(100)->create();
+        JarUser::factory(20)->create();
 
     }
 }

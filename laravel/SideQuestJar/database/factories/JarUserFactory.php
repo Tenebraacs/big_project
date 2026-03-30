@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\Jar;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,9 +19,9 @@ class JarUserFactory extends Factory
     public function definition(): array
     {
         return [
-            "jar_id" => fake()->numberBetween(1,100),
-            "user_id" => fake()->numberBetween(1,100),
-            "streak" => fake()->numberBetween(1,365)
+            "jar_id" => Jar::inRandomOrder()->value('id'),
+            "user_id" => User::inRandomOrder()->value('id'),
+            "streak" => fake()->numberBetween(10,500)
         ];
     }
 }
