@@ -14,7 +14,6 @@ namespace SideQuestJar.Models
         public required string Email { get; set; }
         public required string ProfilePicture { get; set; }
         public DateTime BirthDate { get; set; }
-        public DateTime JoinedDate { get; set; }
         public int UserXp { get; set; }
         public bool IsCustomized { get; set; }
         public bool IsAdmin { get; set; }

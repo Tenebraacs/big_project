@@ -45,12 +45,5 @@ namespace SideQuestJar.DTOs
 
         [JsonPropertyName("is_admin")]
         public int IsAdmin { get; set; }
-
-        // Átváltjuk a 0/1 értékeket bool típusra a könnyebb használat érdekében
-        [JsonIgnore]
-        public bool IsAdminBool => IsAdmin == 1;
-
-        [JsonIgnore]
-        public bool IsCustomizedBool => IsCustomized == 1;
     }
 }

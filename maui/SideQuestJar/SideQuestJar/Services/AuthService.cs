@@ -1,4 +1,6 @@
-﻿using SideQuestJar.DTOs;
+﻿using SideQuestJar.Data;
+using SideQuestJar.DTOs;
+using SideQuestJar.Models;
 using System;
 using System.Collections.Generic;
 using System.Net.Http.Json;
@@ -49,6 +51,29 @@ namespace SideQuestJar.Services
                     if (result?.Token != null)
                     {
                         await SecureStorage.Default.SetAsync("auth_token", result.Token);
+
+                        using (var db = new AppDbContext())
+                        {
+                            db.Users.RemoveRange(db.Users);
+
+                            var user = new User
+                            {
+                                Id = result.User.Id,
+                                Username = result.User.Username,
+                                Nickname = result.User.Nickname,
+                                Fullname = result.User.Fullname,
+                                Email = result.User.Email,
+                                ProfilePicture = result.User.ProfilePicture,
+                                BirthDate = result.User.BirthDate,
+                                UserXp = result.User.UserXp,
+                                IsCustomized = result.User.IsCustomized == 1,
+                                IsAdmin = result.User.IsAdmin == 1
+                            };
+
+                            db.Users.Add(user);
+                            await db.SaveChangesAsync();
+                        }
+
                         return true;
                     }
                 }
@@ -114,14 +139,73 @@ namespace SideQuestJar.Services
                     await _httpClient.PostAsync("logout", null);
                 }
                 SecureStorage.Default.Remove("auth_token");
+
+                using (var db = new AppDbContext())
+                {
+                    db.Users.RemoveRange(db.Users);
+                    await db.SaveChangesAsync();
+                }
+
                 return true;
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Logout error: {ex.Message}");
                 SecureStorage.Default.Remove("auth_token");
+
+                using (var db = new AppDbContext())
+                {
+                    db.Users.RemoveRange(db.Users);
+                    await db.SaveChangesAsync();
+                }
+
                 return true;
             }
+        }
+
+
+        // Auto-Login, ellenőrzéssel a token érvényességére
+        public async Task<bool> HasValidSessionAsync()
+        {
+            var token = await SecureStorage.Default.GetAsync("auth_token");
+            if (string.IsNullOrEmpty(token))
+                return false;
+
+            _httpClient.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+            try
+            {
+                var response = await _httpClient.GetAsync("user");
+
+                if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                {
+                    SecureStorage.Default.Remove("auth_token");
+                    using (var db = new AppDbContext())
+                    {
+                        db.Users.RemoveRange(db.Users);
+                        await db.SaveChangesAsync();
+                    }
+                    return false;
+                }
+            }
+            catch (HttpRequestException)
+            {
+                Console.WriteLine("No internet connection. Falling back to local offline cache.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error validating session: {ex.Message}");
+            }
+
+            using (var db = new AppDbContext())
+            {
+                var user = db.Users.FirstOrDefault();
+                if (user == null)
+                    return false;
+            }
+
+            return true;
         }
     }
 }
