@@ -19,12 +19,18 @@ class JarController extends Controller
         return view("jars.index", ["jars" => $jars]);
     }
 
-    public function mainJar(){
+    public function home(){
         //Lekeri az elso type == official_jar adatait
-        $jar = Jar::where('type', 'official_jar')->first();
-        $content = $jar->contents()->inRandomOrder()->first();
-        return view('home', compact('jar', 'content'));
+        $mainJar = Jar::where('type', 'official_jar')->first();
+        $mainContent = $mainJar->contents()->inRandomOrder()->first();
+
+        $jars = Jar::whereNot('type', 'official_jar')->with('contents')->get();
+        return view('home', compact('mainJar', 'mainContent', 'jars'));
     }
+
+    
+
+    
 
     /**
      * Show the form for creating a new resource.

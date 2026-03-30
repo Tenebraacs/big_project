@@ -22,7 +22,7 @@ class JarContentFactory extends Factory
         $pictures = ["https://i.ibb.co/JjJczBgX/Hug-ATree.png", "https://i.ibb.co/wN9GKctB/Rope-AJump.png"];
         
         return [
-            "jar_id" => Jar::inRandomOrder()->value('id'),
+            "jar_id" => Jar::whereNotIn('name', ["Today's Avdenture"])->inRandomOrder()->value('id'),
             "title" => fake()->unique()->jobTitle(),
             "description" => fake()->text(),
             "picture" => fake()->randomElement($pictures),
