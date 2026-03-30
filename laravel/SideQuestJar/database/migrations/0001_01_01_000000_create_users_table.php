@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('password');
             $table->string("profile_picture")->default(""); //"https://i.ibb.co/Ngk3xx10/Godly-Pfp.png" Zoli kep
             $table->date("birth_date");
+            // TODO: Ennek nem sok értelme van, a created_at lényegében ugyan az, de beszéljük meg
             $table->dateTime("joined_date")->nullable();
             $table->integer("user_xp")->default(0);
             $table->boolean("is_customized")->default(false);
