@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\JarContent;
-use App\Http\Requests\StoreJarContentRequest;
-use App\Http\Requests\UpdateJarContentRequest;
+use App\Models\JarQuest;
+use App\Http\Requests\StoreJarQuestRequest;
+use App\Http\Requests\UpdateJarQuestRequest;
 
-class JarContentController extends Controller
+class JarQuestController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -27,7 +27,7 @@ class JarContentController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreJarContentRequest $request)
+    public function store(StoreJarQuestRequest $request)
     {
         //
     }
@@ -35,7 +35,7 @@ class JarContentController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(JarContent $jarContent)
+    public function show(JarQuest $jarQuest)
     {
         //
     }
@@ -43,7 +43,7 @@ class JarContentController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(JarContent $jarContent)
+    public function edit(JarQuest $jarQuest)
     {
         //
     }
@@ -51,7 +51,7 @@ class JarContentController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateJarContentRequest $request, JarContent $jarContent)
+    public function update(UpdateJarQuestRequest $request, JarQuest $jarQuest)
     {
         //
     }
@@ -59,7 +59,7 @@ class JarContentController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(JarContent $jarContent)
+    public function destroy(JarQuest $jarQuest)
     {
         //
     }

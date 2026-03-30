@@ -12,6 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('quest_completions', function (Blueprint $table) {
+            //Nem akarok ezzel foglalkozni
+            //Todo gatya
             $table->id();
             $table->dateTime("completion_date");
             $table->string("picture")->default("");

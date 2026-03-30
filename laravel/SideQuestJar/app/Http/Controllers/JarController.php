@@ -21,14 +21,14 @@ class JarController extends Controller
 
     public function home(){
         //Lekeri az elso type == official_jar adatait
-        $mainJar = Jar::where('type', 'official_jar')->first();
-        $mainContent = $mainJar->contents()->inRandomOrder()->first();
+        $mainJar = Jar::where('type', 'official_jar')->where('name', "Today's Adventure")->first();
+        $mainQuest = $mainJar->quests()->inRandomOrder()->first(); //Napi valtozas a questben
 
         $jars = Jar::whereNot('type', 'official_jar')
-        ->whereHas('contents')
-        ->with('contents')
+        ->whereHas('quests')
+        ->with('quests')
         ->get();
-        return view('home', compact('mainJar', 'mainContent', 'jars'));
+        return view('home', compact('mainJar', 'mainQuest', 'jars'));
     }
 
     
@@ -51,8 +51,10 @@ class JarController extends Controller
      */
     public function store(StoreJarRequest $request)
     {
-        $jar = Jar::create($request->all());
-        return response()->json(["msg" => "New Jar was added successfully", "jar" => $jar]);
+        $this->authorize('create', Jar::class);
+        $jar = Jar::create($request->validated());
+        //return redirect()->route('jars.show', $jar)->with('success', 'New jar was added successfully.');
+        return ; //Todo a return redirect mehetne a User/show page re ami Profil page kent funkcioanalhatna
     }
 
     /**

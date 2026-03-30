@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
+<div class="container-fluid">
 
     <div class="row justify-content-center">
         <div class="col-10">
@@ -20,27 +20,19 @@
                     
                     
                     
-                    @if ($mainContent)
-                        <p>{{ $mainContent->description }}</p>
+                    @if ($mainQuest)
+                        <p>{{ $mainQuest->description }}</p>
                     
-                        @if ($mainContent->picture)
-                        <img src="{{ $mainContent->picture }}" alt="Jar picture" class="img-fluid d-block mx-auto">
+                        @if ($mainQuest->picture)
+                        <img src="{{ $mainQuest->picture }}" alt="Jar picture" class="img-fluid d-block mx-auto">
                         @else
                             <h2>No image found.</h2>
                         @endif
                     @endif
                         
-                    
-                    
-                    
-                    
-                    
+                  
                 </div>
-
-                
-
-
-
+               
             </div>
 
             
@@ -58,11 +50,11 @@
                     <div class="card-body text-center">
                         
 
-                        @if ($jar->contents)
-                            <p>{{ $jar->contents->first()->description}}</p>
+                        @if ($jar->quests)
+                            <p>{{ $jar->quests->first()->description}}</p>
 
-                            @if ($jar->contents->first()->picture)
-                                <img src="{{ $jar->contents->first()->picture }}" class="img-fluid">
+                            @if ($jar->quests->first()->picture)
+                                <img src="{{ $jar->quests->first()->picture }}" class="img-fluid">
                             @else
                                 <p>No image found.</p>
                             @endif

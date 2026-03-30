@@ -7,9 +7,9 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\JarContent>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\JarQuest>
  */
-class JarContentFactory extends Factory
+class JarQuestFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -18,7 +18,6 @@ class JarContentFactory extends Factory
      */
     public function definition(): array
     {
-
         $pictures = ["https://i.ibb.co/JjJczBgX/Hug-ATree.png", "https://i.ibb.co/wN9GKctB/Rope-AJump.png"];
         
         return [

@@ -2,11 +2,11 @@
 
 namespace App\Policies;
 
-use App\Models\Quest;
+use App\Models\JarQuest;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
 
-class QuestPolicy
+class JarQuestPolicy
 {
     /**
      * Determine whether the user can view any models.
@@ -19,7 +19,7 @@ class QuestPolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Quest $quest): bool
+    public function view(User $user, JarQuest $jarQuest): bool
     {
         return false;
     }
@@ -35,7 +35,7 @@ class QuestPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Quest $quest): bool
+    public function update(User $user, JarQuest $jarQuest): bool
     {
         return false;
     }
@@ -43,7 +43,7 @@ class QuestPolicy
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Quest $quest): bool
+    public function delete(User $user, JarQuest $jarQuest): bool
     {
         return false;
     }
@@ -51,7 +51,7 @@ class QuestPolicy
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, Quest $quest): bool
+    public function restore(User $user, JarQuest $jarQuest): bool
     {
         return false;
     }
@@ -59,7 +59,7 @@ class QuestPolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, Quest $quest): bool
+    public function forceDelete(User $user, JarQuest $jarQuest): bool
     {
         return false;
     }

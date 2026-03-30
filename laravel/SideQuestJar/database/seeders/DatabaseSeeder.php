@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 
+
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -20,7 +21,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             UserSeeder::class,
             JarSeeder::class,
-            JarContentSeeder::class, 
+            JarQuestSeeder::class,
             JarUserSeeder::class,          
             AchievementSeeder::class,    
             AchievementCompletionSeeder::class,                

@@ -28,8 +28,8 @@ class Jar extends Model
     
 
 
-    public function quest(){
-        return $this->belongsTo(Quest::class);
+    public function quests(){
+        return $this->hasMany(JarQuest::class);
     }
 
     public function like(){
@@ -40,9 +40,7 @@ class Jar extends Model
         return $this->hasMany(JarUser::class);
     }
 
-    public function contents(){
-        return $this->hasMany(JarContent::class);
-    }
+
 
     public function user(){
         return $this->belongsTo(User::class, 'created_by');
