@@ -18,5 +18,5 @@ Route::resource('/jars', JarController::class);
 //TODO (frontend needed)
 Auth::routes();
 
-Route::get('/home', [JarController::class, 'mainJar'])->name('home');
+Route::get('/home', [JarController::class, 'home'])->name('home');
 //Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
