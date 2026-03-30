@@ -37,16 +37,20 @@ namespace SideQuestJar.DTOs
         [JsonPropertyName("birth_date")]
         public DateTime BirthDate { get; set; }
 
-        [JsonPropertyName("joined_date")]
-        public DateTime JoinedDate { get; set; }
-
         [JsonPropertyName("user_xp")]
         public int UserXp { get; set; }
 
         [JsonPropertyName("is_customized")]
-        public bool IsCustomized { get; set; }
+        public int IsCustomized { get; set; }
 
         [JsonPropertyName("is_admin")]
-        public bool IsAdmin { get; set; }
+        public int IsAdmin { get; set; }
+
+        // Átváltjuk a 0/1 értékeket bool típusra a könnyebb használat érdekében
+        [JsonIgnore]
+        public bool IsAdminBool => IsAdmin == 1;
+
+        [JsonIgnore]
+        public bool IsCustomizedBool => IsCustomized == 1;
     }
 }

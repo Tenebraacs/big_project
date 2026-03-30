@@ -4,6 +4,7 @@ using SideQuestJar.Services;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Globalization;
 
 namespace SideQuestJar.ViewModels
 {
@@ -14,21 +15,22 @@ namespace SideQuestJar.ViewModels
 
 
         // Login/Register-hez szükséges mezők
-        [ObservableProperty] public partial string Email { get; set; }
-        [ObservableProperty] public partial string Password { get; set; }
-        [ObservableProperty] public partial string GenericErrorMessage { get; set; } // Általános hibaüzenet (pl. hálózati hiba)
+        [ObservableProperty] public partial string Email { get; set; } = string.Empty;
+        [ObservableProperty] public partial string Password { get; set; } = string.Empty;
+        [ObservableProperty] public partial string GenericErrorMessage { get; set; } = string.Empty; // Általános hibaüzenet (pl. hálózati hiba)
 
         // Register-hez szükséges mezők
-        [ObservableProperty] public partial string Username { get; set; }
-        [ObservableProperty] public partial string FirstName { get; set; }
-        [ObservableProperty] public partial string LastName { get; set; }
-        [ObservableProperty] public partial string PasswordConfirmation { get; set; }
+        [ObservableProperty] public partial string Username { get; set; } = string.Empty;
+        [ObservableProperty] public partial DateTime BirthDate { get; set; } = DateTime.Now;
+        [ObservableProperty] public partial string FirstName { get; set; } = string.Empty;
+        [ObservableProperty] public partial string LastName { get; set; } = string.Empty;
+        [ObservableProperty] public partial string PasswordConfirmation { get; set; } = string.Empty;
 
         // Register hiba üzenetek
-        [ObservableProperty] public partial string UsernameError { get; set; }
-        [ObservableProperty] public partial string EmailError { get; set; }
-        [ObservableProperty] public partial string BirthDateError { get; set; }
-        [ObservableProperty] public partial string PasswordError { get; set; }
+        [ObservableProperty] public partial string UsernameError { get; set; } = string.Empty;
+        [ObservableProperty] public partial string EmailError { get; set; } = string.Empty;
+        [ObservableProperty] public partial string BirthDateError { get; set; } = string.Empty;
+        [ObservableProperty] public partial string PasswordError { get; set; } = string.Empty;
 
         // Konstruktor
         public AuthViewModel(AuthService authService, GlobalAppState appState)
@@ -36,6 +38,7 @@ namespace SideQuestJar.ViewModels
             _authService = authService;
             AppState = appState;
         }
+        
 
         [RelayCommand]
         private async Task PerformLoginAsync()
@@ -61,13 +64,14 @@ namespace SideQuestJar.ViewModels
                 GenericErrorMessage = "Invalid email or password.";
             }
         }
+        
 
         [RelayCommand]
         private async Task PerformRegisterAsync()
         {
             ClearAllErrors();
 
-            var (IsSuccess, SummaryMessage, FieldErrors) = await _authService.RegisterAsync(Username, FirstName, LastName, Email, Password, PasswordConfirmation);
+            var (IsSuccess, SummaryMessage, FieldErrors) = await _authService.RegisterAsync(Username, BirthDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture), FirstName, LastName, Email, Password, PasswordConfirmation);
 
             if (IsSuccess)
             {
@@ -85,6 +89,8 @@ namespace SideQuestJar.ViewModels
 
                 if (FieldErrors.ContainsKey("password"))
                     PasswordError = FieldErrors["password"][0];
+                if (FieldErrors.ContainsKey("birth_date"))
+                    BirthDateError = FieldErrors["birth_date"][0];
             }
             else
             {

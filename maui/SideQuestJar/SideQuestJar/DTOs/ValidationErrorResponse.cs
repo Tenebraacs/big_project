@@ -8,9 +8,9 @@ namespace SideQuestJar.DTOs
     internal class ValidationErrorResponse
     {
         [JsonPropertyName("message")]
-        public required string Message { get; set; }
+        public string? Message { get; set; }
 
         [JsonPropertyName("errors")]
-        public required Dictionary<string, string[]> Errors { get; set; }
+        public Dictionary<string, string[]>? Errors { get; set; }
     }
 }

@@ -18,17 +18,26 @@ namespace SideQuestJar.Services
             {
                 BaseAddress = new Uri(BaseUrl)
             };
+
+            _httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
+
+            string userAgent = $"{AppInfo.Current.Name} MAUI - ({DeviceInfo.Current.Platform}; {DeviceInfo.Current.VersionString})";
+            _httpClient.DefaultRequestHeaders.Add("User-Agent", userAgent);
         }
+
 
         // Login
         public async Task<bool> LoginAsync(string email, string password)
         {
             try
             {
+                string deviceId = $"{DeviceInfo.Current.Platform} - {DeviceInfo.Current.Name}";
+
                 var loginData = new
                 {
                     email,
-                    password
+                    password,
+                    deviceId
                 };
 
                 var response = await _httpClient.PostAsJsonAsync("login", loginData);
@@ -54,13 +63,14 @@ namespace SideQuestJar.Services
 
 
         // Register
-        public async Task<(bool IsSuccess, string SummaryMessage, Dictionary<string, string[]>? FieldErrors)> RegisterAsync(string username, string firstname, string lastname, string email, string password, string passwordConfirmation)
+        public async Task<(bool IsSuccess, string SummaryMessage, Dictionary<string, string[]>? FieldErrors)> RegisterAsync(string username, string birthDate, string firstname, string lastname, string email, string password, string passwordConfirmation)
         {
             try
             {
                 var registerData = new
                 {
                     username = username,
+                    birth_date = birthDate,
                     first_name = firstname,
                     last_name = lastname,
                     email = email,
@@ -79,13 +89,13 @@ namespace SideQuestJar.Services
 
                 if (errorResult?.Errors != null && errorResult.Errors.Count > 0)
                 {
-                    return (false, errorResult.Message, errorResult.Errors);
+                    return (false, errorResult.Message ?? "Validation error", errorResult.Errors);
                 }
                 return (false, errorResult?.Message ?? "An unknown error occurred during registration.", null);
             }
             catch (Exception ex)
             {
-                return (false, ex.Message, null);
+                return (false, $"Connection Error: {ex.Message}", null);
             }
         }
 
