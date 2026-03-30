@@ -5,58 +5,139 @@
              xmlns:components="clr-namespace:SideQuestJar.Components"
              x:Class="SideQuestJar.Views.AuthPage"
              x:DataType="viewmodels:AuthViewModel"
-             Title="SideQuestJar">
-
+             Title="SideQuestJar"
+             BackgroundColor="#E6B5A7">
     <Grid RowDefinitions="Auto, *">
 
         <components:NavbarView Grid.Row="0" BindingContext="{Binding AppState}" />
 
-        <Grid Grid.Row="1" ColumnDefinitions="*, *">
+        <Grid Grid.Row="1" Padding="40">
 
-            <VerticalStackLayout Grid.Column="0" BackgroundColor="#DDDDDD" Padding="30" VerticalOptions="Center">
-                <Label Text="SIDE QUEST JAR" FontSize="32" FontAttributes="Bold" HorizontalOptions="Center"/>
-                <Label Text="Life begins at the end of your comfort zone." HorizontalOptions="Center" Margin="0,10,0,0"/>
-            </VerticalStackLayout>
+            <Border BackgroundColor="#32495A"
+                    StrokeThickness="0"
+                    StrokeShape="RoundRectangle 40">
 
-            <Grid Grid.Column="1" Padding="30">
+                <Grid ColumnDefinitions="*, *">
 
-                <VerticalStackLayout Spacing="15" IsVisible="{Binding AppState.IsLoginViewActive}">
-                    <Label Text="Login" FontSize="24" FontAttributes="Bold" />
+                    <VerticalStackLayout Grid.Column="0" Padding="40" VerticalOptions="Center">
+                        <Label Text="SIDE QUEST JAR" 
+                               FontSize="36" 
+                               FontAttributes="Bold" 
+                               TextColor="White" 
+                               HorizontalOptions="Center"/>
+                        <Label Text="Life begins at the end of your comfort zone." 
+                               TextColor="#A0B0BA" 
+                               HorizontalOptions="Center" 
+                               Margin="0,10,0,0"/>
+                    </VerticalStackLayout>
 
-                    <Entry Text="{Binding Email}" Placeholder="Email" Keyboard="Email" />
-                    <Entry Text="{Binding Password}" IsPassword="True" Placeholder="Password" />
+                    <Border Grid.Column="1" 
+                            BackgroundColor="#EABCAE" 
+                            StrokeThickness="0"
+                            StrokeShape="RoundRectangle 35"
+                            Margin="0, 20, 20, 20">
+                        <ScrollView>
+                            <VerticalStackLayout Padding="40" Spacing="20">
 
-                    <Label Text="{Binding GenericErrorMessage}" TextColor="Red" />
+                                <VerticalStackLayout Spacing="15" IsVisible="{Binding AppState.IsLoginViewActive}">
+                                    <Label Text="Login" FontSize="32" TextColor="#222222" Margin="0,0,0,10" />
 
-                    <Button Text="LOGIN" Command="{Binding PerformLoginCommand}" />
-                </VerticalStackLayout>
+                                    <VerticalStackLayout Spacing="5">
+                                        <Label Text="Email Address" FontAttributes="Bold" TextColor="#333333" />
+                                        <Border Stroke="#BFA29E" StrokeThickness="1" StrokeShape="RoundRectangle 8" BackgroundColor="#E0B0A2" HeightRequest="45" Padding="10,0">
+                                            <Entry Text="{Binding Email}" Placeholder="hello@example.com" Keyboard="Email" BackgroundColor="Transparent" TextColor="#222" />
+                                        </Border>
+                                    </VerticalStackLayout>
 
-                <VerticalStackLayout Spacing="15" IsVisible="{Binding AppState.IsRegisterViewActive}">
-                    <Label Text="Register" FontSize="24" FontAttributes="Bold" />
+                                    <VerticalStackLayout Spacing="5">
+                                        <Label Text="Password" FontAttributes="Bold" TextColor="#333333" />
+                                        <Border Stroke="#BFA29E" StrokeThickness="1" StrokeShape="RoundRectangle 8" BackgroundColor="#E0B0A2" HeightRequest="45" Padding="10,0">
+                                            <Entry Text="{Binding Password}" IsPassword="True" Placeholder="Password" BackgroundColor="Transparent" TextColor="#222" />
+                                        </Border>
+                                    </VerticalStackLayout>
 
-                    <Entry Text="{Binding Username}" Placeholder="Username" />
-                    <Label Text="{Binding UsernameError}" TextColor="Red" FontSize="12" Margin="0,-10,0,0" />
+                                    <Label Text="{Binding GenericErrorMessage}" TextColor="#D32F2F" FontAttributes="Bold" />
 
-                    <DatePicker Date="{Binding BirthDate}" Format="yyyy-MM-dd" />
-                    <Label Text="{Binding BirthDateError}" TextColor="Red" FontSize="12" Margin="0,-10,0,0" />
+                                    <Button Text="Login" 
+                                            Command="{Binding PerformLoginCommand}" 
+                                            BackgroundColor="#476273" 
+                                            TextColor="White"
+                                            CornerRadius="20"
+                                            HeightRequest="50"
+                                            Margin="0,10,0,0"/>
+                                </VerticalStackLayout>
 
-                    <Entry Text="{Binding FirstName}" Placeholder="First Name" />
-                    <Entry Text="{Binding LastName}" Placeholder="Last Name" />
 
-                    <Entry Text="{Binding Email}" Placeholder="Email" Keyboard="Email" />
-                    <Label Text="{Binding EmailError}" TextColor="Red" FontSize="12" Margin="0,-10,0,0" />
+                                <VerticalStackLayout Spacing="15" IsVisible="{Binding AppState.IsRegisterViewActive}">
+                                    <Label Text="Register" FontSize="32" TextColor="#222222" Margin="0,0,0,10" />
 
-                    <Entry Text="{Binding Password}" IsPassword="True" Placeholder="Password" />
-                    <Label Text="{Binding PasswordError}" TextColor="Red" FontSize="12" Margin="0,-10,0,0" />
+                                    <VerticalStackLayout Spacing="5">
+                                        <Label Text="UserName" FontAttributes="Bold" TextColor="#333333" />
+                                        <Border Stroke="#9AB5EA" StrokeThickness="2" StrokeShape="RoundRectangle 8" BackgroundColor="#E0B0A2" HeightRequest="45" Padding="10,0">
+                                            <Entry Text="{Binding Username}" Placeholder="Username" BackgroundColor="Transparent" TextColor="#222" />
+                                        </Border>
+                                        <Label Text="{Binding UsernameError}" TextColor="#D32F2F" FontSize="12" />
+                                    </VerticalStackLayout>
 
-                    <Entry Text="{Binding PasswordConfirmation}" IsPassword="True" Placeholder="Confirm Password" />
+                                    <VerticalStackLayout Spacing="5">
+                                        <Label Text="Birth Date" FontAttributes="Bold" TextColor="#333333" />
+                                        <Border Stroke="#BFA29E" StrokeThickness="1" StrokeShape="RoundRectangle 8" BackgroundColor="#E0B0A2" HeightRequest="45" Padding="10,0">
+                                            <DatePicker Date="{Binding BirthDate}" Format="yyyy-MM-dd" BackgroundColor="Transparent" TextColor="#222" />
+                                        </Border>
+                                        <Label Text="{Binding BirthDateError}" TextColor="#D32F2F" FontSize="12" />
+                                    </VerticalStackLayout>
 
-                    <Label Text="{Binding GenericErrorMessage}" TextColor="Red" />
+                                    <VerticalStackLayout Spacing="5">
+                                        <Label Text="Full Name" FontAttributes="Bold" TextColor="#333333" />
+                                        <Grid ColumnDefinitions="*, *" ColumnSpacing="15">
+                                            <Border Grid.Column="0" Stroke="#BFA29E" StrokeThickness="1" StrokeShape="RoundRectangle 8" BackgroundColor="#E0B0A2" HeightRequest="45" Padding="10,0">
+                                                <Entry Text="{Binding FirstName}" Placeholder="First Name" BackgroundColor="Transparent" TextColor="#222" />
+                                            </Border>
+                                            <Border Grid.Column="1" Stroke="#BFA29E" StrokeThickness="1" StrokeShape="RoundRectangle 8" BackgroundColor="#E0B0A2" HeightRequest="45" Padding="10,0">
+                                                <Entry Text="{Binding LastName}" Placeholder="Last Name" BackgroundColor="Transparent" TextColor="#222" />
+                                            </Border>
+                                        </Grid>
+                                    </VerticalStackLayout>
 
-                    <Button Text="REGISTER" Command="{Binding PerformRegisterCommand}" />
-                </VerticalStackLayout>
+                                    <VerticalStackLayout Spacing="5">
+                                        <Label Text="Email Address" FontAttributes="Bold" TextColor="#333333" />
+                                        <Border Stroke="#BFA29E" StrokeThickness="1" StrokeShape="RoundRectangle 8" BackgroundColor="#E0B0A2" HeightRequest="45" Padding="10,0">
+                                            <Entry Text="{Binding Email}" Placeholder="hello@example.com" Keyboard="Email" BackgroundColor="Transparent" TextColor="#222" />
+                                        </Border>
+                                        <Label Text="{Binding EmailError}" TextColor="#D32F2F" FontSize="12" />
+                                    </VerticalStackLayout>
 
-            </Grid>
+                                    <VerticalStackLayout Spacing="5">
+                                        <Label Text="Password" FontAttributes="Bold" TextColor="#333333" />
+                                        <Border Stroke="#BFA29E" StrokeThickness="1" StrokeShape="RoundRectangle 8" BackgroundColor="#E0B0A2" HeightRequest="45" Padding="10,0">
+                                            <Entry Text="{Binding Password}" IsPassword="True" Placeholder="Password" BackgroundColor="Transparent" TextColor="#222" />
+                                        </Border>
+                                        <Label Text="{Binding PasswordError}" TextColor="#D32F2F" FontSize="12" />
+                                    </VerticalStackLayout>
+
+                                    <VerticalStackLayout Spacing="5">
+                                        <Label Text="Confirm Password" FontAttributes="Bold" TextColor="#333333" />
+                                        <Border Stroke="#BFA29E" StrokeThickness="1" StrokeShape="RoundRectangle 8" BackgroundColor="#E0B0A2" HeightRequest="45" Padding="10,0">
+                                            <Entry Text="{Binding PasswordConfirmation}" IsPassword="True" Placeholder="Confirm Password" BackgroundColor="Transparent" TextColor="#222" />
+                                        </Border>
+                                    </VerticalStackLayout>
+
+                                    <Label Text="{Binding GenericErrorMessage}" TextColor="#D32F2F" FontAttributes="Bold" />
+
+                                    <Button Text="Register" 
+                                            Command="{Binding PerformRegisterCommand}" 
+                                            BackgroundColor="#476273" 
+                                            TextColor="White"
+                                            CornerRadius="20"
+                                            HeightRequest="50"
+                                            Margin="0,10,0,0"/>
+                                </VerticalStackLayout>
+
+                            </VerticalStackLayout>
+                        </ScrollView>
+                    </Border>
+                </Grid>
+            </Border>
         </Grid>
     </Grid>
 </ContentPage>
