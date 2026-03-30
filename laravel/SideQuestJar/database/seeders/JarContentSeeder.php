@@ -34,7 +34,7 @@ class JarContentSeeder extends Seeder
             "likes" => 22
         ]);
 
-        JarContent::factory(20)->create();
+        JarContent::factory(100)->create();
 
     }
 }

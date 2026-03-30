@@ -2,6 +2,7 @@
 
 @section('content')
 <div class="container">
+
     <div class="row justify-content-center">
         <div class="col-10">
             <div class="card">
@@ -41,8 +42,41 @@
 
 
             </div>
+
+            
         </div>
     </div>
+    <div class="row">
+        @foreach ($jars as $jar)
+            <div class="col-md-3 md-4">
+                <div class="card h-100">
+
+                    <div class="card-header text-center">
+                        <h5 class="fw-bold">{{ $jar->name }}</h5>
+                    </div>
+
+                    <div class="card-body text-center">
+                        
+
+                        @if ($jar->contents)
+                            <p>{{ $jar->contents->first()->description}}</p>
+
+                            @if ($jar->contents->first()->picture)
+                                <img src="{{ $jar->contents->first()->picture }}" class="img-fluid">
+                            @else
+                                <p>No image found.</p>
+                            @endif
+                        @else
+                            <p>No content available.</p>
+                        @endif
+                    </div>
+
+                </div>
+            </div>             
+        @endforeach
+    </div>
+    
+
 </div>
 
 

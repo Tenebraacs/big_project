@@ -24,7 +24,10 @@ class JarController extends Controller
         $mainJar = Jar::where('type', 'official_jar')->first();
         $mainContent = $mainJar->contents()->inRandomOrder()->first();
 
-        $jars = Jar::whereNot('type', 'official_jar')->with('contents')->get();
+        $jars = Jar::whereNot('type', 'official_jar')
+        ->whereHas('contents')
+        ->with('contents')
+        ->get();
         return view('home', compact('mainJar', 'mainContent', 'jars'));
     }
 
