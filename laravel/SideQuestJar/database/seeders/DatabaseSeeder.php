@@ -25,7 +25,6 @@ class DatabaseSeeder extends Seeder
             JarUserSeeder::class,          
             AchievementSeeder::class,    
             AchievementCompletionSeeder::class,                
-            QuestSeeder::class,
             QuestCompletionSeeder::class,
             LikeSeeder::class,
             CustomizationSeeder::class,

@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Models\Quest;
+use App\Models\JarQuest;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -23,7 +23,7 @@ class QuestCompletionFactory extends Factory
             "picture" => fake()->imageUrl(),
             "description" => fake()->paragraph(30, true),
             "user_id" => User::inRandomOrder()->value('id'),
-            "quest_id" => Quest::inRandomOrder()->value('id')
+            "jar_quest_id" => JarQuest::inRandomOrder()->value('id')
         ];
     }
 }
