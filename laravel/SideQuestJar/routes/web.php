@@ -6,11 +6,9 @@ use App\Http\Controllers\LibraryController;
 use App\Http\Controllers\QuestController;
 use Illuminate\Support\Facades\Route;
 
-/*
-Route::get('/', function () {
-    return view('home');
-});
-*/
+
+Route::get('/', [JarController::class, 'home'])->name('root');
+Route::redirect('/home', '/');
 //Route::resource('/quest', QuestController::class);
 Route::resource('/jars', JarController::class);
 //Route::resource('/library', LibraryController::class);
@@ -18,5 +16,5 @@ Route::resource('/jars', JarController::class);
 //TODO (frontend needed)
 Auth::routes();
 
-Route::get('/home', [JarController::class, 'home'])->name('home');
+//Route::get('/home', [JarController::class, 'home'])->name('home');
 //Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

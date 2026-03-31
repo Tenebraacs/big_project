@@ -34,10 +34,7 @@ class JarPolicy
 
         
         
-        if($user->username == "ZoliProli"){
-            return true;
-        }
-        return false;
+        return true;
         
         
     }
