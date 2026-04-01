@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Attributes\UsePolicy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Laravel\Sanctum\HasApiTokens;
 
 #[ObservedBy(JarObserver::class)]
 #[UsePolicy(JarPolicy::class)]
@@ -16,6 +17,7 @@ class Jar extends Model
 {
     /** @use HasFactory<\Database\Factories\JarFactory> */
     use HasFactory, SoftDeletes;
+
 
     protected $fillable = [
         'name',
@@ -28,8 +30,8 @@ class Jar extends Model
     
 
 
-    public function quest(){
-        return $this->belongsTo(Quest::class);
+    public function quests(){
+        return $this->hasMany(JarQuest::class);
     }
 
     public function like(){
@@ -40,9 +42,7 @@ class Jar extends Model
         return $this->hasMany(JarUser::class);
     }
 
-    public function contents(){
-        return $this->hasMany(JarContent::class);
-    }
+
 
     public function user(){
         return $this->belongsTo(User::class, 'created_by');

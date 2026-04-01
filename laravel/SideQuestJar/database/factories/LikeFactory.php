@@ -3,7 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Jar;
-use App\Models\Quest;
+use App\Models\JarQuest;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -23,7 +23,7 @@ class LikeFactory extends Factory
         return [
             "user_id" => User::inRandomOrder()->value('id'),
             "type" => fake()->randomElement($types),
-            "quest_id" => Quest::inRandomOrder()->value('id'),
+            "jar_quest_id" => JarQuest::inRandomOrder()->value('id'),
             "jar_id" => Jar::inRandomOrder()->value('id')
         ];
     }

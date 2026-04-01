@@ -12,6 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('quest_completions', function (Blueprint $table) {
+            //Nem akarok ezzel foglalkozni
+            //Todo gatya
             $table->id();
             $table->dateTime("completion_date");
             $table->string("picture")->default("");
@@ -19,7 +21,7 @@ return new class extends Migration
             $table->integer("likes")->default(0);
             $table->enum("type", ["public_post", "private_post", "friends_only_post"])->default("public_post");
             $table->foreignId("user_id")->constrained()->onDelete("cascade");
-            $table->foreignId("quest_id")->constrained()->onDelete("cascade");
+            $table->foreignId("jar_quest_id")->constrained()->onDelete("cascade");
             $table->timestamps();
             $table->softDeletes();
         });

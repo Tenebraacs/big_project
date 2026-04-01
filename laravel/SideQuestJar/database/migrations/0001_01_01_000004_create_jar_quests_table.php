@@ -11,14 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('quests', function (Blueprint $table) {
+        Schema::create('jar_quests', function (Blueprint $table) {
             $table->id();
-            $table->string("name");
+            $table->foreignId('jar_id')->constrained()->onDelete('cascade');
+            $table->string("title");
             $table->longText("description")->nullable();
-            $table->integer("completions");
+            $table->string("picture")->default("https://i.ibb.co/2YvZypwJ/Jar-Quest-Placeholder.png");
             $table->integer("likes")->default(0);
-            $table->integer("xp_gain");
-            $table->foreignId("jar_id")->constrained()->onDelete("cascade");
+            $table->integer("completions")->default(0);
+            $table->integer("xp_gain")->nullable(); //Todo ha lesz ra ido 
+            $table->foreignId("created_by")->nullable()->constrained('users','id');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -29,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('quests');
+        Schema::dropIfExists('jar_quests');
     }
 };

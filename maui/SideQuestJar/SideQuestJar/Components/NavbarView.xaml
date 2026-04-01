@@ -13,11 +13,11 @@
             <Button Text="Home" Command="{Binding GoHomeCommand}" BackgroundColor="Transparent" TextColor="White" />
 
             <HorizontalStackLayout Spacing="10" IsVisible="{Binding IsLoggedOut}">
-                <Button Text="BEJELENTKEZÉS" Command="{Binding ShowLoginViewCommand}" />
-                <Button Text="REGISZTRÁCIÓ" Command="{Binding ShowRegisterViewCommand}" />
+                <Button Text="Login" Command="{Binding ShowLoginViewCommand}" />
+                <Button Text="Register" Command="{Binding ShowRegisterViewCommand}" />
             </HorizontalStackLayout>
 
-            <Button Text="LOGOUT" 
+            <Button Text="Logout" 
                     Command="{Binding LogoutCommand}" 
                     IsVisible="{Binding IsLoggedIn}" 
                     BackgroundColor="DarkRed" 

@@ -2,15 +2,51 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:components="clr-namespace:SideQuestJar.Components"
+             xmlns:viewmodels="clr-namespace:SideQuestJar.ViewModels"
              x:Class="SideQuestJar.Views.HomePage"
-             Title="Home">
+             x:DataType="viewmodels:HomeViewModel"
+             Title="Home"
+             BackgroundColor="#F5F5F5">
+    <Grid RowDefinitions="Auto, *">
 
-    <VerticalStackLayout>
+        <components:NavbarView Grid.Row="0" BindingContext="{Binding AppState}" />
 
-        <Label Text="Welcome to the Home Page!" 
-               FontSize="32"
-               HorizontalOptions="Center"
-               VerticalOptions="CenterAndExpand"
-               Margin="0, 100, 0, 0" />
-    </VerticalStackLayout>
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="30" Spacing="20">
+
+                <Label Text="Welcome back to SideQuestJar!" 
+                       FontSize="28" 
+                       FontAttributes="Bold" 
+                       TextColor="#222222"
+                       HorizontalOptions="Center" 
+                       Margin="0, 20, 0, 20"/>
+
+                <Border BackgroundColor="#32495A" 
+                        StrokeThickness="0"
+                        StrokeShape="RoundRectangle 20"
+                        Padding="30"
+                        Margin="20, 0">
+
+                    <Border.Shadow>
+                        <Shadow Brush="Black" Offset="0,5" Opacity="0.2" Radius="10" />
+                    </Border.Shadow>
+
+                    <VerticalStackLayout Spacing="10" HorizontalOptions="Center">
+                        <Label Text="Your Adventurer Profile" 
+                               TextColor="White" 
+                               FontSize="20" 
+                               FontAttributes="Bold" 
+                               HorizontalOptions="Center"/>
+
+                        <BoxView HeightRequest="1" Color="#476273" Margin="0,5" />
+
+                        <Label Text="Username: Loading..." TextColor="#A0B0BA" FontSize="16" HorizontalOptions="Center" />
+                        <Label Text="Total XP: 0" TextColor="#EABCAE" FontSize="16" FontAttributes="Bold" HorizontalOptions="Center" />
+                    </VerticalStackLayout>
+                </Border>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+    </Grid>
 </ContentPage>

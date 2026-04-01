@@ -19,7 +19,7 @@
 <body class="background">
     <div id="app">
         <nav class="navbar-base navbar navbar-expand-md navbar-light shadow-sm">
-            <div class="container">
+            <div class="container-fluid">
                 <a class="navbar-brand" href="{{ url('/') }}">
                     {{ config('app.name', 'Laravel') }}
                 </a>
@@ -31,11 +31,12 @@
                     
 
                     <ul class="navbar-nav me-auto">
-                        @can('create', App\Models\Jar::class)
+                        @auth
                             <li class="nav-item">
-                                    <a class="nav-link" href="">CreateNewJar</a>
+                                    <a class="nav-link" href="{{  route("jars.create") }}">CreateJar</a>
                             </li>
-                         @endcan
+                        @endauth
+
                     </ul>
 
                     <!-- Right Side Of Navbar -->
@@ -55,19 +56,16 @@
                             @endif
                         @else
                             <li class="nav-item dropdown">
-                                <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                                <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
                                     {{ Auth::user()->name }}
                                 </a>
 
-                                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item" href="{{ route('logout') }}"
-                                       onclick="event.preventDefault();
-                                                     document.getElementById('logout-form').submit();">
-                                        {{ __('Logout') }}
-                                    </a>
-
-                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                                <div class="dropdown-menu dropdown-menu-end">
+                                    <form action="{{ route('logout') }}" method="POST">
                                         @csrf
+                                        <button type="submit" class="dropdown-item">
+                                            Logout
+                                        </button>
                                     </form>
                                 </div>
                             </li>

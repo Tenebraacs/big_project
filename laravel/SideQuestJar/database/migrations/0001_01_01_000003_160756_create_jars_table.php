@@ -11,14 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('jar_contents', function (Blueprint $table) {
+        Schema::create('jars', function (Blueprint $table) {
+            //Korlatozas kell mint a kave shopnal lehessen (amerikai expresso es olasz expresso) name es created_by alapjan chekkol
             $table->id();
-            $table->foreignId('jar_id')->constrained()->onDelete('cascade');
-            $table->string("title")->unique();
-            $table->longText("description")->nullable();
-            $table->string("picture")->default("");
+            $table->string("name");   
+            $table->longText("description")->nullable();       
             $table->integer("likes")->default(0);
+            $table->enum("type", ["public_jar", "private_jar", "friends_only_jar", "invite_only_jar", "official_jar"])->default("public_jar");
             $table->foreignId("created_by")->nullable()->constrained('users','id');
+            $table->string("picture")->default("https://i.ibb.co/2YvZypwJ/Jar-Quest-Placeholder.png");
             $table->timestamps();
             $table->softDeletes();
         });
@@ -29,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('jar_contents');
+        Schema::dropIfExists('jars');
     }
 };

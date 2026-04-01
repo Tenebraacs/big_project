@@ -30,6 +30,23 @@ class JarController extends Controller
         return response()->json(["msg" => "Jar was deleted"]);
     }
 
+
+    public function home(){
+        //Lekeri az elso type == official_jar adatait
+        $mainJar = Jar::where('type', 'official_jar')->where('name', "Today's Adventure")->first();
+        $mainQuest = $mainJar->quests()->inRandomOrder()->first(); //Napi valtozas a questben
+
+        $jars = Jar::whereNot('type', 'official_jar')
+        ->whereHas('quests')
+        ->with('quests')
+        ->get();
+        return response()->json([
+            'mainJar' => $mainJar,
+            'mainQuest' => $mainQuest,
+            'jars' => $jars
+        ]);
+    }
+
     public function mainJar(){
         //Lekeri az elso type == official_jar adatait Api-hoz
         $jar = Jar::where('type', 'official_jar')->first();
