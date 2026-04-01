@@ -62,7 +62,7 @@ class JarController extends Controller
      */
     public function show(Jar $jar)
     {
-        return response()->json(["jar" => $jar]);
+        return view(("jars.show"), ["jar" => $jar]);
     }
 
     /**

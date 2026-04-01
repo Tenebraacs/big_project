@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: http://localhost:8000/api/jars/main
+  url: http://localhost:8000/api/jars/home
   headers:
     - name: Accept
       value: application/json

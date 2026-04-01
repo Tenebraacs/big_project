@@ -11,6 +11,7 @@ Route::get('/', [JarController::class, 'home'])->name('root');
 Route::redirect('/home', '/');
 //Route::resource('/quest', QuestController::class);
 Route::resource('/jars', JarController::class);
+Route::get('/jars/{jar}', [JarController::class, 'show'])->name('jars.show');
 //Route::resource('/library', LibraryController::class);
 //Route::resource('/achievement', AchievementController::class);
 //TODO (frontend needed)

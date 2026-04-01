@@ -45,16 +45,17 @@
 
                     <div class="card-header text-center">
                         <h5 class="fw-bold">{{ $jar->name }}</h5>
+
                     </div>
 
                     <div class="card-body text-center">
                         
 
-                        @if ($jar->quests)
-                            <p>{{ $jar->quests->first()->description}}</p>
+                        @if ($jar)
+                            
 
-                            @if ($jar->quests->first()->picture)
-                                <img src="{{ $jar->quests->first()->picture }}" class="img-fluid">
+                            @if ($jar->picture)
+                                <img src="{{ $jar->picture }}" class="img-fluid">
                             @else
                                 <p>No image found.</p>
                             @endif
@@ -62,7 +63,13 @@
                             <p>No content available.</p>
                         @endif
                     </div>
+                    <a href="{{ route('jars.show', $jar) }}" class="text-decoration-none text-dark">
+                    <div class="card-footer d-flex justify-content-center align-items-center">
+                        
+                        <p class="fw-bold fs-5 mb-0">Show Jar</p>
 
+                    </div>
+                    </a>
                 </div>
             </div>             
         @endforeach
