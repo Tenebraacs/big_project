@@ -81,8 +81,8 @@
             @yield('content')
         </main>
 
-        <footer class="footer-base">
-            <div>
+        <footer>
+            <div class="footer-base">
                 <p>+36 20 261 9875</p>
                 <p>sidequestjar@gmail.com</p>
             </div>
