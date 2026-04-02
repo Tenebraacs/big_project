@@ -10,7 +10,11 @@
         <Label Grid.Column="0" Text="SIDE QUEST JAR" TextColor="White" FontAttributes="Bold" VerticalOptions="Center" />
 
         <HorizontalStackLayout Grid.Column="2" Spacing="15" VerticalOptions="Center">
-            <Button Text="Home" Command="{Binding GoHomeCommand}" BackgroundColor="Transparent" TextColor="White" />
+            <Button Text="Home" 
+                Command="{Binding GoHomeCommand}" 
+                IsVisible="{Binding IsLoggedIn}" 
+                BackgroundColor="Transparent" 
+                TextColor="White" />
 
             <HorizontalStackLayout Spacing="10" IsVisible="{Binding IsLoggedOut}">
                 <Button Text="Login" Command="{Binding ShowLoginViewCommand}" />
