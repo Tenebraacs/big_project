@@ -17,7 +17,7 @@
     @vite(['resources/sass/ownapp.scss','resources/sass/app.scss', 'resources/js/app.js'])
 </head>
 <body class="background">
-    <div id="app">
+    <div id="app" class=" d-flex flex-column min-vh-100">
         <nav class="navbar-base navbar navbar-expand-md navbar-light shadow-sm">
             <div class="container-fluid">
                 <a class="navbar-brand" href="{{ url('/') }}">
@@ -75,14 +75,25 @@
             </div>
         </nav>
 
-        <main class="py-4">
+        <main class="py-4 grow">
             @yield('content')
         </main>
 
-        <footer>
-            <div class="footer-base">
-                <p>+36 20 261 9875</p>
-                <p>sidequestjar@gmail.com</p>
+        <footer class="mt-auto">
+            <div class="footer-base py-3">
+                <div class="container-fluid d-flex justify-content-center align-items-center">
+
+                    <!-- Left Side -->
+                    <div class="col-6 text-start">
+                        <p class="mb-0">+36 20 261 9875</p>
+                        <p class="mb-0">sidequestjar@gmail.com</p>
+                    </div>
+                    <!-- Right Side -->
+                    <div class="col-6 text-end">
+                        <p class="mb-0">© 2026 SideQuestJar</p>
+                    </div>
+                
+                </div>
             </div>
         </footer>
     </div>
