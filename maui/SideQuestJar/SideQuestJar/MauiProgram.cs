@@ -23,6 +23,7 @@ namespace SideQuestJar
 
             builder.Services.AddSingleton<AuthService>();
             builder.Services.AddSingleton<GlobalAppState>();
+            builder.Services.AddSingleton<JarService>();
 
             builder.Services.AddTransient<HomePage>();
             builder.Services.AddTransient<HomeViewModel>();

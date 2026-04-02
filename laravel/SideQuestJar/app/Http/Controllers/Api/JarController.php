@@ -11,8 +11,8 @@ use Illuminate\Http\Request;
 class JarController extends Controller
 {
     public function index(){
-        $jar = Jar::all();
-        return response()->json(["jar" => $jar, "msg" => "Here are your books"]);
+        $jars = Jar::latest()->paginate(10);
+        return response()->json($jars);
     }
 
     public function store(StoreJarRequest $request) {
