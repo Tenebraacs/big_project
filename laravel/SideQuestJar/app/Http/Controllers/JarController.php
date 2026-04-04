@@ -60,9 +60,50 @@ class JarController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Jar $jar)
+    public function show(Jar $jar, $questId = null)
     {
-        return view(("jars.show"), ["jar" => $jar]);
+        $quests = $jar->quests()->get();
+
+        if($quests->isEmpty()){
+            return view('jars.show', [
+                'jar' => $jar,
+                'currentQuest' => null,
+                'previousQuest' => null,
+                'nextQuest' => null,
+            ]);
+        }
+        
+        if ($questId) {
+            $currentQuest = $quests->firstWhere('id', $questId);
+        }
+        else {
+            $currentQuest = $quests->first();
+        }
+
+        $currentIndex = $quests->pluck('id')->search($currentQuest->id);
+
+        if($currentIndex > 0){
+            $previousQuest = $quests[$currentIndex - 1];
+        }
+        else{
+            $previousQuest = $quests->last();
+        }
+
+        if($currentIndex < $quests->count() -1){
+            $nextQuest = $quests[$currentIndex + 1];
+        }
+        else{
+            $nextQuest = $quests->first();
+        }
+
+        
+
+        return view("jars.show", [
+        'jar' => $jar,
+        'currentQuest' => $currentQuest,
+        'previousQuest' => $previousQuest,
+        'nextQuest' => $nextQuest
+        ]);
     }
 
     /**
