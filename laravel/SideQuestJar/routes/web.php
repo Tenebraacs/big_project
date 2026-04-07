@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [JarController::class, 'home'])->name('root');
 Route::redirect('/home', '/');
 //Route::resource('/quest', QuestController::class);
-Route::resource('/jars', JarController::class);
+Route::resource('/jars', JarController::class)->except(['show']);
 Route::get('/jars/{jar}/{quest?}', [JarController::class, 'show'])->name('jars.show');
 //Route::resource('/library', LibraryController::class);
 //Route::resource('/achievement', AchievementController::class);

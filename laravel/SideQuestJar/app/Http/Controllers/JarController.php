@@ -60,9 +60,9 @@ class JarController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Jar $jar, $questId = null)
+    public function show(Jar $jar, $quest = null)
     {
-        $quests = $jar->quests()->get();
+        $quests = $jar->quests()->orderBy('id')->get();
 
         if($quests->isEmpty()){
             return view('jars.show', [
@@ -73,8 +73,8 @@ class JarController extends Controller
             ]);
         }
         
-        if ($questId) {
-            $currentQuest = $quests->firstWhere('id', $questId);
+        if ($quest) {
+            $currentQuest = $quests->firstWhere('id', $quest);
         }
         else {
             $currentQuest = $quests->first();
@@ -82,27 +82,21 @@ class JarController extends Controller
 
         $currentIndex = $quests->pluck('id')->search($currentQuest->id);
 
-        if($currentIndex > 0){
-            $previousQuest = $quests[$currentIndex - 1];
-        }
-        else{
-            $previousQuest = $quests->last();
-        }
+        $previousQuest = $currentIndex > 0 
+            ? $quests[$currentIndex - 1] 
+            : $quests->last();
 
-        if($currentIndex < $quests->count() -1){
-            $nextQuest = $quests[$currentIndex + 1];
-        }
-        else{
-            $nextQuest = $quests->first();
-        }
+        $nextQuest = $currentIndex < $quests->count() - 1
+            ? $quests[$currentIndex + 1]
+            : $quests->first();
 
         
 
         return view("jars.show", [
-        'jar' => $jar,
-        'currentQuest' => $currentQuest,
-        'previousQuest' => $previousQuest,
-        'nextQuest' => $nextQuest
+            'jar' => $jar,
+            'currentQuest' => $currentQuest,
+            'previousQuest' => $previousQuest,
+            'nextQuest' => $nextQuest
         ]);
     }
 

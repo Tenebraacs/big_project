@@ -18,6 +18,8 @@ return new class extends Migration
             $table->integer("streak");
             $table->timestamps();
             $table->softDeletes();
+
+            $table->unique(['jar_id', 'user_id']);
         });
     }
 

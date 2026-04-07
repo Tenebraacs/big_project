@@ -22,7 +22,7 @@
                     
                 </div>
 
-                <div class="card-body text-center flex-grow-1 d-flex flex-column p-0 mb-0">
+                <div class="card-body text-center flex-grow-1 d-flex flex-column p-0 mb-2">
                     
                     
                     <div class=" rounded-3 p-2 mb-3 ">
@@ -44,24 +44,21 @@
                     
                         <div class="container-fluid">
                             <div class="row justify-content-center align-items-stretch">
-                                <div class="col-1 d-flex align-items-center justify-content-center">
-                                    <a href="{{ route('jars.show', ['jar' => $jar->id, 'questId' => $previousQuest->id]) }}" class='text-decoration-none text-dark fs-1'>
-                                        ←
-                                    </a>
-                                       
-                                    
-                                </div>
+                                <a class="col-1 d-flex align-items-center justify-content-center text-decoration-none text-dark fs-1" href="{{ route('jars.show', ['jar' => $jar->id, 'quest' => $previousQuest->id]) }}" >
+
+                                        ❮
+                                            
+                                </a>
                                 
                                 <div class="col-10 p-0" style="aspect-ratio: 1/1;">
                                     <img src="{{ $currentQuest->picture }}" alt="Jar picture" class="w-100 h-100" style="object-fit: cover;">
                                 </div>
 
-                                <div class="col-1 d-flex align-items-center justify-content-center">
-                                    <a href="{{ route('jars.show', ['jar' => $jar->id, 'questId' => $nextQuest->id]) }}" class='text-decoration-none text-dark fs-1'>
-                                        → <!-- a teg nem jo helyen van -->
-                                    </a>
-                                        
-                                </div>
+                                <a class="col-1 d-flex align-items-center justify-content-center text-decoration-none text-dark fs-1" href="{{ route('jars.show', ['jar' => $jar->id, 'quest' => $nextQuest->id]) }}" >
+
+                                        ❯
+ 
+                                </a>
 
                                 
                             </div>
@@ -70,16 +67,14 @@
                     @endif
                     
                 </div>
-                
-                    <div class="card-footer">
+                @auth
+                <div class="card-footer">
+             
                         <p class="fs-3 mb-0">Join Jar</p>
-                    </div>
-                
-                
-               
+                                       
+                </div>
+                @endauth
             </div>
-
-            
         </div>
     </div>
 </div>
