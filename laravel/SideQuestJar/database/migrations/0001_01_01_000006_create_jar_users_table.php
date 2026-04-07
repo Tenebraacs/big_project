@@ -17,7 +17,6 @@ return new class extends Migration
             $table->foreignId("user_id")->constrained()->onDelete("cascade");
             $table->integer("streak");
             $table->timestamps();
-            $table->softDeletes();
 
             $table->unique(['jar_id', 'user_id']);
         });

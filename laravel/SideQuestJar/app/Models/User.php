@@ -77,13 +77,13 @@ class User extends Authenticatable
         return $this->hasMany(Jar::class, 'created_by');
     }
 
-    public function jaruser(){
-        return $this->hasMany(JarUser::class);
+    public function joinedJars(){
+        return $this->belongsToMany(Jar::class, 'jar_users')
+            ->withPivot('streak')
+            ->withTimestamps();
     }
     
-    public function jarcontent(){
-        return $this->hasMany(JarContent::class, 'created_by');
-    }
+    
 
 
 

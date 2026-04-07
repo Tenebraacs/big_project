@@ -1,9 +1,7 @@
 <?php
 
-use App\Http\Controllers\AchievementController;
+
 use App\Http\Controllers\JarController;
-use App\Http\Controllers\LibraryController;
-use App\Http\Controllers\QuestController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -13,6 +11,7 @@ Route::redirect('/home', '/');
 //Route::resource('/quest', QuestController::class);
 Route::resource('/jars', JarController::class)->except(['show']);
 Route::get('/jars/{jar}/{quest?}', [JarController::class, 'show'])->name('jars.show');
+Route::post('/jars/{jar}/join', [JarController::class, 'join'])->middleware('auth')->name('jars.join');
 //Route::resource('/library', LibraryController::class);
 //Route::resource('/achievement', AchievementController::class);
 //TODO (frontend needed)

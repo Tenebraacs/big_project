@@ -6,6 +6,7 @@ use App\Models\Jar;
 use App\Http\Requests\StoreJarRequest;
 use App\Http\Requests\UpdateJarRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 
 class JarController extends Controller
@@ -107,6 +108,18 @@ class JarController extends Controller
     {
         //
     }
+
+    public function join(Jar $jar){
+        $user = Auth::user();
+
+        $jar->users()->syncWithoutDetaching([
+            auth()->id() => ['streak' => '0']
+        ]);
+
+        return redirect()->route('jars.show', $jar->id)->with('success', 'You joined the jar');
+
+    }
+
 
     /**
      * Update the specified resource in storage.

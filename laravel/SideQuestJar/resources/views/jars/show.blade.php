@@ -4,7 +4,7 @@
 
 <div class="container-fluid">
     <div class="row justify-content-center">
-        <div class="col-12 col-md-8 col-lg-5 col-xl-4">
+        <div class="col-12 col-md-10 col-lg-8 col-xl-4">
             <div class="card text-center h-100 d-flex flex-column" style="">
                 <div class="card-header">
                     
@@ -18,8 +18,7 @@
                     @else
                         <h1 class="fs-1 fw-bold">No Usable Adventure Found</h1>  
                     @endif
-                         
-                    
+                                
                 </div>
 
                 <div class="card-body text-center flex-grow-1 d-flex flex-column p-0 mb-2">
@@ -57,7 +56,7 @@
                                 <a class="col-1 d-flex align-items-center justify-content-center text-decoration-none text-dark fs-1" href="{{ route('jars.show', ['jar' => $jar->id, 'quest' => $nextQuest->id]) }}" >
 
                                         ❯
- 
+
                                 </a>
 
                                 
@@ -68,9 +67,18 @@
                     
                 </div>
                 @auth
-                <div class="card-footer">
-             
-                        <p class="fs-3 mb-0">Join Jar</p>
+                <div class="card-footer p-0">
+                    @if ($jar->users()->where('user_id', auth()->id())->exists())
+                        <form action="{{ route('jars.leave', $jar) }}" method="POST" class="w-100"></form>
+                    @else
+                        <form action="{{ route('jars.join', $jar) }}" method="POST">
+                            @csrf
+                            <button type="submit" class="w-100 h-100 border-0 bg-transparent fs-3  p-0 m-1">
+                                Join Jar
+                            </button>
+                        </form>
+                    @endif
+                        
                                        
                 </div>
                 @endauth

@@ -11,7 +11,15 @@ class JarUser extends Model
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory;
-    use SoftDeletes;
+
+    protected $fillable = [
+        'jar_id',
+        'user_id',
+        'streak',
+    ];
+
+
+
     public function user(){
         return $this->belongsTo(User::class);
     }
