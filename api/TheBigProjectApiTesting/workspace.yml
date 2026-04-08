@@ -8,6 +8,8 @@ collections:
     path: "collections/Jar Function Testing"
   - name: "User Auth Testing"
     path: "collections/User Auth Testing"
+  - name: "Complex Data testing"
+    path: "collections/Complex Data testing"
 
 specs:
 

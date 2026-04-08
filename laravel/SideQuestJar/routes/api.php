@@ -32,7 +32,7 @@ Route::middleware('auth:sanctum')->group(function() {
 
     Route::controller(JarController::class)->group(function(){
         Route::get('/jars', "index")->withoutMiddleware('auth:sanctum');
-        Route::get('/jars/home', 'home')->withoutMiddleware('auth:sanctum');
+        Route::get('/discover', 'discover')->withoutMiddleware('auth:sanctum');
         Route::post('/jars',"store");
         Route::put("/jars/{jar}","update");
         Route::delete("/jars/{jar}", "destroy");

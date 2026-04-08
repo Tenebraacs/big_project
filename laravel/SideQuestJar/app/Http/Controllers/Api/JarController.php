@@ -30,31 +30,26 @@ class JarController extends Controller
         return response()->json(["msg" => "Jar was deleted"]);
     }
 
+    public function discover() 
+    {
+        $mainJar = Jar::where('type', 'official_jar')->first();
+        $mainQuest = $mainJar ? $mainJar->quests()->inRandomOrder()->first() : null;
 
-    public function home(){
-        //Lekeri az elso type == official_jar adatait
-        $mainJar = Jar::where('type', 'official_jar')->where('name', "Today's Adventure")->first();
-        $mainQuest = $mainJar->quests()->inRandomOrder()->first(); //Napi valtozas a questben
+        $popularJars = Jar::where('type', '!=', 'official_jar')
+                            ->orderBy('likes', 'desc')
+                            ->take(10)
+                            ->get();
 
-        $jars = Jar::whereNot('type', 'official_jar')
-        ->whereHas('quests')
-        ->with('quests')
-        ->get();
+        $recommendedJars = Jar::where('type', '!=', 'official_jar')
+                            ->inRandomOrder()
+                            ->take(10)
+                            ->get();
+
         return response()->json([
             'mainJar' => $mainJar,
             'mainQuest' => $mainQuest,
-            'jars' => $jars
-        ]);
-    }
-
-    public function mainJar(){
-        //Lekeri az elso type == official_jar adatait Api-hoz
-        $jar = Jar::where('type', 'official_jar')->first();
-        $randomContent = $jar->contents()->inRandomOrder()->first();
-        
-        return response()->json([
-            'jar'=>$jar,
-            'content' => $randomContent
+            'popularJars' => $popularJars,
+            'recommendedJars' => $recommendedJars
         ]);
     }
 

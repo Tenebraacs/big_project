@@ -11,7 +11,7 @@ namespace SideQuestJar.Data
         public DbSet<User> Users { get; set; }
         public DbSet<Jar> Jars { get; set; }
         public DbSet<JarUser> JarUsers { get; set; }
-        public DbSet<Quest> Quests { get; set; }
+        public DbSet<JarQuest> Quests { get; set; }
         public DbSet<QuestCompletion> QuestCompletions { get; set; }
         public DbSet<Like> Likes { get; set; }
         public DbSet<Library> Libraries { get; set; }

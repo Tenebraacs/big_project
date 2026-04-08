@@ -25,6 +25,6 @@ namespace SideQuestJar.Models
         public string? Picture { get; set; }
         public int Likes { get; set; }
         public JarType Type { get; set; }
-        public int CreatedBy { get; set; }
+        public int? CreatedBy { get; set; }
     }
 }
