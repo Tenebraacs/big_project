@@ -22,6 +22,7 @@ class Jar extends Model
     protected $fillable = [
         'name',
         'likes',
+        'description',
         'type',
         'created_by'
     ];

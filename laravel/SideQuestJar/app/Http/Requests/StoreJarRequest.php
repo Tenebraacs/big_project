@@ -15,14 +15,7 @@ class StoreJarRequest extends FormRequest
     public function authorize(): bool
     {
         
-        if(Auth::check() && Auth::user()->can('create', Jar::class)){
-            return true;
-        }
-        else{
-            return false;
-        }
         
-
         return true;
     }
 

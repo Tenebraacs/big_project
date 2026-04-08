@@ -2,6 +2,9 @@
 
 @section('content')
 
+
+    <!-- Meg basic kinezettel szorakozok --> 
+
     <div class="container-fluid">
     <div class="row justify-content-center">
         <div class="col-12 col-md-10 col-lg-8 col-xl-4">
@@ -10,31 +13,43 @@
                 <div class="card text-center h-100 d-flex flex-column" style="">
                     <div class="card-header">
                         
-                        <div class="form-group">
+                        <div class="row">
                             <label for="name">JarName</label>
-                            <input type="text" name="name" id="name" placeholder="JarName" required value="{{ old('name') }}">
                         </div>
+                        <div class="row justify-content-center">
+                            <input class="text-center col-6" type="text" name="name" id="name" placeholder="JarName" required value="{{ old('name') }}">
+                        </div>
+                            
+                        
                                     
                     </div>
 
                     <div class="card-body text-center flex-grow-1 d-flex flex-column p-0 mb-2">
                         
                         
-                        <div class="form-group">
-                            <label for="description">JarDescription</label>
-                            <input type="text" name="description" id="description" placeholder="JarDescription" value="{{ old('description') }}">
+                        <div class="row">
+                            <label for="description">JarName</label>
+                        </div>
+                        <div class="row justify-content-center p-2">
+                            <input class="text-center col-8 p-2" type="text" name="description" id="description" placeholder="JarDescription" value="{{ old('description') }}">
                         </div>
 
-                        <div class="col-10 p-0" style="aspect-ratio: 1/1;">
-                            <img src="{{ $currentQuest->picture }}" alt="Jar picture" class="w-100 h-100" style="object-fit: cover;">
+                        <div class="row justify-content-center align-items-stretch">
+                            <div class="col-10 p-0 " style="aspect-ratio: 1/1;">
+                                <img src="https://i.ibb.co/2YvZypwJ/Jar-Quest-Placeholder.png" alt="Jar picture" class="w-100 h-100" style="object-fit: cover;">
+                            </div>
                         </div>
+
+                        
                         
                     </div>
                     
                     <div class="card-footer p-0">
                         
                         <div>
-                            <button type="submit">CreateJar</button>
+                            <button type="submit" class="w-100 h-100 border-0 bg-transparent fs-3 p-0 m-1">
+                                CreateJar
+                            </button>
                         </div>    
                                         
                     </div>
