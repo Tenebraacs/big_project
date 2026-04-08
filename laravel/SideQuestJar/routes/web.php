@@ -12,6 +12,7 @@ Route::redirect('/home', '/');
 Route::resource('/jars', JarController::class)->except(['show']);
 Route::get('/jars/{jar}/{quest?}', [JarController::class, 'show'])->name('jars.show');
 Route::post('/jars/{jar}/join', [JarController::class, 'join'])->middleware('auth')->name('jars.join');
+Route::delete('/jars/{jar}/leave', [JarController::class, 'leave'])->middleware('auth')->name('jars.leave');
 //Route::resource('/library', LibraryController::class);
 //Route::resource('/achievement', AchievementController::class);
 //TODO (frontend needed)

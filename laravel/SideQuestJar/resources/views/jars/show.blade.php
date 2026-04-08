@@ -69,9 +69,15 @@
                 @auth
                 <div class="card-footer p-0">
                     @if ($jar->users()->where('user_id', auth()->id())->exists())
-                        <form action="{{ route('jars.leave', $jar) }}" method="POST" class="w-100"></form>
+                        <form action="{{ route('jars.leave', $jar) }}" method="POST" class="w-100">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="w-100 h-100 border-0 bg-transparent fs-3  p-0 m-1">
+                                Leave Jar
+                            </button>
+                        </form>
                     @else
-                        <form action="{{ route('jars.join', $jar) }}" method="POST">
+                        <form action="{{ route('jars.join', $jar) }}" method="POST" class="w-100">
                             @csrf
                             <button type="submit" class="w-100 h-100 border-0 bg-transparent fs-3  p-0 m-1">
                                 Join Jar

@@ -110,7 +110,6 @@ class JarController extends Controller
     }
 
     public function join(Jar $jar){
-        $user = Auth::user();
 
         $jar->users()->syncWithoutDetaching([
             auth()->id() => ['streak' => '0']
@@ -118,6 +117,13 @@ class JarController extends Controller
 
         return redirect()->route('jars.show', $jar->id)->with('success', 'You joined the jar');
 
+    }
+
+    public function leave(Jar $jar)
+    {
+        $jar->users()->detach(auth()->id());
+
+        return redirect()->route('jars.show', $jar->id)->with('success', 'You left the jar');
     }
 
 
