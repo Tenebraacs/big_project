@@ -4,6 +4,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Rubik+Bubbles&display=swap'); //Rubik Bubbles
 @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap'); //Fredoka
 @import url('https://fonts.googleapis.com/css2?family=Knewave&display=swap'); //Knewave
+@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap'); //Lora
+
 
 
 // Variables
@@ -16,20 +18,24 @@
     min-height: 80vh;
 }
 
+//Background settings
 .background{
     background: no-repeat center fixed radial-gradient(#7D5252 40%, #2D4356);
     background-size: cover;
 }
 
+
 .block-radius{
     border-radius: 5%;
 }
 
+//Main Block
 .bg-block-blue{
     background-color: #2D4356;
     border-radius: 5%;
 }
 
+//Register and login buttons
 .reg-log-button{
     background-color: #435B66;
     color: white;
@@ -37,6 +43,7 @@
 
 }
 
+//Form text basic settings
 .form-text{
     color: black;
     font-weight: bolder;
@@ -44,32 +51,25 @@
     font-family: "Fredoka", sans-serif;
 }
 
+//Navbar basic settings
 .navbar-base{
     color: black;
     background-color: #A76F6F;
     font-weight: bold;
 }
 
-.blend-center {
-    width: 300px;
-    height: 300px;
-    background-image: 
-    linear-gradient(to right, #7D5252 0%, #7D5252 50%, transparent 50%),
-    linear-gradient(to bottom, #2D4356 0%, #2D4356 50%, transparent 50%);
-    background-size: 100% 100%;
-    background-position: center;
-    background-blend-mode: multiply;
-}
-
+//Side Quest text from the logo
 .logo-first{
     font-family: "Rubik Mono One", monospace;
     text-align: center;
     color: white;
     font-weight: bolder;
     letter-spacing: 0px;
-    margin: -15px;
+    margin-bottom: -15px;
+    margin-top: 20px;
 }
 
+//Jar text from the log
 .logo-second{
     font-family: 'Rubik Bubbles', system-ui;
     text-align: center;
@@ -78,6 +78,7 @@
     text-shadow: 0px 10px black;
 }
 
+//Welcome text
 .welcome-text{
     font-family: "Knewave", system-ui;
     text-align: center;
@@ -86,10 +87,11 @@
     color: #EAB2A0;
     text-shadow: 0px 5px black;
     transform: rotate(5deg);
-    margin: 0;
+    margin: 15px;
     padding: 0;
 }
 
+//Footer basic settings
 .footer-base{
     background-color: #A76F6F;
     color: black;
@@ -100,6 +102,13 @@
     display: flex;
     text-align: center;
     padding: 3px;
+}
+
+.main-jar-desc{
+    font-family: "Lora", serif;
+    color: #EAB2A0;
+    text-shadow: 0px 4px black;
+    font-size: larger;
 }
 
 
