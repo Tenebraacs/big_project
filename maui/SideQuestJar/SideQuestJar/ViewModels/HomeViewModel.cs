@@ -54,13 +54,7 @@ namespace SideQuestJar.ViewModels
         {
             if (selectedJar == null) return;
 
-            // CRASH PREVENTION: We use an alert until JarDetailsPage is fully created and registered
-            await Shell.Current.DisplayAlertAsync("Navigation", $"Routing to Jar: {selectedJar.Name} (ID: {selectedJar.Id}). Prepare API call to fetch quests!", "OK");
-
-            /* FUTURE IMPLEMENTATION:
-            var parameters = new Dictionary<string, object> { { "JarId", selectedJar.Id } };
-            await Shell.Current.GoToAsync("JarDetailsPage", parameters);
-            */
+            await Shell.Current.GoToAsync($"{nameof(Views.JarDetailsPage)}?JarId={selectedJar.Id}");
         }
     }
 }

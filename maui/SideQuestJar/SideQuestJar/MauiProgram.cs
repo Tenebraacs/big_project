@@ -25,10 +25,14 @@ namespace SideQuestJar
             builder.Services.AddSingleton<GlobalAppState>();
             builder.Services.AddSingleton<JarService>();
 
-            builder.Services.AddTransient<HomePage>();
-            builder.Services.AddTransient<HomeViewModel>();
+            // Nyitva marad a memóriában de ez később problémás lehet (logout, aggresszív refresh az újratöltésnél)
+            builder.Services.AddSingleton<HomePage>();
+            builder.Services.AddSingleton<HomeViewModel>();
+
             builder.Services.AddTransient<AuthViewModel>();
             builder.Services.AddTransient<AuthPage>();
+            builder.Services.AddTransient<JarDetailsPage>();
+            builder.Services.AddTransient<JarDetailsViewModel>();
 
 #if DEBUG
             builder.Logging.AddDebug();
