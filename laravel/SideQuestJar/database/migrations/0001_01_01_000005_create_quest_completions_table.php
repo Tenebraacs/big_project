@@ -16,7 +16,7 @@ return new class extends Migration
             //Todo gatya
             $table->id();
             $table->dateTime("completion_date");
-            $table->string("picture")->default("");
+            $table->string("picture")->default(""); //TODO Akkor hasznaljuk ha eljutunk kep feldolgozasig
             $table->longText("description")->nullable();
             $table->integer("likes")->default(0);
             $table->enum("type", ["public_post", "private_post", "friends_only_post"])->default("public_post");
