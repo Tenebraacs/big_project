@@ -5,8 +5,15 @@
              xmlns:components="clr-namespace:SideQuestJar.Components"
              x:Class="SideQuestJar.Views.AuthPage"
              x:DataType="viewmodels:AuthViewModel"
-             Title="SideQuestJar"
-             BackgroundColor="#E6B5A7">
+             Title="SideQuestJar">
+
+    <ContentPage.Background>
+        <RadialGradientBrush Center="0.5,0.5" Radius="0.9">
+            <GradientStop Color="#775655" Offset="0.0" />
+            <GradientStop Color="#232733" Offset="1.0" />
+        </RadialGradientBrush>
+    </ContentPage.Background>
+
     <Grid RowDefinitions="Auto, *">
 
         <components:NavbarView Grid.Row="0" BindingContext="{Binding AppState}" />

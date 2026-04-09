@@ -53,7 +53,34 @@ class JarController extends Controller
         ]);
     }
 
+    public function show(Request $request, Jar $jar)
+    {
+        $isJoined = false;
+        $user = $request->user();
 
+        if ($user) {
+            $isJoined = $jar->users()->where('user_id', $user->id)->exists();
+        }
 
+        $quests = $jar->quests()->get();
 
+        return response()->json([
+            'jar' => $jar,
+            'quests' => $quests,
+            'is_joined' => $isJoined 
+        ]);
+    }
+
+    public function join(Request $request, Jar $jar)
+    {
+        $user = $request->user();
+
+        if ($jar->users()->where('user_id', $user->id)->exists()) {
+            return response()->json(['message' => 'You have already joined this jar.'], 409);
+        }
+
+        $jar->users()->attach($user->id, ['streak' => 0]);
+
+        return response()->json(['message' => 'Successfully joined the jar.']);
+    }
 }
