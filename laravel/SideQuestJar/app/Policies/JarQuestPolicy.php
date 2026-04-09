@@ -63,4 +63,11 @@ class JarQuestPolicy
     {
         return false;
     }
+
+    public function before(User $user): bool|null {
+        if ($user->is_admin){
+            return true;
+        }
+        return null;
+    }
 }

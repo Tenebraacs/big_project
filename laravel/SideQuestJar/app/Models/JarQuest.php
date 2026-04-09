@@ -15,12 +15,11 @@ class JarQuest extends Model
 
 
     protected $fillable = [
-        'jar_id',
+        
         'title',
         'picture',
         'description',
-        'likes',
-        'created_by'
+        
     ];
 
 

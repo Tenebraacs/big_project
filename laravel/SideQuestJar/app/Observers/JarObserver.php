@@ -12,7 +12,8 @@ class JarObserver
      */
     public function creating(Jar $jar): void
     {
-       $jar->created_by = Auth::user()->id;
+        //Runs before adding it to the database
+       $jar->created_by = Auth::id();
     }
 
     /**

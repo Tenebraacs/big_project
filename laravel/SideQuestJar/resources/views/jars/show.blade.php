@@ -68,22 +68,37 @@
                 </div>
                 @auth
                 <div class="card-footer p-0">
-                    @if ($jar->users()->where('user_id', auth()->id())->exists())
-                        <form action="{{ route('jars.leave', $jar) }}" method="POST" class="w-100">
+                    
+                    @if($jar->created_by === auth()->id())
+                        <a href="{{ route('jars.quests.create', $jar) }}" class="w-100 h-100 border-0 bg-transparent fs-3 text-decoration-none text-dark p-0 m-1 ">
+                            Add New Quest
+                        </a>
+                        <form action="{{ route('jars.destroy', $jar) }}" method="POST">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="w-100 h-100 border-0 bg-transparent fs-3  p-0 m-1">
-                                Leave Jar
+                                Delete Jar
                             </button>
                         </form>
                     @else
-                        <form action="{{ route('jars.join', $jar) }}" method="POST" class="w-100">
-                            @csrf
-                            <button type="submit" class="w-100 h-100 border-0 bg-transparent fs-3  p-0 m-1">
-                                Join Jar
-                            </button>
-                        </form>
+                        @if ($jar->users()->where('user_id', auth()->id())->exists())
+                            <form action="{{ route('jars.leave', $jar) }}" method="POST" class="w-100">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="w-100 h-100 border-0 bg-transparent fs-3  p-0 m-1">
+                                    Leave Jar
+                                </button>
+                            </form>
+                        @else
+                            <form action="{{ route('jars.join', $jar) }}" method="POST" class="w-100">
+                                @csrf
+                                <button type="submit" class="w-100 h-100 border-0 bg-transparent fs-3  p-0 m-1">
+                                    Join Jar
+                                </button>
+                            </form>
+                        @endif
                     @endif
+                    
                         
                                        
                 </div>

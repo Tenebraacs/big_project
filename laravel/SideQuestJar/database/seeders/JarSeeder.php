@@ -15,12 +15,13 @@ class JarSeeder extends Seeder
     public function run(): void
     {
 
-        //$zoli = User::where('username', 'ZoliProli')->first();
+        $zoli = User::where('username', 'ZoliProli')->first();
         
         Jar::create([
             "name" => "Today's Adventure",
             "likes" => 333,
-            "type" => "official_jar"
+            "type" => "official_jar",
+            "created_by" => $zoli->id
         ]);
 
         Jar::factory(20)->create();

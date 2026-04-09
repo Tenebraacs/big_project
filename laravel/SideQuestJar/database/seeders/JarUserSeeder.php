@@ -14,6 +14,6 @@ class JarUserSeeder extends Seeder
     public function run(): void
     {
         JarUser::factory(20)->create();
-
+        //Todo ugyanaz a user ugyanabban a tablaban = NO NO
     }
 }

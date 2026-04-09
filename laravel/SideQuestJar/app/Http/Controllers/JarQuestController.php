@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Jar;
 use App\Models\JarQuest;
 use App\Http\Requests\StoreJarQuestRequest;
 use App\Http\Requests\UpdateJarQuestRequest;
@@ -19,17 +20,23 @@ class JarQuestController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Jar $jar)
     {
-        //
+        $this->authorize('create', JarQuest::class);
+        return view("jars.quests.create", compact('jar'));
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreJarQuestRequest $request)
+    public function store(StoreJarQuestRequest $request, Jar $jar)
     {
-        //
+        $this->authorize('create', JarQuest::class);
+        $quest = $jar->quests()->create($request->validated());
+
+        return redirect()
+            ->route('jars.show', $jar)
+            ->with('success', 'Quest created successfully.');
     }
 
     /**

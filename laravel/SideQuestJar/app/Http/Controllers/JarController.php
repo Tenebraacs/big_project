@@ -54,8 +54,13 @@ class JarController extends Controller
     {
         $this->authorize('create', Jar::class);
         $jar = Jar::create($request->validated());
-        //return redirect()->route('jars.show', $jar)->with('success', 'New jar was added successfully.');
-        return ; //Todo a return redirect mehetne a User/show page re ami Profil page kent funkcioanalhatna
+
+        $jar->users()->syncWithoutDetaching([
+            auth()->id() => ['streak' => 0]
+        ]);
+
+        return redirect()->route('jars.show', $jar)->with('success', 'New jar was added successfully.');
+        //Todo a return redirect mehetne a User/show page re ami Profil page kent funkcioanalhatna
     }
 
     /**
@@ -141,7 +146,11 @@ class JarController extends Controller
      */
     public function destroy(Jar $jar)
     {
+        $this->authorize('delete', $jar);
+
         $jar->delete();
-        return response()->json(["msg" => "New document was deleted successfully"]);
+
+        return redirect()->route('home')->with('success', 'Jar deleted successfully.');
+        //TODO Ha Profil Page kesz lesz vagy mar letezik ott kene a user altal letrehozott Jarokat tarolni igy amikor torol egyet lehet jobb oda vinni nem a Home-ra
     }
 }

@@ -28,7 +28,7 @@ class StoreJarRequest extends FormRequest
     {
         return [
             //TODO: 14-19 videok //Puszi a Pocidra Voros
-
+            
             "name" => ["required", "string"],
             "description" => ["nullable", "string"],
             "picture" => ["string", "nullable"],

@@ -19,6 +19,8 @@ class JarUserFactory extends Factory
     public function definition(): array
     {
         return [
+            //Todo ugyanaz a user ugyanabban a tablaban = NO NO
+
             "jar_id" => Jar::inRandomOrder()->value('id'),
             "user_id" => User::inRandomOrder()->value('id'),
             "streak" => fake()->numberBetween(10,500)
