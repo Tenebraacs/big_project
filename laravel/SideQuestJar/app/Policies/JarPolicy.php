@@ -44,7 +44,10 @@ class JarPolicy
      */
     public function update(User $user, Jar $jar): bool
     {
-        return false;
+        
+
+
+        return $user->id === $jar->created_by;
     }
 
     /**
@@ -52,7 +55,7 @@ class JarPolicy
      */
     public function delete(User $user, Jar $jar): bool
     {
-        return false;
+        return $user->id === $jar->created_by;
     }
 
     /**

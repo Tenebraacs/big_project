@@ -22,7 +22,7 @@ class JarQuestController extends Controller
      */
     public function create(Jar $jar)
     {
-        $this->authorize('create', JarQuest::class);
+        $this->authorize('update', $jar);
         return view("jars.quests.create", compact('jar'));
     }
 
@@ -31,7 +31,7 @@ class JarQuestController extends Controller
      */
     public function store(StoreJarQuestRequest $request, Jar $jar)
     {
-        $this->authorize('create', JarQuest::class);
+        $this->authorize('update', $jar);
         $quest = $jar->quests()->create($request->validated());
 
         return redirect()
