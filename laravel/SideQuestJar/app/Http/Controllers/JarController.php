@@ -151,6 +151,6 @@ class JarController extends Controller
         $jar->delete();
 
         return redirect()->route('home')->with('success', 'Jar deleted successfully.');
-        //TODO Ha Profil Page kesz lesz vagy mar letezik ott kene a user altal letrehozott Jarokat tarolni igy amikor torol egyet lehet jobb oda vinni nem a Home-ra
+        //TODO Ha Profil Page kesz lesz vagy mar letezik ott kene a user altal letrehozott Jarokat tarolni igy amikor torol egyet lehet jobb oda vinni nem a Home
     }
 }
