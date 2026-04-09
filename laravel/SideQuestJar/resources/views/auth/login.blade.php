@@ -4,7 +4,7 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col">
-            <div class="row bg-block-blue p-4 align-item-center">
+            <div class="row rounded-5 bg-block-blue p-4 align-item-center">
                 <div class="col-md-6">
                     <h2 class="logo-first">SIDE QUEST</h2>
                     <h1 class="logo-second">JAR</h1>
@@ -16,7 +16,7 @@
 
                     <div class="card-header form-text"><h3>{{ __('Login') }}</h3></div>
 
-                    <div class="card-body form-text">
+                    <div class="card-body rounded-2xl form-text">
                         <form method="POST" action="{{ route('login') }}">
                             @csrf
 

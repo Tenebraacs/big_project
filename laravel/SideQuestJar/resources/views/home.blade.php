@@ -5,7 +5,7 @@
 
     <div class="row justify-content-center">
         <div class="col-10">
-            <div class="card bg-block-blue">
+            <div class="card rounded-5 bg-block-blue">
                 <div class="card-header text-center ">
                     
                     @if ($mainJar)
