@@ -70,7 +70,7 @@
                 <div class="card-footer p-0">
                     
                     
-                    @if($jar->created_by === auth()->id() || auth()->user()->is_admin)
+                    @if($jar->created_by === auth()->id() || auth()->user()->is_admin) <!--Lehet policy alapon-->
                         <a href="{{ route('jars.quests.create', $jar) }}" class="w-100 h-100 border-0 bg-transparent fs-3 text-decoration-none text-dark p-0 m-1 ">
                             Add New Quest
                         </a>

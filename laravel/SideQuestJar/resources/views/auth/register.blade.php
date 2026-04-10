@@ -9,7 +9,7 @@
                         <h2 class="logo-first">SIDE QUEST</h2>
                         <h1 class="logo-second">JAR</h1>
                         <br>
-                        <p class="welcome-text">Welcome to The Amazing Digital Side Quest Jar!</p>
+                        <p class="welcome-text m-1.5 fs-1" style="transform: rotate(5deg);">Welcome to The Amazing Digital Side Quest Jar!</p>
                     </div>
                     <div class="col-md-6">
                         <div class="card block-radius">
@@ -110,7 +110,7 @@
 
                                 <div class="row mb-0">
                                     <div class="col">
-                                        <button type="submit" class="btn btn-primary w-100 reg-log-button rounded-pill">
+                                        <button type="submit" class="btn w-100 blue-button rounded-pill">
                                             {{ __('Register') }}
                                         </button>
                                     </div>

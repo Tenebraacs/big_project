@@ -6,30 +6,43 @@
     <div class="row justify-content-center">
         <div class="col-10">
             <div class="card rounded-5 bg-block-blue">
-                <div class="card-header text-center ">
+                <div class="text-center card-header border-0">
                     
                     @if ($mainJar)
-                        <h1 class="fs-1 fw-bold welcome-text">{{ $mainJar->name }}</h1>
+                        <h1 class="fw-bold display-3 welcome-text m-3">{{ $mainJar->name }}</h1>
                     @else
                         <h1 class="fs-1 fw-bold welcome-text">No Usable Adventure Found</h1>                      
                     @endif
-                    
                 </div>
 
                 <div class="card-body text-center">
                     
-                    
+                    <div class="row">
                     
                     @if ($mainQuest)
-                        <p class="main-jar-desc">{{ $mainQuest->description }}</p>
-                    
+                        <!--Left side-->
+                        <div class="col-sm-8 text-center">
+                            <p class="main-jar-desc fs-2">{{ $mainQuest->description }}</p>
+                        </div>
+
                         @if ($mainQuest->picture)
-                        <img src="{{ $mainQuest->picture }}" alt="Jar picture" class="img-fluid d-block mx-auto">
+                        <!--Right side-->
+                        <div class="col-sm-4">
+                            <img src="{{ $mainQuest->picture }}" alt="Jar picture" class="img-fluid cropped-img w-60 rounded-5">
+                            
+                            <!--TODO: Itt kap a felhasználó XP-t a megcsinált quest-ért-->
+                            <button class="btn blue-button w-75 justify-center m-2 rounded-pill">
+                                {{ __('Claim') }}
+                            </button>
+                        </div>
+
                         @else
                             <h2>No image found.</h2>
                         @endif
                     @endif
-                        
+                        </div>
+
+                <!--TODO: Itt kap a felhasználó XP-t a megcsinált quest-ért-->
                   
                 </div>
                
