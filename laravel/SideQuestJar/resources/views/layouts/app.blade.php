@@ -15,6 +15,8 @@
 
     <!-- Scripts -->
     @vite(['resources/sass/ownapp.scss','resources/sass/app.scss', 'resources/js/app.js'])
+
+    @livewireStyles
 </head>
 <body class="background">
     <div id="app" class=" d-flex flex-column min-vh-100">
@@ -97,5 +99,7 @@
             </div>
         </footer>
     </div>
+
+    @livewireScripts
 </body>
 </html>
