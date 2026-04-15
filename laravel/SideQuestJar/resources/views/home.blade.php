@@ -3,7 +3,7 @@
 @section('content')
 <div class="container-fluid">
 
-    <div class="row justify-content-center">
+    <div class="row justify-content-center mb-3">
         <div class="col-10">
             <div class="card rounded-5 bg-block-blue">
                 <div class="text-center card-header border-0">

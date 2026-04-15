@@ -112,7 +112,7 @@ new class extends Component
 };
 ?>
 
-<div class="card-body text-center flex-grow-1 d-flex flex-column p-0 mb-2">
+<div class="card-body text-center flex-grow-1 d-flex flex-column">
                     
                     
     <div class=" rounded-3 p-2 mb-3 ">

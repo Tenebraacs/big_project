@@ -17,7 +17,7 @@
                             <label for="name">JarName</label>
                         </div>
                         <div class="row justify-content-center">
-                            <input class="text-center col-6" type="text" name="name" id="name" placeholder="JarName" required value="{{ old('name') }}">
+                            <input class="text-center col-6" required type="text" name="name" id="name" placeholder="JarName" required value="{{ old('name') }}">
                         </div>
                             
                         
@@ -28,10 +28,10 @@
                         
                         
                         <div class="row">
-                            <label for="description">JarName</label>
+                            <label for="description">JarDescription</label>
                         </div>
                         <div class="row justify-content-center p-2">
-                            <input class="text-center col-8 p-2" type="text" name="description" id="description" placeholder="JarDescription" value="{{ old('description') }}">
+                            <textarea class=" text-center col-8 p-2" name="description" id="description" placeholder="JarDescription"></textarea>
                         </div>
 
                         <div class="row justify-content-center align-items-stretch">

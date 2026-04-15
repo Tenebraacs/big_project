@@ -3,13 +3,12 @@
 @section('content')
 
 <div class="container-fluid">
-    <div class="row justify-content-center">
+    <div class="row justify-content-center ">
         <div class="col-12 col-md-10 col-lg-8 col-xl-4">
             
-            <div class="card text-center h-100 d-flex flex-column" style="">
+            <div class="card text-center h-100 d-flex flex-column">
                 
                 
-
                 <div class="card-header">
                     
                     @if ($jar)
@@ -33,7 +32,7 @@
                     
                     
                     @if($jar->created_by === auth()->id() || auth()->user()->is_admin) <!--Lehet policy alapon-->
-                        <a href="{{ route('jars.quests.create', $jar) }}" class="w-100 h-100 border-0 bg-transparent fs-3 text-decoration-none text-dark p-0 m-1 ">
+                        <a href="{{ route('jars.quests.create', ['jar' => $jar->id]) }}" class="w-100 h-100 border-0 bg-transparent fs-3 text-decoration-none text-dark p-0 m-1 ">
                             Add New Quest
                         </a>
                         <form action="{{ route('jars.destroy', $jar) }}" method="POST">

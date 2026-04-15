@@ -26,7 +26,7 @@ class StoreJarQuestRequest extends FormRequest
 
             "title" => ["required", "string"],
             "description" => ["nullable", "string"],
-            "picture" => ["string", "nullable"]
+            "picture" => ["string", "nullable"] //Majd kitalalom mi legyen vele
         ];
     }
 }
