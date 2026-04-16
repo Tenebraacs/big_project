@@ -19,7 +19,7 @@
                         @if ($mainQuest)
                             <!-- Left side -->
                             <div class="col-sm-8 text-center align-self-center d-flex justify-content-center">
-                                <p class="jar-name fs-1 text-center">{{ $mainQuest->description }}</p>
+                                <p class="jar-name display-6 text-center">{{ $mainQuest->description }}</p>
                             </div>
 
                             @if ($mainQuest->picture)
