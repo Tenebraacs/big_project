@@ -79,13 +79,7 @@ class JarController extends Controller
         ]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Jar $jar)
-    {
-        //
-    }
+    
 
     public function join(Jar $jar){
 
@@ -103,16 +97,27 @@ class JarController extends Controller
 
         return redirect()->route('jars.show', $jar->id)->with('success', 'You left the jar');
     }
-
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Jar $jar)
+    {
+        return view('jars.edit', compact('jar'));
+    }
 
     /**
      * Update the specified resource in storage.
      */
     public function update(UpdateJarRequest $request, Jar $jar)
     {
-        $jar->update($request->all());
-        return response()->json(["msg" => "New document was updated successfully"]);
+        $this->authorize('update', $jar);
+
+        $jar->update($request->validated());
+
+        return redirect()->route('jars.show', $jar)->with('success', 'Jar updated successfully');
     }
+
+
 
     /**
      * Remove the specified resource from storage.

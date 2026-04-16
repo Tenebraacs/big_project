@@ -28,18 +28,28 @@
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
                     <span class="navbar-toggler-icon"></span>
                 </button>
+                
 
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     
 
                     <ul class="navbar-nav pink-button rounded-pill me-auto">
                         @auth
+                            @if(!request()->route('jars.show'))
                             <li class="nav-item">
                                     <a class="nav-link" href="{{  route("jars.create") }}">CreateJar</a>
                             </li>
+                            @endif
+
+                            @if(request()->routeIs('jars.show') && isset($jar))
+                            <li class="nav-item">
+                                    <a class="nav-link" href="{{  route("jars.edit", $jar) }}">EditJar</a>
+                            </li>
+                            @endif
                         @endauth
 
                     </ul>
+
 
                     <!-- Right Side Of Navbar -->
                     <ul class="navbar-nav ms-auto">
