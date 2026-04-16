@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'SudeQuestJar'),
+    'name' => env('APP_NAME', 'SideQuestJar'),
 
     /*
     |--------------------------------------------------------------------------

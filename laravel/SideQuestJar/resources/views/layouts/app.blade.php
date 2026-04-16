@@ -33,15 +33,15 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     
 
-                    <ul class="navbar-nav pink-button rounded-pill me-auto">
+                    <ul class="navbar-nav me-auto">
                         @auth
                             
-                            <li class="nav-item">
-                                    <a class="nav-link" href="{{  route("jars.create") }}">CreateJar</a>
+                            <li class="nav-item pink-button rounded-pill">
+                                    <a class="nav-link" href="{{  route("jars.create") }}">Create Jar</a>
                             </li>
                             @if(request()->routeIs('jars.show') && isset($jar) && ($jar->created_by === auth()->id() || auth()->user()->is_admin))
-                            <li class="nav-item">
-                                    <a class="nav-link" href="{{  route("jars.edit", $jar) }}">EditJar</a>
+                            <li class="nav-item pink-button rounded-pill">
+                                    <a class="nav-link" href="{{  route("jars.edit", $jar) }}">Edit Jar</a>
                             </li>
                             @endif
                         @endauth
