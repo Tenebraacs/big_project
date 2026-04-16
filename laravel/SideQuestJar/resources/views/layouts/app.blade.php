@@ -35,13 +35,11 @@
 
                     <ul class="navbar-nav pink-button rounded-pill me-auto">
                         @auth
-                            @if(!request()->route('jars.show'))
+                            
                             <li class="nav-item">
                                     <a class="nav-link" href="{{  route("jars.create") }}">CreateJar</a>
                             </li>
-                            @endif
-
-                            @if(request()->routeIs('jars.show') && isset($jar))
+                            @if(request()->routeIs('jars.show') && isset($jar) && ($jar->created_by === auth()->id() || auth()->user()->is_admin))
                             <li class="nav-item">
                                     <a class="nav-link" href="{{  route("jars.edit", $jar) }}">EditJar</a>
                             </li>
