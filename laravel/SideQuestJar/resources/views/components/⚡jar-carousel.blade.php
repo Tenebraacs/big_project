@@ -62,7 +62,7 @@ new class extends Component
                         <div class="card bg-block-blue rounded-5 h-100">
 
                             <div class="card-header border-0 text-center">
-                                <h5 class="fw-bold jar-name fs-3 text-truncate m-2">{{ $jar->name }}</h5>
+                                <h5 class="fw-bold jar-name fs-3 text-truncate mt-2">{{ $jar->name }}</h5>
                             </div>
 
                             <div class="card-body text-center">

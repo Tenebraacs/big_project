@@ -13,6 +13,10 @@
     <link rel="dns-prefetch" href="//fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
 
+    <!--Icons-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+
     <!-- Scripts -->
     @vite(['resources/sass/ownapp.scss','resources/sass/app.scss', 'resources/js/app.js'])
 
@@ -20,9 +24,9 @@
 </head>
 <body class="background">
     <div id="app" class=" d-flex flex-column min-vh-100">
-        <nav class="navbar-base navbar navbar-expand-md navbar-light shadow-sm">
+        <nav class="navbar-base navbar navbar-expand-md navbar-light">
             <div class="container-fluid">
-                <a class="navbar-brand logo-second fs-3" style="text-shadow: 0px 3px black;" href="{{ url('/') }}">
+                <a class="navbar-brand logo-second fs-3" style="text-shadow: 0px 3px black; color: #EAB2A0;" href="{{ url('/') }}">
                     {{ config('app.name', 'SideQuestJar') }}
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
