@@ -10,13 +10,10 @@ new class extends Component
     public $quests;
     public int $currentIndex = 0;
 
-    public function mount(Jar $jar, ?int $quest = null){
-
-        
-
+    public function mount(Jar $jar, ?int $quest = null)
+    {
         $this->jar = $jar;
         $this->quest = $quest;
-
         $this->quests = $jar->quests->values();
 
         if ($this->quests->isEmpty()) {
@@ -30,39 +27,42 @@ new class extends Component
                 $this->currentIndex = $index;
             }
         }
-
     }
 
-    public function getNextQuestProperty(){
+    public function getCurrentQuestProperty()
+    {
+        if ($this->quests->isEmpty()) {
+            return null;
+        }
 
-        if($this->quests->isEmpty()) {
+        return $this->quests[$this->currentIndex];
+    }
+
+    public function getNextQuestProperty()
+    {
+        if ($this->quests->isEmpty()) {
             return null;
         }
 
         $nextIndex = ($this->currentIndex + 1) % $this->quests->count();
 
         return $this->quests[$nextIndex];
-
-
     }
 
-
-    public function getPreviousQuestProperty(){
-
-        if($this->quests->isEmpty()) {
+    public function getPreviousQuestProperty()
+    {
+        if ($this->quests->isEmpty()) {
             return null;
         }
 
         $previousIndex = ($this->currentIndex - 1 + $this->quests->count()) % $this->quests->count();
 
         return $this->quests[$previousIndex];
-
-
     }
 
     public function updateUrl()
     {
-        if($this->quests->isEmpty()) {
+        if ($this->quests->isEmpty()) {
             return;
         }
 
@@ -73,12 +73,8 @@ new class extends Component
         ");
     }
 
-
-    
-
     public function next()
-    {   
-        
+    {
         if ($this->quests->isEmpty()) {
             return;
         }
@@ -89,94 +85,161 @@ new class extends Component
 
     public function previous()
     {
-        if($this->quests->isEmpty()) {
+        if ($this->quests->isEmpty()) {
             return;
         }
 
         $this->currentIndex = ($this->currentIndex - 1 + $this->quests->count()) % $this->quests->count();
         $this->updateUrl();
-
     }
-
-    public function getCurrentQuestProperty()
-    {
-        if($this->quests->isEmpty()) {
-            return null;
-        }
-
-        return $this->quests[$this->currentIndex];
-    }
-
-
-    
 };
 ?>
 
-<div class="card-body text-center flex-grow-1 d-flex flex-column">
-                    
-                    
-    <div class="p-2 mb-3">
-        <div class="card-header shadow-black rounded-4" style="background-color: #EAB2A0">
-            @if($this->currentQuest)
-            <h3 class="quest-name fs-2">{{ $this->currentQuest->title }}</h3>
-                @if ($this->currentQuest->description)
-                    <p class="fs-5 quest-name">{{ $this->currentQuest->description }}</p>
-                @else
-                    <p class="fs-5 quest-name">No description yet so just figure it out</p>
-                @endif
-            @else
-            <h3>No Quests inside the jar</h3>
-            @endif
-        </div>
-    </div>
-    @if ($this->currentQuest)
-        <div class="container-fluid">
-            <div class="row justify-content-center align-items-stretch">
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-10 col-md-8 col-lg-6 col-xl-4">
+            <div class="card text-center bg-block-blue rounded-5 h-100 d-flex flex-column">
 
-                <!-- PREV -->
-                <button
-                    type="button"
-                    wire:click="previous"
-                    class="btn blue-button fw-bold col-1 d-flex align-items-center justify-content-center fs-1 border-0" style="color: #EAB2A0; background-color: #2D4356;"
-                >
-                    ❮
-                </button>
+                <div class="card-header border-0">
+                    @if ($jar)
+                        <div class="d-flex">
+                            <div class="flex-grow-1 text-center">
+                                <h1 class="jar-name display-5 fw-bold">{{ $jar->name }}</h1>
+                            </div>
 
-                <!-- IMAGE -->
-                <div class="col-10 p-0" style="aspect-ratio: 1/1;">
-                    <img 
-                        src="{{ $this->currentQuest->picture }}" 
-                        alt="Quest picture" 
-                        class="w-100 h-100 rounded-4" 
-                        style="object-fit: cover;">
-                    
+                            <div class="text-start border-0">
+                                <button
+                                    class="m-1.5 bg-transparent border-0 fs-2 bi bi-hand-thumbs-up"
+                                    onclick="changeIcon(this)"
+                                    style="color: #EAB2A0;"
+                                ></button>
+                            </div>
+                        </div>
 
-                    
-
-
+                        @if($jar->description)
+                            <h2 class="jar-name fs-2">{{ $jar->description }}</h2>
+                        @else
+                            <h2 class="jar-name fs-2">No current description found</h2>
+                        @endif
+                    @else
+                        <h1 class="jar-name fs-1 fw-bold">No Usable Adventure Found</h1>
+                    @endif
                 </div>
 
-                @if ($this->nextQuest)
-                    <img src="{{ $this->nextQuest->picture }}" alt="" class="d-none">
-                @endif
+                <div class="card-body text-center flex-grow-1 d-flex flex-column">
+                    <div class="p-2 mb-3">
+                        <div class="card-header shadow-black rounded-4" style="background-color: #EAB2A0">
+                            @if($this->currentQuest)
+                                <h3 class="quest-name fs-2">{{ $this->currentQuest->title }}</h3>
 
-                @if ($this->previousQuest)
-                    <img src="{{ $this->previousQuest->picture }}" alt="" class="d-none">
-                @endif
+                                @if ($this->currentQuest->description)
+                                    <p class="fs-5 quest-name">{{ $this->currentQuest->description }}</p>
+                                @else
+                                    <p class="fs-5 quest-name">No description yet so just figure it out</p>
+                                @endif
+                            @else
+                                <h3>No Quests inside the jar</h3>
+                            @endif
+                        </div>
+                    </div>
 
-                <!-- NEXT -->
-                <button
-                    type="button"
-                    wire:click="next"
-                    class="btn fw-bold col-1 d-flex align-items-center justify-content-center fs-1 border-0" style="color: #EAB2A0; background-color: #2D4356;"
-                >
-                    ❯
-                </button>
+                    @if ($this->currentQuest)
+                        <div class="container-fluid">
+                            <div class="row justify-content-center align-items-stretch">
+                                <button
+                                    type="button"
+                                    wire:click="previous"
+                                    class="btn blue-button fw-bold col-1 d-flex align-items-center justify-content-center fs-1 border-0"
+                                    style="color: #EAB2A0; background-color: #2D4356;"
+                                >
+                                    ❮
+                                </button>
 
+                                <div class="col-10 p-0" style="aspect-ratio: 1/1;">
+                                    <img
+                                        src="{{ $this->currentQuest->picture }}"
+                                        alt="Quest picture"
+                                        class="w-100 h-100 rounded-4"
+                                        style="object-fit: cover;"
+                                    >
+                                </div>
 
+                                <button
+                                    type="button"
+                                    wire:click="next"
+                                    class="btn fw-bold col-1 d-flex align-items-center justify-content-center fs-1 border-0"
+                                    style="color: #EAB2A0; background-color: #2D4356;"
+                                >
+                                    ❯
+                                </button>
+                            </div>
+                        </div>
+                    @endif
+                </div>
+
+                @auth
+                    <div class="card-footer p-0 border-0">
+                        @if($jar->created_by === auth()->id() || auth()->user()->is_admin)
+
+                            <a href="{{ route('jars.quests.create', ['jar' => $jar->id]) }}"
+                               class="btn fw-medium pink-button rounded-pill w-50 fs-3 p-0 m-1">
+                                Add New Quest
+                            </a>
+
+                            @if($this->currentQuest && $this->jar->quests->isNotEmpty())
+                                <a href="{{ route('jars.quests.edit', ['jar' => $jar->id, 'jarQuest' => $this->currentQuest->id]) }}"
+                                   class="btn fw-medium pink-button rounded-pill w-50 fs-3 p-0 m-1">
+                                    Edit Current Quest
+                                </a>
+                            @endif
+
+                            @if($this->currentQuest)
+                                <form action="{{ route('jars.quests.destroy', ['jar' => $jar->id, 'jarQuest' => $this->currentQuest->id]) }}" method="POST">
+                                    <!-- onsubmit="return confirm('Are you sure you want to delete this quest?');" ez gagyi de valami ilyesmi kene azert hogy ne lehessen veletlen torolni (agresszivan magamnak szol ez a komment) -->
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="w-50 border-0 btn btn-outline-danger rounded-pill fs-3 p-0 m-1">
+                                    Delete Quest
+                                    </button>
+                                </form>
+                            @endif
+
+                            <form action="{{ route('jars.destroy', $jar) }}" method="POST">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="w-50 border-0 btn btn-outline-danger rounded-pill fs-3 p-0 m-1">
+                                    Delete Jar
+                                </button>
+                            </form>
+
+                        @else
+                            @if ($jar->users()->where('user_id', auth()->id())->exists())
+                                <form action="{{ route('jars.leave', $jar) }}" method="POST" class="w-100">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn fw-medium pink-button rounded-pill w-50 fs-3 p-0 m-1">
+                                        Leave Jar
+                                    </button>
+                                </form>
+                            @else
+                                <form action="{{ route('jars.join', $jar) }}" method="POST" class="w-100">
+                                    @csrf
+                                    <button type="submit" class="btn fw-medium pink-button rounded-pill w-50 fs-3 p-0 m-1">
+                                        Join Jar
+                                    </button>
+                                </form>
+                            @endif
+                        @endif
+                    </div>
+                @endauth
             </div>
-
         </div>
-    @endif
-    
+    </div>
 </div>
+
+<script>
+    function changeIcon(icon) {
+        icon.classList.toggle("bi-hand-thumbs-up-fill");
+        icon.classList.toggle("bi-hand-thumbs-up");
+    }
+</script>

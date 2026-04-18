@@ -11,7 +11,7 @@ class UpdateJarQuestRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -23,6 +23,10 @@ class UpdateJarQuestRequest extends FormRequest
     {
         return [
             //
+
+            "title" => ["required", "string"],
+            "description" => ["nullable", "string"],
+            "picture" => ["string", "nullable"] //Majd kitalalom mi legyen vele
         ];
     }
 }

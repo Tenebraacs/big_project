@@ -48,6 +48,8 @@
                                     <a class="nav-link" href="{{  route("jars.edit", $jar) }}">Edit Jar</a>
                             </li>
                             @endif
+                            
+                            
                         @endauth
 
                     </ul>

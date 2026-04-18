@@ -50,24 +50,52 @@ class JarQuestController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(JarQuest $jarQuest)
+    public function edit( Jar $jar, JarQuest $jarQuest)
     {
-        //
+        $this->authorize('update', $jar); //otelem sincs megirtam e egyenlore a megfelelo engedejeket hozza
+
+        if($jarQuest->jar_id !== $jar->id){
+            abort(404);
+        }
+
+        return view('jars.quests.edit' , compact('jar', 'jarQuest'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateJarQuestRequest $request, JarQuest $jarQuest)
+    public function update(UpdateJarQuestRequest $request, Jar $jar, JarQuest $jarQuest)
     {
-        //
+        $this->authorize('update', $jar);
+
+        if($jarQuest->jar_id !== $jar->id){
+            abort(404);
+        }
+
+        $jarQuest->update($request->validated());
+
+        return redirect()
+            ->route('jars.show', [
+                'jar' => $jar->id,
+                'quest' => $jarQuest->id,
+            ])->with('success', 'Quest updated successfully.');
+
+
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(JarQuest $jarQuest)
+    public function destroy(Jar $jar, JarQuest $jarQuest)
     {
-        //
+        $this->authorize('delete', $jarQuest);
+
+        if($jarQuest->jar_id !== $jar->id){
+            abort(404);
+        }
+
+        $jarQuest->delete();
+
+        return redirect()->route('jars.show', $jar)->with('success', 'Quest deleted successfully.');
     }
 }
