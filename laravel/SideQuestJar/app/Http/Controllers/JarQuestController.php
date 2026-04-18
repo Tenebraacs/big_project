@@ -22,7 +22,7 @@ class JarQuestController extends Controller
      */
     public function create(Jar $jar)
     {
-        $this->authorize('update', $jar);
+        $this->authorize('update', $jar); //A Jar engedelyeit nezi meg nem a jarQuest-et Ha tovabb fejlesztunk lehet rola szo hogy ne csak a jar keszito tudjon questet hozza adni
         return view("jars.quests.create", compact('jar'));
     }
 
@@ -52,7 +52,7 @@ class JarQuestController extends Controller
      */
     public function edit( Jar $jar, JarQuest $jarQuest)
     {
-        $this->authorize('update', $jar); //otelem sincs megirtam e egyenlore a megfelelo engedejeket hozza
+        $this->authorize('update', $jar); 
 
         if($jarQuest->jar_id !== $jar->id){
             abort(404);
@@ -88,7 +88,7 @@ class JarQuestController extends Controller
      */
     public function destroy(Jar $jar, JarQuest $jarQuest)
     {
-        $this->authorize('delete', $jarQuest);
+        $this->authorize('update', $jar); 
 
         if($jarQuest->jar_id !== $jar->id){
             abort(404);

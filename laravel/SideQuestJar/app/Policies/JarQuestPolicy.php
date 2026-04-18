@@ -8,6 +8,7 @@ use Illuminate\Auth\Access\Response;
 
 class JarQuestPolicy
 {
+    //Igazabol nincs hasznalva meg 
     /**
      * Determine whether the user can view any models.
      */
@@ -45,7 +46,7 @@ class JarQuestPolicy
      */
     public function delete(User $user, JarQuest $jarQuest): bool
     {
-        return false;
+        return $user->id === $jarQuest->jar->created_by;
     }
 
     /**
