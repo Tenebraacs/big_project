@@ -151,7 +151,7 @@ new class extends Component
                         </div>
 
                         @if($jar->description)
-                            <h2 class="jar-name fs-2">{{ $jar->description }}</h2>
+                            <h2 class="jar-name fs-2 overflow-auto scrolling-bar p-1" style="max-height: 20vh;">{{ $jar->description }}</h2>
                         @else
                             <h2 class="jar-name fs-2">No current description found</h2>
                         @endif
@@ -167,12 +167,12 @@ new class extends Component
                                 <h3 class="quest-name fs-2">{{ $this->currentQuest->title }}</h3>
 
                                 @if ($this->currentQuest->description)
-                                    <p class="fs-5 quest-name">{{ $this->currentQuest->description }}</p>
+                                    <p class="fs-5 quest-name overflow-auto scrolling-bar p-1" style="max-height: 20vh;">{{ $this->currentQuest->description }}</p>
                                 @else
                                     <p class="fs-5 quest-name">No description yet so just figure it out</p>
                                 @endif
                             @else
-                                <h3>No Quests inside the jar</h3>
+                                <h3 class="quest-name fs-5">No Quests inside the jar</h3>
                             @endif
                         </div>
                     </div>
