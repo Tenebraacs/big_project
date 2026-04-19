@@ -92,6 +92,13 @@ new class extends Component
         $this->currentIndex = ($this->currentIndex - 1 + $this->quests->count()) % $this->quests->count();
         $this->updateUrl();
     }
+
+    public bool $liked = false;
+
+    public function toggleLike()
+    {
+        $this->liked = ! $this->liked;
+    }
 };
 ?>
 
@@ -109,8 +116,9 @@ new class extends Component
 
                             <div class="text-start border-0">
                                 <button
-                                    class="m-1.5 bg-transparent border-0 fs-2 bi bi-hand-thumbs-up"
-                                    onclick="changeIcon(this)"
+                                    type="button"
+                                    wire:click="toggleLike"
+                                    class="bg-transparent border-0 fs-2 bi {{ $liked ? 'bi-hand-thumbs-up-fill' : 'bi-hand-thumbs-up' }}"
                                     style="color: #EAB2A0;"
                                 ></button>
                             </div>
@@ -236,10 +244,3 @@ new class extends Component
         </div>
     </div>
 </div>
-
-<script>
-    function changeIcon(icon) {
-        icon.classList.toggle("bi-hand-thumbs-up-fill");
-        icon.classList.toggle("bi-hand-thumbs-up");
-    }
-</script>
