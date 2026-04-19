@@ -6,8 +6,8 @@
         <div class="col">
             <div class="row rounded-5 bg-block-blue p-4 align-item-center">
                 <div class="col-md-6">
-                    <h2 class="logo-first">SIDE QUEST</h2>
-                    <h1 class="logo-second">JAR</h1>
+                    <h2 class="logo-first mt-3">SIDE QUEST</h2>
+                    <h1 class="logo-second display-1">JAR</h1>
                     <br>
                     <p class="welcome-text m-1.5 fs-1" style="transform: rotate(5deg);">Welcome to The Amazing Digital Side Quest Jar!</p>
                 </div>

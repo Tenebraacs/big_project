@@ -63,9 +63,7 @@
     text-align: center;
     color: white;
     font-weight: bolder;
-    letter-spacing: 0px;
     margin-bottom: -15px;
-    margin-top: 20px;
 }
 
 //Jar text from the log
@@ -73,7 +71,6 @@
     font-family: 'Rubik Bubbles', system-ui;
     text-align: center;
     color: #EAB2A0;
-    font-size: 100px;
     text-shadow: 0px 10px black;
 }
 
@@ -93,25 +90,15 @@
     font-weight: bold;
     font-family: "Fredoka", sans-serif;
     min-height: 10vh;
-    margin: 0;
     display: flex;
     text-align: center;
-    padding: 3px;
 }
-
-// .main-jar-desc{
-//     font-family: "Lora", serif;
-//     color: #EAB2A0;
-//     text-shadow: 0px 3px black;
-// }
 
 .blue-button:hover{
     background-color: #2D4356;
     color: white;
     border-color: #7D5252;
 }
-
-
 
 .home-quest-image-frame {
     width: 60%;
@@ -154,6 +141,24 @@
 }
 
 .navbar-light .navbar-brand:hover{
-    color: #eab3a0d5;
+    color: #EAB2A0;
     transform: scale(1.05);
+}
+
+.scrolling-bar::-webkit-scrollbar-track
+{
+	border: 1px solid #2D4356;
+	background-color: #2D4356;
+}
+
+.scrolling-bar::-webkit-scrollbar
+{
+	width: 10px;
+	background-color: #EAB2A0;
+}
+
+.scrolling-bar::-webkit-scrollbar-thumb
+{
+    border: solid 3px #2D4356;
+    background-color: #EAB2A0;	
 }
