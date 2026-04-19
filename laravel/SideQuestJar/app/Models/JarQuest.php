@@ -28,6 +28,10 @@ class JarQuest extends Model
         return $this->belongsTo(Jar::class);
     }
 
+    public function likes(){
+        return $this->morphMany(Like::class, 'likeable');
+    }
+
     public function user(){
         return $this->belongsTo(User::class, 'created_by');
     }

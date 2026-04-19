@@ -13,13 +13,12 @@ return new class extends Migration
     {
         Schema::create('likes', function (Blueprint $table) {
             $table->id();
-            $table->foreignId("user_id")->constrained()->onDelete("cascade");
-            $table->enum("type", ["jar", "quest", "completion"]);
-            $table->foreignId("jar_quest_id")->nullable()->constrained()->onDelete("cascade");
-            $table->foreignId("jar_id")->nullable()->constrained()->onDelete("cascade");
-            $table->foreignId("quest_completion_id")->nullable()->constrained('quest_completions')->onDelete("cascade");
+            $table->foreignId("user_id")->constrained()->cascadeOnDelete();
+            $table->morphs('liekable');
             $table->timestamps();
-            $table->softDeletes();
+
+            $table->unique(['user_id', 'likeable_id', 'likeable_type']);
+            
         });
     }
 

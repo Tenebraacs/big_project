@@ -35,8 +35,8 @@ class Jar extends Model
         return $this->hasMany(JarQuest::class);
     }
 
-    public function like(){
-        return $this->belongsTo(Like::class);
+    public function likes(){
+        return $this->morphMany(Like::class, 'likeable');
     }
 
     public function jar_user(){
