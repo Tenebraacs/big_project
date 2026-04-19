@@ -3,18 +3,24 @@
 use Livewire\Component;
 use App\Models\Jar;
 
+
 new class extends Component
 {
     public Jar $jar;
     public ?int $quest = null;
     public $quests;
     public int $currentIndex = 0;
+    public bool $liked = false;
 
     public function mount(Jar $jar, ?int $quest = null)
     {
         $this->jar = $jar;
         $this->quest = $quest;
         $this->quests = $jar->quests->values();
+
+        if(auth()->check()) {
+            $this->liked = $this->jar->likes()->where('user_id', auth()->id())->exists(); //when the page loads check if the logged-in user already liked this jar
+        }
 
         if ($this->quests->isEmpty()) {
             return;
@@ -93,12 +99,31 @@ new class extends Component
         $this->updateUrl();
     }
 
-    public bool $liked = false;
+    
 
     public function toggleLike()
     {
-        $this->liked = ! $this->liked;
+        if (! auth()->check()){
+            return;
+        }
+
+        $existingLike = $this->jar->likes()->where('user_id', auth()->id())->first();
+
+        if($existingLike) {
+            $existingLike->delete();
+            $this->liked = false;
+            return;
+        }
+
+        $this->jar->likes()->create([
+            'user_id' => auth()->id(),
+        ]);
+        
+        $this->liked = true;
     }
+
+
+
 };
 ?>
 
@@ -106,6 +131,7 @@ new class extends Component
     <div class="row align-items-end justify-content-end">
         <div class="col-4 col-md-8 col-lg-6 col-xl-4">
             <div class="card text-center bg-block-blue rounded-5 h-100 d-flex flex-column">
+
 
                 <div class="card-header border-0">
                     @if ($jar)
@@ -233,23 +259,29 @@ new class extends Component
                 @endauth
             </div>
         </div>
+        
         <div class="col-4">
+            @auth 
             <div class="card text-center bg-block-blue h-25 w-75 rounded-5 d-flex flex-column alignt-items-center ms-auto justify-content-end">
             
-            @if(request()->routeIs('jars.show') && isset($jar) && ($jar->created_by === auth()->id() || auth()->user()->is_admin))
-                <a class="btn pink-button rounded-pill m-2 w-75 fs-3 p-0 fw-medium mx-auto" href="{{  route("jars.edit", $jar) }}">Edit Jar</a>
-            @endif
+                @if( $jar && ($jar->created_by === auth()->id() || auth()->user()->is_admin))
+                    <a class="btn pink-button rounded-pill m-2 w-75 fs-3 p-0 fw-medium mx-auto" href="{{  route("jars.edit", $jar) }}">Edit Jar</a>
+                @endif
+                
+                @if ($jar->created_by === auth()->id() || auth()->user()->is_admin)
+                    <form action="{{ route('jars.destroy', $jar) }}" method="POST">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="w-50 border-0 btn btn-outline-danger rounded-pill fs-4 p-0 m-2">
+                            Delete Jar
+                        </button>
+                    </form>
+                @endif
+           
             
-            @if ($jar->created_by === auth()->id() || auth()->user()->is_admin)
-                <form action="{{ route('jars.destroy', $jar) }}" method="POST">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="w-50 border-0 btn btn-outline-danger rounded-pill fs-4 p-0 m-2">
-                        Delete Jar
-                    </button>
-                </form>
-            @endif
             </div>
+            @endauth
         </div>
+         
     </div>
 </div>

@@ -15,7 +15,6 @@ class Like extends Model
         'user_id',
     ];
 
-
     public function likeable()
     {
         return $this->morphTo();
