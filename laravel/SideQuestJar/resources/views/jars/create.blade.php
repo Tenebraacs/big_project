@@ -17,7 +17,7 @@
                             <label for="name" class="jar-name fs-4">Jar Name</label>
                         </div>
                         <div class="row justify-content-center">
-                            <input class="text-center col-6 rounded-2" required type="text" name="name" id="name" placeholder="JarName" required value="{{ old('name') }}">
+                            <input class="text-center col-6 rounded-2" style="background-color: #eab3a0d5;" required type="text" name="name" id="name" placeholder="JarName" required value="{{ old('name') }}">
                         </div>
                             
                         
@@ -31,7 +31,7 @@
                             <label for="description" class="jar-name fs-4">Jar Description</label>
                         </div>
                         <div class="row justify-content-center p-2">
-                            <textarea class=" text-center col-8 p-2 rounded-3" name="description" id="description" placeholder="JarDescription"></textarea>
+                            <textarea class=" text-center col-8 p-2 rounded-3" style="background-color: #eab3a0d5;"  name="description" id="description" placeholder="JarDescription"></textarea>
                         </div>
 
                         <div class="row justify-content-center align-items-stretch">

@@ -262,6 +262,9 @@ new class extends Component
         
         <div class="col-4">
             @auth 
+            @if ($jar && ($jar->created_by === auth()->id() || auth()->user()->is_admin))
+            
+            
             <div class="card text-center bg-block-blue h-25 w-75 rounded-5 d-flex flex-column alignt-items-center ms-auto justify-content-end">
             
                 @if( $jar && ($jar->created_by === auth()->id() || auth()->user()->is_admin))
@@ -280,6 +283,7 @@ new class extends Component
            
             
             </div>
+            @endif
             @endauth
         </div>
          

@@ -25,7 +25,6 @@ Route::get('/jars/{jar}/{quest?}', [JarController::class, 'show'])->name('jars.s
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/jars/{jar}/like', [LikeController::class, 'toggleJar']);
-    Route::post('/jars/{jar}/quests', [LikeController::class, 'toggleQuest']);
 
 });
 //Route::resource('/achievement', AchievementController::class);
