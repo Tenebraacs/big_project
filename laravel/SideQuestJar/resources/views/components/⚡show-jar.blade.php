@@ -103,8 +103,8 @@ new class extends Component
 ?>
 
 <div class="container-fluid">
-    <div class="row justify-content-center">
-        <div class="col-10 col-md-8 col-lg-6 col-xl-4">
+    <div class="row align-items-end justify-content-end">
+        <div class="col-4 col-md-8 col-lg-6 col-xl-4">
             <div class="card text-center bg-block-blue rounded-5 h-100 d-flex flex-column">
 
                 <div class="card-header border-0">
@@ -157,7 +157,7 @@ new class extends Component
                                 <button
                                     type="button"
                                     wire:click="previous"
-                                    class="btn blue-button fw-bold col-1 d-flex align-items-center justify-content-center fs-1 border-0"
+                                    class="blue-button fw-bold col-1 d-flex align-items-center justify-content-center fs-1 border-0"
                                     style="color: #EAB2A0; background-color: #2D4356;"
                                 >
                                     ❮
@@ -175,7 +175,7 @@ new class extends Component
                                 <button
                                     type="button"
                                     wire:click="next"
-                                    class="btn fw-bold col-1 d-flex align-items-center justify-content-center fs-1 border-0"
+                                    class="fw-bold col-1 d-flex align-items-center justify-content-center fs-1 border-0"
                                     style="color: #EAB2A0; background-color: #2D4356;"
                                 >
                                     ❯
@@ -206,20 +206,11 @@ new class extends Component
                                     <!-- onsubmit="return confirm('Are you sure you want to delete this quest?');" ez gagyi de valami ilyesmi kene azert hogy ne lehessen veletlen torolni (agresszivan magamnak szol ez a komment) -->
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="w-50 border-0 btn btn-outline-danger rounded-pill fs-3 p-0 m-1">
+                                    <button type="submit" class="w-50 border-0 btn btn-outline-danger rounded-pill fs-4 p-0 m-1">
                                     Delete Quest
                                     </button>
                                 </form>
                             @endif
-
-                            <form action="{{ route('jars.destroy', $jar) }}" method="POST">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="w-50 border-0 btn btn-outline-danger rounded-pill fs-3 p-0 m-1">
-                                    Delete Jar
-                                </button>
-                            </form>
-
                         @else
                             @if ($jar->users()->where('user_id', auth()->id())->exists())
                                 <form action="{{ route('jars.leave', $jar) }}" method="POST" class="w-100">
@@ -240,6 +231,24 @@ new class extends Component
                         @endif
                     </div>
                 @endauth
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="card text-center bg-block-blue h-25 w-75 rounded-5 d-flex flex-column alignt-items-center ms-auto justify-content-end">
+            
+            @if(request()->routeIs('jars.show') && isset($jar) && ($jar->created_by === auth()->id() || auth()->user()->is_admin))
+                <a class="btn pink-button rounded-pill m-2 w-75 fs-3 p-0 fw-medium mx-auto" href="{{  route("jars.edit", $jar) }}">Edit Jar</a>
+            @endif
+            
+            @if ($jar->created_by === auth()->id() || auth()->user()->is_admin)
+                <form action="{{ route('jars.destroy', $jar) }}" method="POST">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="w-50 border-0 btn btn-outline-danger rounded-pill fs-4 p-0 m-2">
+                        Delete Jar
+                    </button>
+                </form>
+            @endif
             </div>
         </div>
     </div>

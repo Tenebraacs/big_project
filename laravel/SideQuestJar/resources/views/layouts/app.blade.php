@@ -43,11 +43,6 @@
                             <li class="nav-item pink-button rounded-pill">
                                     <a class="nav-link" href="{{  route("jars.create") }}">Create Jar</a>
                             </li>
-                            @if(request()->routeIs('jars.show') && isset($jar) && ($jar->created_by === auth()->id() || auth()->user()->is_admin))
-                            <li class="nav-item pink-button rounded-pill">
-                                    <a class="nav-link" href="{{  route("jars.edit", $jar) }}">Edit Jar</a>
-                            </li>
-                            @endif
                             
                             
                         @endauth
