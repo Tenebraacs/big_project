@@ -23,10 +23,7 @@ Route::delete('/jars/{jar}/quests/{jarQuest}', [JarQuestController::class, 'dest
 Route::resource('/jars', JarController::class)->except(['show']);
 Route::get('/jars/{jar}/{quest?}', [JarController::class, 'show'])->name('jars.show');
 
-Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/jars/{jar}/like', [LikeController::class, 'toggleJar']);
 
-});
 //Route::resource('/achievement', AchievementController::class);
 //TODO (frontend needed)
 Auth::routes();
