@@ -22,11 +22,11 @@ class StoreJarQuestRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            //JO IGY NE NYULKALJ
 
             "title" => ["required", "string"],
             "description" => ["nullable", "string"],
-            "picture" => ["string", "nullable"] //Majd kitalalom mi legyen vele
+            'picture' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'], //Majd kitalalom mi legyen vele => kitalaltam
         ];
     }
 }

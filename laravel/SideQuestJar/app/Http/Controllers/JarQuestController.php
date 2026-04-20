@@ -32,19 +32,22 @@ class JarQuestController extends Controller
     public function store(StoreJarQuestRequest $request, Jar $jar)
     {
         $this->authorize('update', $jar);
-        $quest = $jar->quests()->create($request->validated());
+
+        $validated = $request->validated();
+
+        if ($request->hasFile('picture')) {
+            $validated['picture'] = $request->file('picture')->store('quests', 'public');
+
+        }
+
+        $quest = $jar->quests()->create($validated);
 
         return redirect()
-            ->route('jars.show', $jar)
+            ->route('jars.show', [
+                'jar' => $jar->id,
+                'quest' => $quest->id,
+            ])
             ->with('success', 'Quest created successfully.');
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(JarQuest $jarQuest)
-    {
-        //
     }
 
     /**

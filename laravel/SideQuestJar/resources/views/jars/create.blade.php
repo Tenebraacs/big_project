@@ -8,8 +8,9 @@
     <div class="container-fluid">
     <div class="row justify-content-center">
         <div class="col-12 col-md-10 col-lg-8 col-xl-4">
-            <form action="{{ route( "jars.store") }}" method="POST">
+            <form action="{{ route( "jars.store") }}" method="POST" enctype="multipart/form-data">
             @csrf
+            
                 <div class="card bg-block-blue rounded-5 text-center h-100 d-flex flex-column" style="">
                     <div class="card-header border-0">
                         
@@ -32,6 +33,19 @@
                         </div>
                         <div class="row justify-content-center p-2">
                             <textarea class=" text-center col-8 p-2 rounded-3" style="background-color: #eab3a0d5;"  name="description" id="description" placeholder="JarDescription"></textarea>
+                        </div>
+
+                        <div class="row">
+                            <label for="picture" class="jar-name fs-4">Jar Picture</label>
+                        </div>
+                        <div class="row justify-content-center p-2">
+                            <input
+                                type="file"
+                                name="picture"
+                                id="picture"
+                                accept="image/*"
+                                class="col-8"
+                            >
                         </div>
 
                         <div class="row justify-content-center align-items-stretch">

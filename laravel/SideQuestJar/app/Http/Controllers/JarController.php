@@ -25,10 +25,9 @@ class JarController extends Controller
         $mainJar = Jar::where('type', 'official_jar')->where('name', "Today's Adventure")->first();
         $mainQuest = $mainJar->quests()->inRandomOrder()->first(); //Napi valtozas a questben
 
-        $jars = Jar::whereNot('type', 'official_jar')
-        ->whereHas('quests')
-        ->with('quests')
-        ->get();
+        $jars = Jar::whereNot('type', 'official_jar')->get();
+
+        
         return view('home', compact('mainJar', 'mainQuest', 'jars'));
     }
 
@@ -53,7 +52,16 @@ class JarController extends Controller
     public function store(StoreJarRequest $request)
     {
         $this->authorize('create', Jar::class);
-        $jar = Jar::create($request->validated());
+
+        $validated = $request->validated();
+
+        $validated['created_by'] = auth()->id();
+
+        if ($request->hasFile('picture')) {
+            $validated['picture'] = $request->file('picture')->store('jars', 'public');
+        }
+
+        $jar = Jar::create($validated);
 
         $jar->users()->syncWithoutDetaching([
             auth()->id() => ['streak' => 0]

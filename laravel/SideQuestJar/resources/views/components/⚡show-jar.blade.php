@@ -191,7 +191,7 @@ new class extends Component
 
                                 <div class="col-10 p-0" style="aspect-ratio: 1/1;">
                                     <img
-                                        src="{{ $this->currentQuest->picture }}"
+                                        src="{{ $this->currentQuest->picture_url }}"
                                         alt="Quest picture"
                                         class="w-100 h-100 rounded-4"
                                         style="object-fit: cover;"
