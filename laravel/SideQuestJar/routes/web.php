@@ -1,6 +1,6 @@
 <?php
 
-
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\JarController;
 use App\Http\Controllers\JarQuestController;
 use Illuminate\Support\Facades\Auth;
@@ -22,6 +22,9 @@ Route::delete('/jars/{jar}/quests/{jarQuest}', [JarQuestController::class, 'dest
 Route::resource('/jars', JarController::class)->except(['show']);
 Route::get('/jars/{jar}/{quest?}', [JarController::class, 'show'])->name('jars.show');
 
+Route::get('/user', [UserController::class, 'user'])
+    ->middleware('auth')
+    ->name('user');
 
 //Route::resource('/achievement', AchievementController::class);
 //TODO (frontend needed)
