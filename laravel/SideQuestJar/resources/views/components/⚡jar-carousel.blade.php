@@ -66,8 +66,8 @@ new class extends Component
                             </div>
 
                             <div class="card-body text-center">
-                                @if ($jar->picture)
-                                    <img src="{{ $jar->picture }}" class="img-fluid rounded-4">
+                                @if ($jar->picture_url)
+                                    <img src="{{ $jar->picture_url }}" alt="{{ $jar->name }}" class="img-fluid rounded-4">
                                 @else
                                     <p>No image found.</p>
                                 @endif

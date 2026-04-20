@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateJarRequest extends FormRequest
 {
@@ -25,11 +26,16 @@ class UpdateJarRequest extends FormRequest
             
             //TODO: 14-19 videok //Puszi a Pocidra Voros
 
-            "name" => ["required", "string"],
-            "description" => ["nullable", "string"],
-            "picture" => ["string", "nullable"],
-            "type" => ["nullable",
-                "in:public_jar,private_jar,friends_only_jar,invite_only_jar,official_jar"],
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('jars')->where(function ($query) {
+                    return $query->where('created_by', auth()->id());
+                }),
+            ],
+            'description' => ['nullable', 'string'],
+            'picture' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
 
         ];
         

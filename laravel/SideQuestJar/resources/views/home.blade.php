@@ -13,7 +13,7 @@
                         <h1 class="fs-1 fw-bold welcome-text">No Usable Adventure Found</h1>
                     @endif
                 </div>
-
+                
                 <div class="card-body text-center">
                     <div class="row">
                         @if ($mainQuest)

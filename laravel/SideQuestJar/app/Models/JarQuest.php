@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 
 class JarQuest extends Model
 {
@@ -22,6 +23,23 @@ class JarQuest extends Model
         
     ];
 
+    protected $appends = ['picture_url'];
+
+    public function getPictureUrlAttribute()
+    {
+        if (!$this->picture){
+            return 'https://i.ibb.co/2YvZypwJ/Jar-Quest-Placeholder.png';
+        }
+
+        
+        if(Str::startsWith($this->picture, ['http://', 'https://'])) {
+            return $this->picture;
+        }
+
+        return asset('storage/' . $this->picture);
+
+
+    }
 
 
     public function jar(){

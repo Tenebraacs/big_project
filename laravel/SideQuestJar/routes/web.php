@@ -3,7 +3,6 @@
 
 use App\Http\Controllers\JarController;
 use App\Http\Controllers\JarQuestController;
-use App\Http\Controllers\LikeController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
