@@ -83,6 +83,11 @@ class UserController extends Controller
         return $request->user();   
     }
 
+    public function show(Request $request)
+{
+    return response()->json($request->user());
+}
+
 
 
 

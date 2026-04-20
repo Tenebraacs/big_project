@@ -35,7 +35,7 @@ class UserController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        
     }
 
     /**
@@ -44,5 +44,12 @@ class UserController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function user()
+    {
+        return view('user.show', [
+            'user' => auth()->user()
+        ]);
     }
 }

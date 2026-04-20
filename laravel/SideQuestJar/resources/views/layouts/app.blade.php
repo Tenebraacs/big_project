@@ -67,11 +67,13 @@
                             @endif
                         @else
                             <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
-                                    {{ Auth::user()->username }}
-                                </a>
+                                <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown"> {{ Auth::user()->username }} </a>
 
                                 <div class="dropdown-menu dropdown-menu-end">
+                                    <a class="dropdown-item" href="{{ route('user') }}">
+                                        {{ __('User') }}
+                                    </a>
+
                                     <form action="{{ route('logout') }}" method="POST">
                                         @csrf
                                         <button type="submit" class="dropdown-item">
@@ -79,6 +81,7 @@
                                         </button>
                                     </form>
                                 </div>
+
                             </li>
                         @endguest
                     </ul>
