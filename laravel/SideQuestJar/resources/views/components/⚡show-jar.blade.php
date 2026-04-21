@@ -2,15 +2,22 @@
 
 use Livewire\Component;
 use App\Models\Jar;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 
 new class extends Component
 {
+    use AuthorizesRequests;
+
+
     public Jar $jar;
     public ?int $quest = null;
     public $quests;
     public int $currentIndex = 0;
     public bool $liked = false;
+    public bool $confirmingDeleteQuest = false;
+    public bool $confirmingDeleteJar = false;
+
 
     public function mount(Jar $jar, ?int $quest = null)
     {
@@ -122,7 +129,71 @@ new class extends Component
         $this->liked = true;
     }
 
+    public function deleteJar(){
+        $this->authorize('delete', $this->jar);
 
+        $this->confirmingDeleteJar = false;
+
+        $this->jar->delete();
+
+        return $this->redirect(route('home'), navigate: true);
+        
+    }
+
+    public function deleteCurrentQuest()
+    {
+        if (! $this->currentQuest) {
+            return;
+        }
+
+        $this->authorize('update', $this->jar);
+
+        $deletedIndex = $this->currentIndex;
+        $questToDelete = $this->currentQuest;
+
+        $questToDelete->delete();
+
+
+        $this->jar = $this->jar->fresh();
+        $this->quests = $this->jar->quests()->orderBy('id')->get()->values();
+
+        $this->confirmingDeleteQuest = false;
+
+        if ($this->quests->isEmpty()){
+            $this->currentIndex = 0;
+            $this->quest = null;
+
+            unset($this->currentQuest, $this->nextQuest, $this->previousQuest);
+
+            return;
+        }
+
+        $this->currentIndex = min($deletedIndex, $this->quests->count() - 1);
+        $this->quest = $this->quests[$this->currentIndex]->id;
+
+        unset($this->currentQuest, $this->nextQuest, $this->previousQuest);
+
+        $this->updateUrl();
+    }
+
+    public function confirmDeleteQuest(){
+        if(! $this->currentQuest){
+            return;
+        }
+
+        $this->confirmingDeleteQuest = true;
+    }
+
+    public function confirmDeleteJar()
+    {
+        $this->confirmingDeleteJar = true;
+    }
+
+    public function closeDeleteModal()
+    {
+        $this->confirmingDeleteQuest = false;
+        $this->confirmingDeleteJar = false;
+    }
 
 };
 ?>
@@ -134,24 +205,24 @@ new class extends Component
 
 
                 <div class="card-header border-0">
-                    @if ($jar)
+                    @if ($this->jar)
                         <div class="d-flex">
                             <div class="flex-grow-1 text-center">
-                                <h1 class="jar-name display-5 fw-bold">{{ $jar->name }}</h1>
+                                <h1 class="jar-name display-5 fw-bold">{{ $this->jar->name }}</h1>
                             </div>
 
                             <div class="text-start border-0">
                                 <button
                                     type="button"
                                     wire:click="toggleLike"
-                                    class="bg-transparent border-0 fs-2 bi {{ $liked ? 'bi-hand-thumbs-up-fill' : 'bi-hand-thumbs-up' }}"
+                                    class="bg-transparent border-0 fs-2 bi {{ $this->liked ? 'bi-hand-thumbs-up-fill' : 'bi-hand-thumbs-up' }}"
                                     style="color: #EAB2A0;"
                                 ></button>
                             </div>
                         </div>
 
-                        @if($jar->description)
-                            <h2 class="jar-name fs-2 overflow-auto scrolling-bar" style="max-height: 20vh;">{{ $jar->description }}</h2>
+                        @if($this->jar->description)
+                            <h2 class="jar-name fs-2 overflow-auto scrolling-bar" style="max-height: 20vh;">{{ $this->jar->description }}</h2>
                         @else
                             <h2 class="jar-name fs-2">No current description found</h2>
                         @endif
@@ -213,33 +284,32 @@ new class extends Component
 
                 @auth
                     <div class="card-footer p-0 border-0">
-                        @if($jar->created_by === auth()->id() || auth()->user()->is_admin)
+                        @if($this->jar->created_by === auth()->id() || auth()->user()->is_admin)
 
-                            <a href="{{ route('jars.quests.create', ['jar' => $jar->id]) }}"
+                            <a href="{{ route('jars.quests.create', ['jar' => $this->jar->id]) }}"
                                class="btn fw-medium pink-button rounded-pill w-50 fs-3 p-0 m-1">
                                 Add New Quest
                             </a>
 
                             @if($this->currentQuest && $this->jar->quests->isNotEmpty())
-                                <a href="{{ route('jars.quests.edit', ['jar' => $jar->id, 'jarQuest' => $this->currentQuest->id]) }}"
+                                <a href="{{ route('jars.quests.edit', ['jar' => $this->jar->id, 'jarQuest' => $this->currentQuest->id]) }}"
                                    class="btn fw-medium pink-button rounded-pill w-50 fs-3 p-0 m-1">
                                     Edit Current Quest
                                 </a>
                             @endif
 
                             @if($this->currentQuest)
-                                <form action="{{ route('jars.quests.destroy', ['jar' => $jar->id, 'jarQuest' => $this->currentQuest->id]) }}" method="POST">
-                                    <!-- onsubmit="return confirm('Are you sure you want to delete this quest?');" ez gagyi de valami ilyesmi kene azert hogy ne lehessen veletlen torolni (agresszivan magamnak szol ez a komment) -->
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="w-50 border-0 btn btn-outline-danger rounded-pill fs-4 p-0 m-1">
+                                <button
+                                    type="button"
+                                    wire:click="confirmDeleteQuest"
+                                    class="w-50 border-0 btn btn-outline-danger rounded-pill fs-4 p-0 m-1"
+                                >
                                     Delete Quest
-                                    </button>
-                                </form>
+                                </button>
                             @endif
                         @else
-                            @if ($jar->users()->where('user_id', auth()->id())->exists())
-                                <form action="{{ route('jars.leave', $jar) }}" method="POST" class="w-100">
+                            @if ($this->jar->users()->where('user_id', auth()->id())->exists())
+                                <form action="{{ route('jars.leave', $this->jar) }}" method="POST" class="w-100">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn fw-medium pink-button rounded-pill w-50 fs-3 p-0 m-1">
@@ -247,7 +317,7 @@ new class extends Component
                                     </button>
                                 </form>
                             @else
-                                <form action="{{ route('jars.join', $jar) }}" method="POST" class="w-100">
+                                <form action="{{ route('jars.join', $this->jar) }}" method="POST" class="w-100">
                                     @csrf
                                     <button type="submit" class="btn fw-medium pink-button rounded-pill w-50 fs-3 p-0 m-1">
                                         Join Jar
@@ -262,23 +332,25 @@ new class extends Component
         
         <div class="col-12 col-md-4">
             @auth 
-            @if ($jar && ($jar->created_by === auth()->id() || auth()->user()->is_admin))
+            @if ($this->jar && ($jar->created_by === auth()->id() || auth()->user()->is_admin))
             
             
             <div class="card m-2 text-center justify-content-center bg-block-blue h-25 w-100 w-md-75 rounded-5 d-flex flex-column alignt-items-center ms-auto justify-content-end">
             
-                @if( $jar && ($jar->created_by === auth()->id() || auth()->user()->is_admin))
-                    <a class="btn pink-button rounded-pill m-2 w-75 fs-3 p-0 fw-medium mx-auto" href="{{  route("jars.edit", $jar) }}">Edit Jar</a>
+                @if( $this->jar && ($jar->created_by === auth()->id() || auth()->user()->is_admin))
+                    <a class="btn pink-button rounded-pill m-2 w-75 fs-3 p-0 fw-medium mx-auto" href="{{  route("jars.edit", $this->jar) }}">Edit Jar</a>
                 @endif
                 
-                @if ($jar->created_by === auth()->id() || auth()->user()->is_admin)
-                    <form action="{{ route('jars.destroy', $jar) }}" method="POST">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="w-50 border-0 btn btn-outline-danger rounded-pill fs-4 p-0 m-2">
-                            Delete Jar
-                        </button>
-                    </form>
+                @if ($this->jar->created_by === auth()->id() || auth()->user()->is_admin)
+                    
+                    <button
+                        type="button" 
+                        wire:click="confirmDeleteJar"
+                        class="w-50 border-0 btn btn-outline-danger rounded-pill fs-4 p-0 m-2"
+                    >
+                        Delete Jar
+                    </button>
+                    
                 @endif
            
             
@@ -287,5 +359,62 @@ new class extends Component
             @endauth
         </div>
          
+    </div>
+    <div x-data>
+        @if ($this->confirmingDeleteQuest)
+            <div class="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center"
+                style="background: rgba(0,0,0,0.5); z-index: 9999;">
+                <div class="card bg-block-blue rounded-5 p-4 text-center" style="width: min(90vw, 420px);">
+                    <h3 class="jar-name fs-3 mb-3">Delete quest?</h3>
+                    <p class="mb-4">Are you sure you want to delete this quest?</p>
+
+                    <div class="d-flex justify-content-center gap-2">
+                        <button
+                            type="button"
+                            wire:click="closeDeleteModal"
+                            class="btn blue-button rounded-pill px-4"
+                        >
+                            Cancel
+                        </button>
+
+                        <button
+                            type="button"
+                            wire:click="deleteCurrentQuest"
+                            class="btn btn-outline-danger rounded-pill px-4"
+                        >
+                            Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+        @endif
+
+        @if ($this->confirmingDeleteJar)
+            <div class="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center"
+                style="background: rgba(0,0,0,0.5); z-index: 9999;">
+                <div class="card bg-block-blue rounded-5 p-4 text-center" style="width: min(90vw, 420px);">
+                    <h3 class="jar-name fs-3 mb-3">Delete jar?</h3>
+                    <p class="mb-4">This will delete the whole jar. Are you sure?</p>
+
+                    <div class="d-flex justify-content-center gap-2">
+                        <button
+                            type="button"
+                            wire:click="closeDeleteModal"
+                            class="btn blue-button rounded-pill px-4"
+                        >
+                            Cancel
+                        </button>
+
+                        <button
+                            type="button"
+                            wire:click="deleteJar"
+                            class="btn btn-outline-danger rounded-pill px-4"
+                        >
+                            Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+        @endif
     </div>
 </div>

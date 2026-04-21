@@ -2,12 +2,14 @@
 
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Models\Jar;
+
 
 
 new class extends Component
 {
-     use WithFileUploads;
+     use WithFileUploads, AuthorizesRequests;
 
      public string $name ='';
      public string $description ='';
@@ -15,10 +17,12 @@ new class extends Component
 
     public function save()
     {
+        $this->authorize('create', Jar::class);
+
         $validated = $this->validate([
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
-            'picture' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'picture' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
         ]);
 
         $validated['created_by'] = auth()->id();
@@ -46,7 +50,6 @@ new class extends Component
     <div class="row justify-content-center">
         <div class="col-12 col-md-10 col-lg-8 col-xl-4">
             <form wire:submit="save">
-            @csrf
             
                 <div class="card bg-block-blue rounded-5 text-center h-100 d-flex flex-column" style="">
                     <div class="card-header border-0">
@@ -55,13 +58,20 @@ new class extends Component
                             <label for="name" class="jar-name fs-4">Jar Name</label>
                         </div>
                         <div class="row justify-content-center">
-                            <input wire:model="name"
-                            class="text-center col-6 rounded-2"
-                            style="background-color: #eab3a0d5;"
-                            required type="text" name="name" id="name"
-                            placeholder="JarName"
-                            required 
-                            value="{{ old('name') }}">
+
+                            <input 
+                                wire:model="name"
+                                class="text-center col-6 rounded-2"
+                                style="background-color: #eab3a0d5;"
+                                required 
+                                type="text" 
+                                id="name"
+                                placeholder="JarName"
+                            >
+                            @error('name')
+                                <div class="text-danger mt-2">{{ $message }}</div>
+                            @enderror
+
                         </div>
                             
                         
@@ -76,10 +86,13 @@ new class extends Component
                         </div>
                         <div class="row justify-content-center p-2">
                             <textarea wire:model="description"
-                            class=" text-center col-8 p-2 rounded-3" style="background-color: #eab3a0d5;"
-                            name="description"
+                            class=" text-center col-8 p-2 rounded-3"
+                            style="background-color: #eab3a0d5;"
                             id="description"
                             placeholder="JarDescription"></textarea>
+                            @error('description')
+                                <div class="text-danger mt-2">{{ $message }}</div>
+                            @enderror
                         </div>
 
                         <div class="row">
@@ -89,11 +102,13 @@ new class extends Component
                             <input
                                 wire:model="picture"
                                 type="file"
-                                name="picture"
                                 id="picture"
                                 accept="image/*"
                                 class="col-8"
                             >
+                            @error('picture')
+                                <div class="text-danger mt-2">{{ $message }}</div>
+                            @enderror
                         </div>
 
                         <div class="row justify-content-center align-items-stretch">
@@ -105,13 +120,14 @@ new class extends Component
                                     class="w-100 h-100 rounded-5"
                                     style="object-fit: cover;"
                                 >
-                                @endif
+                                @else
                                 <img 
                                     src="https://i.ibb.co/2YvZypwJ/Jar-Quest-Placeholder.png"
                                     alt="Jar picture"
                                     class="w-100 h-100 rounded-5"
                                     style="object-fit: cover;"
                                 >
+                                @endif
                             </div>
                         </div>
 
@@ -136,11 +152,3 @@ new class extends Component
 </div>
 
 
-    <div class="form-container">
-        
-            
-            
-            
-        
-        
-    </div>

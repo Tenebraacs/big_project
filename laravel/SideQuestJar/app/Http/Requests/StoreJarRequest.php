@@ -37,7 +37,7 @@ class StoreJarRequest extends FormRequest
                 }),
             ],
             'description' => ['nullable', 'string'],
-            'picture' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'picture' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
         ];
     }
 }
