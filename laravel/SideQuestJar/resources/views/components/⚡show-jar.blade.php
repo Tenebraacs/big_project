@@ -22,9 +22,9 @@ new class extends Component
 
     public function mount(Jar $jar, ?int $quest = null)
     {
-        $this->jar = $jar;
+        $this->jar = $jar->load('users');
         $this->quest = $quest;
-        $this->quests = $jar->quests->values();
+        $this->quests = $this->jar->quests->values();
 
         if(auth()->check()) {
             $this->liked = $this->jar->likes()->where('user_id', auth()->id())->exists(); //when the page loads check if the logged-in user already liked this jar
@@ -141,7 +141,7 @@ new class extends Component
             auth()->id() => ['streak' => 0]
         ]);
 
-        $this->jar = $this->jar->fresh();
+        $this->jar = $this->jar->fresh()->load('users');
         $this->joined = true;
     }
 
@@ -153,7 +153,7 @@ new class extends Component
 
         $this->jar->users()->detach(auth()->id());
 
-        $this->jar = $this->jar->fresh();
+        $this->jar = $this->jar->fresh()->load('users');
         $this->joined = false;
     }
 
@@ -182,13 +182,12 @@ new class extends Component
 
         $questToDelete->delete();
 
-
-        $this->jar = $this->jar->fresh();
+        $this->jar = $this->jar->fresh()->load('users');
         $this->quests = $this->jar->quests()->orderBy('id')->get()->values();
 
         $this->confirmingDeleteQuest = false;
 
-        if ($this->quests->isEmpty()){
+        if ($this->quests->isEmpty()) {
             $this->currentIndex = 0;
             $this->quest = null;
 
@@ -228,10 +227,53 @@ new class extends Component
 ?>
 
 <div class="container-fluid">
-    <div class="row align-items-end justify-content-end">
-        <div class="col-12 col-md-8 col-lg-6 col-xl-4">
-            <div class="card text-center bg-block-blue rounded-5 h-100 d-flex flex-column">
+    <div class="row align-items-start justify-content-center g-3">
 
+        <!-- LEFT: MEMBERS -->
+        <div class="col-12 col-lg-3 order-2 order-lg-1">
+            <div class="card bg-block-blue rounded-5 h-100">
+                <div class="card-header border-0 text-center">
+                    <h3 class="jar-name fs-3 fw-bold mb-1">Members</h3>
+                    <p class="mb-0">{{ $this->jar->users->count() }} joined</p>
+                </div>
+
+                <div class="card-body overflow-auto" style="max-height: 70vh;">
+                    @if ($this->jar->users->isNotEmpty())
+                        <div class="d-flex flex-column gap-2">
+                            @foreach ($this->jar->users->sortByDesc(fn($user) => $user->pivot->steak ?? 0) as $user)
+                                <div class="rounded-4 px-3 py-2" style="background-color: #EAB2A0;">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="fw-bold text-dark">{{ $user->username }}</span>
+
+                                        <div class="d-flex gap-1">
+                                            @if ($user->id === $this->jar->created_by)
+                                                <span class="badge text-bg-dark">Owner</span>
+                                            @endif
+
+                                            @auth
+                                                @if ($user->id === auth()->id())
+                                                    <span class="badge text-bg-primary">You</span>
+                                                @endif
+                                            @endauth
+                                        </div>
+                                    </div>
+
+                                    <div class="small text-muted">
+                                        Streak: {{ $user->pivot->streak ?? 0 }}
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <p class="text-center mb-0">No members yet.</p>
+                    @endif
+                </div>
+            </div>
+        </div>
+
+        <!-- CENTER: MAIN JAR / QUEST -->
+        <div class="col-12 col-lg-6 order-1 order-lg-2">
+            <div class="card text-center bg-block-blue rounded-5 h-100 d-flex flex-column">
 
                 <div class="card-header border-0">
                     @if ($this->jar)
@@ -251,7 +293,9 @@ new class extends Component
                         </div>
 
                         @if($this->jar->description)
-                            <h2 class="jar-name fs-2 overflow-auto scrolling-bar" style="max-height: 20vh;">{{ $this->jar->description }}</h2>
+                            <h2 class="jar-name fs-2 overflow-auto scrolling-bar" style="max-height: 20vh;">
+                                {{ $this->jar->description }}
+                            </h2>
                         @else
                             <h2 class="jar-name fs-2">No current description found</h2>
                         @endif
@@ -267,7 +311,9 @@ new class extends Component
                                 <h3 class="quest-name fs-2">{{ $this->currentQuest->title }}</h3>
 
                                 @if ($this->currentQuest->description)
-                                    <p class="fs-5 quest-name overflow-auto scrolling-bar" style="max-height: 20vh">{{ $this->currentQuest->description }}</p>
+                                    <p class="fs-5 quest-name overflow-auto scrolling-bar" style="max-height: 20vh">
+                                        {{ $this->currentQuest->description }}
+                                    </p>
                                 @else
                                     <p class="fs-5 quest-name">No description yet so just figure it out</p>
                                 @endif
@@ -315,14 +361,18 @@ new class extends Component
                     <div class="card-footer p-0 border-0">
                         @if($this->jar->created_by === auth()->id() || auth()->user()->is_admin)
 
-                            <a href="{{ route('jars.quests.create', ['jar' => $this->jar->id]) }}"
-                               class="btn fw-medium pink-button rounded-pill w-50 fs-3 p-0 m-1">
+                            <a
+                                href="{{ route('jars.quests.create', ['jar' => $this->jar->id]) }}"
+                                class="btn fw-medium pink-button rounded-pill w-50 fs-3 p-0 m-1"
+                            >
                                 Add New Quest
                             </a>
 
                             @if($this->currentQuest && $this->jar->quests->isNotEmpty())
-                                <a href="{{ route('jars.quests.edit', ['jar' => $this->jar->id, 'jarQuest' => $this->currentQuest->id]) }}"
-                                   class="btn fw-medium pink-button rounded-pill w-50 fs-3 p-0 m-1">
+                                <a
+                                    href="{{ route('jars.quests.edit', ['jar' => $this->jar->id, 'jarQuest' => $this->currentQuest->id]) }}"
+                                    class="btn fw-medium pink-button rounded-pill w-50 fs-3 p-0 m-1"
+                                >
                                     Edit Current Quest
                                 </a>
                             @endif
@@ -337,7 +387,7 @@ new class extends Component
                                 </button>
                             @endif
                         @else
-                            @if ($this->joined)                               
+                            @if ($this->joined)
                                 <button
                                     type="button"
                                     wire:click="leaveJar"
@@ -352,48 +402,70 @@ new class extends Component
                                     class="btn fw-medium pink-button rounded-pill w-50 fs-3 p-0 m-1"
                                 >
                                     Join Jar
-                                </button> 
+                                </button>
                             @endif
                         @endif
                     </div>
                 @endauth
             </div>
         </div>
-        
-        <div class="col-12 col-md-4">
-            @auth 
-            @if ($this->jar && ($this->jar->created_by === auth()->id() || auth()->user()->is_admin))
-            
-            
-            <div class="card m-2 text-center justify-content-center bg-block-blue h-25 w-100 w-md-75 rounded-5 d-flex flex-column alignt-items-center ms-auto justify-content-end">
-            
-                @if( $this->jar && ($this->jar->created_by === auth()->id() || auth()->user()->is_admin))
-                    <a class="btn pink-button rounded-pill m-2 w-75 fs-3 p-0 fw-medium mx-auto" href="{{  route("jars.edit", $this->jar) }}">Edit Jar</a>
+
+        <!-- RIGHT: PREVIEW / ADMIN -->
+        <div class="col-12 col-lg-3 order-3">
+            @auth
+                @if ($this->jar && ($this->jar->created_by === auth()->id() || auth()->user()->is_admin))
+                    <div class="card bg-block-blue rounded-5 h-100 text-center">
+
+                        <div class="card-header border-0 text-center">
+                            <h5 class="fw-bold jar-name fs-3 text-truncate mt-2">
+                                {{ $this->jar->name }}
+                            </h5>
+                        </div>
+
+                        <div class="card-body text-center">
+                            @if ($this->jar->picture_url)
+                                <img
+                                    src="{{ $this->jar->picture_url }}"
+                                    alt="{{ $this->jar->name }}"
+                                    class="img-fluid rounded-4"
+                                    style="aspect-ratio: 1/1; object-fit: cover; width: 100%;"
+                                >
+                            @else
+                                <p>No image found.</p>
+                            @endif
+                        </div>
+
+                        <div class="card-footer border-0 d-flex flex-column align-items-center gap-2 pb-3">
+
+                            <a
+                                href="{{ route('jars.edit', $this->jar) }}"
+                                class="btn fw-medium pink-button rounded-pill w-75 fs-5 p-0"
+                            >
+                                Edit Jar
+                            </a>
+
+                            <button
+                                type="button"
+                                wire:click="confirmDeleteJar"
+                                class="w-75 border-0 btn btn-outline-danger rounded-pill fs-5 p-0"
+                            >
+                                Delete Jar
+                            </button>
+                        </div>
+
+                    </div>
                 @endif
-                
-                @if ($this->jar->created_by === auth()->id() || auth()->user()->is_admin)
-                    
-                    <button
-                        type="button" 
-                        wire:click="confirmDeleteJar"
-                        class="w-50 border-0 btn btn-outline-danger rounded-pill fs-4 p-0 m-2"
-                    >
-                        Delete Jar
-                    </button>
-                    
-                @endif
-           
-            
-            </div>
-            @endif
             @endauth
         </div>
-         
+
     </div>
+
     <div>
         @if ($this->confirmingDeleteQuest)
-            <div class="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center"
-                style="background: rgba(0,0,0,0.5); z-index: 9999;">
+            <div
+                class="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center"
+                style="background: rgba(0,0,0,0.5); z-index: 9999;"
+            >
                 <div class="card bg-block-blue rounded-5 p-4 text-center" style="width: min(90vw, 420px);">
                     <h3 class="jar-name fs-3 mb-3">Delete quest?</h3>
                     <p class="mb-4">Are you sure you want to delete this quest?</p>
@@ -420,8 +492,10 @@ new class extends Component
         @endif
 
         @if ($this->confirmingDeleteJar)
-            <div class="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center"
-                style="background: rgba(0,0,0,0.5); z-index: 9999;">
+            <div
+                class="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center"
+                style="background: rgba(0,0,0,0.5); z-index: 9999;"
+            >
                 <div class="card bg-block-blue rounded-5 p-4 text-center" style="width: min(90vw, 420px);">
                     <h3 class="jar-name fs-3 mb-3">Delete jar?</h3>
                     <p class="mb-4">This will delete the whole jar. Are you sure?</p>

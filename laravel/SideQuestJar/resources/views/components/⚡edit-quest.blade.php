@@ -3,6 +3,7 @@
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\Storage;
 use App\Models\Jar;
 use App\Models\JarQuest;
 
@@ -23,7 +24,7 @@ new class extends Component
         abort_if($jarQuest->jar_id !== $jar->id, 404);
 
         $this->jar = $jar;
-        $this->jarQuest;
+        $this->jarQuest = $jarQuest;
 
         $this->title = $jarQuest->title ?? '';
         $this->description = $jarQuest->description ?? '';
@@ -31,11 +32,12 @@ new class extends Component
 
     public function save()
     {
+        
+
+        abort_if($this->jarQuest->jar_id !== $this->jar->id, 404);
+
         $this->authorize('update', $this->jar);
 
-        if($this->jarQuest->jar_id !== $this->jar->id) {
-            abort(404);
-        }
 
         $validated = $this->validate([
             'title' => ['required', 'string', 'max:255'],
@@ -43,16 +45,23 @@ new class extends Component
             'picture' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
         ]);
 
+        unset($validated['picture']);
+
         if ($this->picture) {
+
+            if ($this->jarQuest->picture && Storage::disk('public')->exists($this->jarQuest->picture)){
+                Storage::disk('public')->delete($this->jarQuest->picture);
+            }
+
             $validated['picture'] = $this->picture->store('quests', 'public');
         }
+            
+        
 
         $this->jarQuest->update($validated);
 
-        return redirect()->route('jars.show', [
-            'jar' => $this->jar->id,
-            'quest' => $this->jarQuest->id,
-        ])->with('success', 'Quest updated successfully');
+        return redirect()->route('jars.show', $this->jar->id)
+            ->with('success', 'Quest updated successfully');
     }
 };
 ?>

@@ -26,65 +26,169 @@
     <div id="app" class=" d-flex flex-column min-vh-100">
         <nav class="navbar-base navbar navbar-expand-md navbar-light">
             <div class="container-fluid">
-                <a class="navbar-brand logo-second fs-3" style="text-shadow: 0px 3px black; color: #EAB2A0;" href="{{ url('/') }}">
-                    {{ config('app.name', 'SideQuestJar') }}
-                </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                
+                @auth
+                    @php
+                        $streak = Auth::user()->streak ?? 0;
+                        $completedDays = min($streak, 7);
+                    @endphp
+                @endauth
 
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    
+                <!-- Top row -->
+                <div class="nav-top w-100 d-flex align-items-center justify-content-between">
+                    <a class="navbar-brand logo-second fs-3 mb-0"
+                    style="text-shadow: 0px 3px black; color: #EAB2A0;"
+                    href="{{ url('/') }}">
+                        {{ config('app.name', 'SideQuestJar') }}
+                    </a>
 
-                    <ul class="navbar-nav me-auto">
+                    <button class="navbar-toggler" type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#navbarSupportedContent"
+                            aria-controls="navbarSupportedContent"
+                            aria-expanded="false"
+                            aria-label="{{ __('Toggle navigation') }}">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                </div>
+
+                <!-- Collapsible content -->
+                <div class="collapse navbar-collapse mt-3 mt-md-0" id="navbarSupportedContent">
+                    <div class="nav-inner w-100">
+
                         @auth
-                            
-                            <li class="nav-item pink-button rounded-pill">
-                                    <a class="nav-link" href="{{  route("jars.create") }}">Create Jar</a>
-                            </li>
-                            
-                            
+                            @php
+                                $todayIndex = now()->dayOfWeekIso - 1;
+                                $todayDone = $todayIndex < $completedDays;
+                                $todayLetter = ['M', 'T', 'W', 'T', 'F', 'S', 'S'][$todayIndex];
+                            @endphp
+
+                            <div class="mobile-menu-streak d-md-none">
+                                <div class="mobile-streak-pill rounded-pill">
+                                    <div class="mobile-today-indicator">
+                                        <span class="mobile-streak-dot {{ $todayDone ? 'filled' : '' }}"></span>
+                                        <span class="mobile-today-label">Today ({{ $todayLetter }})</span>
+                                    </div>
+
+                                    <div class="mobile-streak-count">
+                                        <i class="bi bi-fire"></i>
+                                        <span class="mobile-streak-number">{{ $streak }}</span>
+                                        <span class="mobile-streak-label">day streak</span>
+                                    </div>
+                                </div>
+                            </div>
                         @endauth
 
-                    </ul>
+                        <!-- Left -->
+                        <div class="nav-left">
+                        </div>
 
+                        <!-- Center desktop only -->
+                        <div class="nav-center d-none d-md-flex">
+                            @auth
+                                <div class="streak-pill px-4 py-3 rounded-pill">
+                                    <div class="streak-week">
+                                        @foreach (['M','T','W','T','F','S','S'] as $index => $day)
+                                            <div class="streak-day">
+                                                <span class="streak-dot {{ $index < $completedDays ? 'filled' : '' }}"></span>
+                                                <small>{{ $day }}</small>
+                                            </div>
+                                        @endforeach
+                                    </div>
 
-                    <!-- Right Side Of Navbar -->
-                    <ul class="navbar-nav ms-auto">
-                        <!-- Authentication Links -->
-                        @guest
-                            @if (Route::has('login'))
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
-                                </li>
-                            @endif
+                                    <div class="streak-divider"></div>
 
-                            @if (Route::has('register'))
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
-                                </li>
-                            @endif
-                        @else
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown"> {{ Auth::user()->username }} </a>
-
-                                <div class="dropdown-menu dropdown-menu-end">
-                                    <a class="dropdown-item" href="{{ route('user') }}">
-                                        {{ __('User') }}
-                                    </a>
-
-                                    <form action="{{ route('logout') }}" method="POST">
-                                        @csrf
-                                        <button type="submit" class="dropdown-item">
-                                            Logout
-                                        </button>
-                                    </form>
+                                    <div class="streak-count">
+                                        <i class="bi bi-fire"></i>
+                                        <span class="streak-number">{{ $streak }}</span>
+                                        <span class="streak-label">day streak</span>
+                                    </div>
                                 </div>
+                            @endauth
+                        </div>
 
-                            </li>
-                        @endguest
-                    </ul>
+                        <!-- Right -->
+                        <div class="nav-right">
+                            <ul class="navbar-nav">
+                                @guest
+                                    @if (Route::has('login'))
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
+                                        </li>
+                                    @endif
+
+                                    @if (Route::has('register'))
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
+                                        </li>
+                                    @endif
+                                @else
+                                    <li class="nav-item dropdown user-dropdown">
+                                        <a class="nav-link dropdown-toggle user-dropdown-toggle d-flex align-items-center gap-2"
+                                        href="#"
+                                        role="button"
+                                        data-bs-toggle="dropdown"
+                                        aria-expanded="false">
+                                            
+                                            <span class="user-avatar">
+                                                @if (!empty(Auth::user()->profile_picture))
+                                                    <img src="{{ asset('storage/' . Auth::user()->profile_picture) }}" alt="{{ Auth::user()->username }}">
+                                                @else
+                                                    <span class="user-avatar-fallback">
+                                                        {{ strtoupper(substr(Auth::user()->username, 0, 1)) }}
+                                                    </span>
+                                                @endif
+                                            </span>
+
+                                            <span class="user-name">{{ Auth::user()->username }}</span>
+                                        </a>
+
+                                        <div class="dropdown-menu dropdown-menu-end user-dropdown-menu">
+                                            <div class="user-dropdown-header">
+                                                <div class="user-dropdown-avatar">
+                                                    @if (!empty(Auth::user()->profile_picture))
+                                                        <img src="{{ asset('storage/' . Auth::user()->profile_picture) }}" alt="{{ Auth::user()->username }}">
+                                                    @else
+                                                        <span class="user-avatar-fallback">
+                                                            {{ strtoupper(substr(Auth::user()->username, 0, 1)) }}
+                                                        </span>
+                                                    @endif
+                                                </div>
+                                                <div class="user-dropdown-info">
+                                                    <div class="user-dropdown-name">{{ Auth::user()->username }}</div>
+                                                    @if (!empty(Auth::user()->email))
+                                                        <div class="user-dropdown-email">{{ Auth::user()->email }}</div>
+                                                    @endif
+                                                </div>
+                                            </div>
+
+                                            <div class="dropdown-divider"></div>
+
+                                            <a class="dropdown-item user-dropdown-item" href="{{ route('user') }}">
+                                                <i class="bi bi-person-circle me-2"></i>
+                                                Profile
+                                            </a>
+
+                                            <a class="dropdown-item user-dropdown-item" href="{{ route('jars.create') }}">
+                                                <i class="bi bi-plus-circle me-2"></i>
+                                                Create Jar
+                                            </a>
+
+                                            <div class="dropdown-divider"></div>
+
+                                            <form action="{{ route('logout') }}" method="POST">
+                                                @csrf
+                                                <button type="submit" class="dropdown-item user-dropdown-item user-dropdown-logout">
+                                                    <i class="bi bi-box-arrow-right me-2"></i>
+                                                    Logout
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </li>
+                                @endguest
+                            </ul>
+                        </div>
+
+                    </div>
                 </div>
             </div>
         </nav>

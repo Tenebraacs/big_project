@@ -3,6 +3,7 @@
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\Storage;
 use App\Models\Jar;
 
 new class extends Component
@@ -31,7 +32,14 @@ new class extends Component
             'picture' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
         ]);
 
+        unset($validated['picture']);
+
         if ($this->picture) {
+
+            if ($this->jar->picture && Storage::disk('public')->exists($this->jar->picture)){
+                Storage::disk('public')->delete($this->jar->picture);
+            }
+
             $validated['picture'] = $this->picture->store('jars', 'public');
         }
 

@@ -33,18 +33,20 @@ class JarController extends Controller
 
         //1 Ordered by number of users
         $mostPopularJars = (clone $baseQuery)
+            ->with('user')
             ->withCount('users')
             ->orderByDesc('users_count')
             ->get();
         //2 Ordered by likes
         $mostLikedJars = (clone $baseQuery)
+            ->with('user')
             ->withCount('likes')
             ->orderByDesc('likes_count')
             ->get();
 
         //3 Jars created by the logged-in user
         $myJars = auth()->check()
-            ? (clone $baseQuery)->where('created_by', auth()->id())->get()
+            ? (clone $baseQuery)->with('user')->where('created_by', auth()->id())->get()
             : collect();
         
         return view('home', compact(
