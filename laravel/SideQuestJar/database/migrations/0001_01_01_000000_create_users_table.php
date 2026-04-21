@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('fullname');
             $table->string('email')->unique();
             $table->string('password');
-            $table->string("profile_picture")->default(""); //"https://i.ibb.co/Ngk3xx10/Godly-Pfp.png" Zoli kep
+            $table->string("profile_picture")->default("https://i.ibb.co/Ngk3xx10/Godly-Pfp.png"); //"https://i.ibb.co/Ngk3xx10/Godly-Pfp.png" Zoli kep
             $table->date("birth_date");
             // TODO: Ennek nem sok értelme van, a created_at lényegében ugyan az, de beszéljük meg
             $table->dateTime("joined_date")->nullable(); //Kerdes hogy hasznaljuk e????

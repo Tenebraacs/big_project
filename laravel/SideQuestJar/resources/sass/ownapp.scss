@@ -171,3 +171,39 @@
     background-color: #A76F6F;
     border: solid 3px #435B66;
 }
+
+.profile-label{
+    color: #A76F6F;
+    text-shadow: 0px 2px black;
+    font-weight: bold;
+    font-family: "Fredoka", sans-serif;
+}
+
+.edit-button{
+    background-color: #A76F6F;
+    color: black;
+    font-family: "Fredoka", sans-serif;
+    border: solid 1px #A76F6F;
+}
+
+.edit-button:hover{
+    background-color: #435B66;
+    border: solid 1px #435B66;
+}
+
+.triangle-level{
+    width: 0;
+	height: 0;
+    border-left: 25px solid transparent;
+	border-right: 25px solid transparent;
+	border-top: 50px solid #A76F6F;
+}
+
+.parallelogram {
+	transform: skew(-20deg);
+	background-color: #A76F6F;
+}
+
+.parallelogram:hover{
+    background-color: #7D5252;
+}
