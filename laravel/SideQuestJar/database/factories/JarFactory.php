@@ -24,7 +24,6 @@ class JarFactory extends Factory
             "name" => fake()->name(),
             "description" => fake()->randomElement($descriptions),   
             "type" => fake()->randomElement($types),
-            "likes" => fake()->numberBetween(20,1000),
             "created_by" => User::inRandomOrder()->value('id')
         ];
     }

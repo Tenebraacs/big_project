@@ -23,7 +23,6 @@ class JarQuestSeeder extends Seeder
             "title" => "Hug a tree",
             "picture" => "https://i.ibb.co/JjJczBgX/Hug-ATree.png",
             "description" => "Go outside and hug a tree",
-            "likes" => 222
         ]);
 
         JarQuest::create([
@@ -31,7 +30,6 @@ class JarQuestSeeder extends Seeder
             "title" => "RopeAJump",
             "picture" => "https://i.ibb.co/wN9GKctB/Rope-AJump.png",
             "description" => "Go outside and rope a jump",
-            "likes" => 22
         ]);
 
         JarQuest::factory(100)->create();

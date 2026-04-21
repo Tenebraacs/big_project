@@ -17,7 +17,6 @@ return new class extends Migration
             $table->string("title");
             $table->longText("description")->nullable();
             $table->string("picture")->default("https://i.ibb.co/2YvZypwJ/Jar-Quest-Placeholder.png");
-            $table->integer("likes")->default(0);
             $table->integer("completions")->default(0);
             $table->integer("xp_gain")->nullable(); //Todo ha lesz ra ido 
             $table->foreignId("created_by")->nullable()->constrained('users','id');

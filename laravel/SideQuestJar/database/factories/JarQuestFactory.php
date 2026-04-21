@@ -25,7 +25,6 @@ class JarQuestFactory extends Factory
             "title" => fake()->unique()->jobTitle(),
             "description" => fake()->text(),
             "picture" => fake()->randomElement($pictures),
-            "likes" => fake()->numberBetween(20,1000),
             "created_by" => User::inRandomOrder()->value('id')
         ];
     }

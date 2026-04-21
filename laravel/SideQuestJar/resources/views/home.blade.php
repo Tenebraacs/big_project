@@ -44,7 +44,38 @@
         </div>
     </div>
 
-    <livewire:jar-carousel :jars="$jars" />
+    <div class="container-fluid mt-5">
+
+        <div class="mb-5">
+
+            <livewire:jar-carousel 
+                :jars="$mostPopularJars"
+                title="Most Popular Jars"
+                wire:key="popular-jars-carousel" 
+            />
+        </div>
+
+        <div class="mb-5">
+            
+            <livewire:jar-carousel 
+                :jars="$mostLikedJars"
+                title="Most Liked Jars"
+                wire:key="liked-jars-carousel" 
+            />
+        </div>
+        @auth
+        <div class="mb-5">
+        
+        <livewire:jar-carousel 
+            :jars="$myJars"
+            title="My Jars"
+            wire:key="my-jars-carousel" 
+        />
+        </div>
+        @endauth
+        
+    </div>
+    
 
 </div>
 @endsection

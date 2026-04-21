@@ -58,7 +58,7 @@ class Jar extends Model
         return $this->morphMany(Like::class, 'likeable');
     }
 
-    public function jar_user(){
+    public function jarUser(){
         return $this->hasMany(JarUser::class);
     }
 

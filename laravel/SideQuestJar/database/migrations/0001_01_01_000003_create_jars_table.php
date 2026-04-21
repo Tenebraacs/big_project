@@ -17,7 +17,6 @@ return new class extends Migration
             $table->id();
             $table->string("name");   
             $table->longText("description")->nullable();       
-            $table->integer("likes")->default(0);
             $table->enum("type", ["public_jar", "private_jar", "friends_only_jar", "invite_only_jar", "official_jar"])->default("public_jar");
             $table->foreignId("created_by")->nullable()->constrained('users','id');
             $table->string("picture")->default("https://i.ibb.co/2YvZypwJ/Jar-Quest-Placeholder.png");

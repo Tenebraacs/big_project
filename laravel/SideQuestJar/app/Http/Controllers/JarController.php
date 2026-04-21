@@ -25,12 +25,36 @@ class JarController extends Controller
     public function home(){
         //Lekeri az elso type == official_jar adatait
         $mainJar = Jar::where('type', 'official_jar')->where('name', "Today's Adventure")->first();
-        $mainQuest = $mainJar->quests()->inRandomOrder()->first(); //Napi valtozas a questben
 
-        $jars = Jar::whereNot('type', 'official_jar')->get();
 
+        $mainQuest = $mainJar?->quests()->inRandomOrder()->first(); //Napi valtozas a questben megkene irni
+
+        $baseQuery = Jar::where('type', '!=', 'official_jar');
+
+        //1 Ordered by number of users
+        $mostPopularJars = (clone $baseQuery)
+            ->withCount('users')
+            ->orderByDesc('users_count')
+            ->get();
+        //2 Ordered by likes
+        $mostLikedJars = (clone $baseQuery)
+            ->withCount('likes')
+            ->orderByDesc('likes_count')
+            ->get();
+
+        //3 Jars created by the logged-in user
+        $myJars = auth()->check()
+            ? (clone $baseQuery)->where('created_by', auth()->id())->get()
+            : collect();
         
-        return view('home', compact('mainJar', 'mainQuest', 'jars'));
+        return view('home', compact(
+            'mainJar', 
+            'mainQuest', 
+            'mostPopularJars',
+            'mostLikedJars',
+            'myJars' 
+            
+        ));
     }
 
     

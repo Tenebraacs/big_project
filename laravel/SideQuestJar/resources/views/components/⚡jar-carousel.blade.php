@@ -5,48 +5,73 @@ use Livewire\Component;
 new class extends Component
 {
     public $jars = [];
+    public string $title = '';
     public int $start = 0;
 
-    public function mount($jars)
+    public function mount($jars, $title = '')
     {
         $this->jars = $jars;
+        $this->title = $title;
+    }
+
+    public function getCanSlideProperty()
+    {
+        return count($this->jars) > 4;
     }
 
     public function next()
     {
-        $count = count($this->jars);
-        if ($count === 0) return;
+        if(!$this->canSlide) return;
 
+
+        $count = count($this->jars);
         $this->start = ($this->start + 1) % $count;
     }
 
     public function previous()
     {
-        $count = count($this->jars);
-        if ($count === 0) return;
+        if(!$this->canSlide) return;
 
+        $count = count($this->jars);
         $this->start = ($this->start - 1 + $count) % $count;
     }
 
     public function getVisibleJarsProperty()
     {
         $count = count($this->jars);
-        if ($count === 0) return collect();
 
-        return collect(range(0, 3))
+        if ($count === 0) {
+            return collect();
+        }
+
+        $visibleCount = min(4, $count);
+
+        return collect(range(0, $visibleCount - 1))
             ->map(fn($i) => $this->jars[($this->start + $i) % $count]);
     }
 }
 ?>
 
 <div class="container-fluid">
+
+    @if ($title)
+        <div class="row mb-3">
+            <div class="col-12 text-center">
+                <h2 class="fw-bold welcome-text">{{ $title }}</h2>
+            </div>
+        </div>
+    @endif
+
+
     <div class="row align-items-stretch">
 
         <!-- Previous button -->
         <div class="col-1 d-flex justify-content-center align-items-center">
             <button wire:click="previous"
                 class="btn blue-button rounded-circle fw-bold"
-                style="color: #EAB2A0; background-color: #2D4356;">
+                style="color: #EAB2A0; background-color: #2D4356;"
+                @if(!$this->canSlide) disabled style="opacity: 0.4; cursor: not-allowed;" @endif  
+            >
                 ❮
             </button>
         </div>
@@ -89,7 +114,9 @@ new class extends Component
         <div class="col-1 d-flex justify-content-center align-items-center">
             <button wire:click="next"
                 class="btn blue-button rounded-circle fw-bold"
-                style="color: #EAB2A0; background-color: #2D4356;">
+                style="color: #EAB2A0; background-color: #2D4356;"
+                @if(!$this->canSlide) disabled style="opacity: 0.4; cursor: not-allowed;" @endif  
+            >
                 ❯
             </button>
         </div>

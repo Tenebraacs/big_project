@@ -19,7 +19,6 @@ class JarSeeder extends Seeder
         
         Jar::create([
             "name" => "Today's Adventure",
-            "likes" => 333,
             "type" => "official_jar",
             "created_by" => $zoli->id
         ]);
