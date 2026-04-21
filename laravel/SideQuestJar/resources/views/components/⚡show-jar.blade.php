@@ -17,6 +17,7 @@ new class extends Component
     public bool $liked = false;
     public bool $confirmingDeleteQuest = false;
     public bool $confirmingDeleteJar = false;
+    public bool $joined = false;
 
 
     public function mount(Jar $jar, ?int $quest = null)
@@ -27,6 +28,7 @@ new class extends Component
 
         if(auth()->check()) {
             $this->liked = $this->jar->likes()->where('user_id', auth()->id())->exists(); //when the page loads check if the logged-in user already liked this jar
+            $this->joined = $this->jar->users()->where('user_id', auth()->id())->exists();
         }
 
         if ($this->quests->isEmpty()) {
@@ -128,6 +130,33 @@ new class extends Component
         
         $this->liked = true;
     }
+
+    public function joinJar()
+    {
+        if(! auth()->check() || $this->joined) {
+            return;
+        }
+
+        $this->jar->users()->syncWithoutDetaching([
+            auth()->id() => ['streak' => 0]
+        ]);
+
+        $this->jar = $this->jar->fresh();
+        $this->joined = true;
+    }
+
+    public function leaveJar()
+    {
+        if(! auth()->check() || ! $this->joined){
+            return;
+        }
+
+        $this->jar->users()->detach(auth()->id());
+
+        $this->jar = $this->jar->fresh();
+        $this->joined = false;
+    }
+
 
     public function deleteJar(){
         $this->authorize('delete', $this->jar);
@@ -308,21 +337,22 @@ new class extends Component
                                 </button>
                             @endif
                         @else
-                            @if ($this->jar->users()->where('user_id', auth()->id())->exists())
-                                <form action="{{ route('jars.leave', $this->jar) }}" method="POST" class="w-100">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn fw-medium pink-button rounded-pill w-50 fs-3 p-0 m-1">
-                                        Leave Jar
-                                    </button>
-                                </form>
+                            @if ($this->joined)                               
+                                <button
+                                    type="button"
+                                    wire:click="leaveJar"
+                                    class="btn fw-medium pink-button rounded-pill w-50 fs-3 p-0 m-1"
+                                >
+                                    Leave Jar
+                                </button>
                             @else
-                                <form action="{{ route('jars.join', $this->jar) }}" method="POST" class="w-100">
-                                    @csrf
-                                    <button type="submit" class="btn fw-medium pink-button rounded-pill w-50 fs-3 p-0 m-1">
-                                        Join Jar
-                                    </button>
-                                </form>
+                                <button
+                                    type="button"
+                                    wire:click="joinJar"
+                                    class="btn fw-medium pink-button rounded-pill w-50 fs-3 p-0 m-1"
+                                >
+                                    Join Jar
+                                </button> 
                             @endif
                         @endif
                     </div>
@@ -332,12 +362,12 @@ new class extends Component
         
         <div class="col-12 col-md-4">
             @auth 
-            @if ($this->jar && ($jar->created_by === auth()->id() || auth()->user()->is_admin))
+            @if ($this->jar && ($this->jar->created_by === auth()->id() || auth()->user()->is_admin))
             
             
             <div class="card m-2 text-center justify-content-center bg-block-blue h-25 w-100 w-md-75 rounded-5 d-flex flex-column alignt-items-center ms-auto justify-content-end">
             
-                @if( $this->jar && ($jar->created_by === auth()->id() || auth()->user()->is_admin))
+                @if( $this->jar && ($this->jar->created_by === auth()->id() || auth()->user()->is_admin))
                     <a class="btn pink-button rounded-pill m-2 w-75 fs-3 p-0 fw-medium mx-auto" href="{{  route("jars.edit", $this->jar) }}">Edit Jar</a>
                 @endif
                 
@@ -360,7 +390,7 @@ new class extends Component
         </div>
          
     </div>
-    <div x-data>
+    <div>
         @if ($this->confirmingDeleteQuest)
             <div class="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center"
                 style="background: rgba(0,0,0,0.5); z-index: 9999;">
