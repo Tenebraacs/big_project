@@ -13,13 +13,20 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('jars', function (Blueprint $table) {
-            //Korlatozas kell mint a kave shopnal lehessen (amerikai expresso es olasz expresso) name es created_by alapjan chekkol
             $table->id();
-            $table->string("name");   
-            $table->longText("description")->nullable();       
-            $table->enum("type", ["public_jar", "private_jar", "friends_only_jar", "invite_only_jar", "official_jar"])->default("public_jar");
-            $table->foreignId("created_by")->nullable()->constrained('users','id');
+            $table->string("name");
+            $table->longText("description")->nullable();
+            $table->enum("type", [
+                "public_jar",
+                "private_jar",
+                "friends_only_jar",
+                "invite_only_jar",
+                "official_jar"
+            ])->default("public_jar");
+
+            $table->foreignId("created_by")->nullable()->constrained('users', 'id');
             $table->string("picture")->default("https://i.ibb.co/2YvZypwJ/Jar-Quest-Placeholder.png");
+
             $table->timestamps();
             $table->softDeletes();
         });

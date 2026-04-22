@@ -21,41 +21,75 @@ class JarController extends Controller
         return view("jars.index", ["jars" => $jars]);
         */
     }
+    protected function getOrCreateDailyQuest(Jar $jar)
+    {
+        $today = now()->toDateString();
 
-    public function home(){
-        //Lekeri az elso type == official_jar adatait
-        $mainJar = Jar::where('type', 'official_jar')->where('name', "Today's Adventure")->first();
+        if (
+            $jar->current_daily_quest_id &&
+            $jar->current_daily_quest_date &&
+            $jar->current_daily_quest_date->toDateString() === $today
+        ) {
+            return $jar->currentDailyQuest;
+        }
 
+        $lastQuestId = $jar->current_daily_quest_id;
 
-        $mainQuest = $mainJar?->quests()->inRandomOrder()->first(); //Napi valtozas a questben megkene irni
+        $questQuery = $jar->quests();
+
+        if ($lastQuestId && $jar->quests()->count() > 1) {
+            $questQuery->where('id', '!=', $lastQuestId);
+        }
+
+        $selectedQuest = $questQuery->inRandomOrder()->first();
+
+        if (!$selectedQuest) {
+            return null;
+        }
+
+        $jar->update([
+            'previous_daily_quest_id' => $lastQuestId,
+            'current_daily_quest_id' => $selectedQuest->id,
+            'current_daily_quest_date' => $today,
+        ]);
+
+        $jar->refresh();
+
+        return $jar->currentDailyQuest;
+    }
+
+    public function home()
+    {
+        $mainJar = Jar::where('type', 'official_jar')
+            ->where('name', "Today's Adventure")
+            ->first();
+
+        $mainQuest = $mainJar ? $this->getOrCreateDailyQuest($mainJar) : null;
 
         $baseQuery = Jar::where('type', '!=', 'official_jar');
 
-        //1 Ordered by number of users
         $mostPopularJars = (clone $baseQuery)
             ->with('user')
             ->withCount('users')
             ->orderByDesc('users_count')
             ->get();
-        //2 Ordered by likes
+
         $mostLikedJars = (clone $baseQuery)
             ->with('user')
             ->withCount('likes')
             ->orderByDesc('likes_count')
             ->get();
 
-        //3 Jars created by the logged-in user
         $myJars = auth()->check()
             ? (clone $baseQuery)->with('user')->where('created_by', auth()->id())->get()
             : collect();
-        
+
         return view('home', compact(
-            'mainJar', 
-            'mainQuest', 
+            'mainJar',
+            'mainQuest',
             'mostPopularJars',
             'mostLikedJars',
-            'myJars' 
-            
+            'myJars'
         ));
     }
 

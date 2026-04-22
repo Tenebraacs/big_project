@@ -9,53 +9,48 @@ use Illuminate\Support\Str;
 
 class JarQuest extends Model
 {
-    /** @use HasFactory<\Database\Factories\JarQuestFactory> */
-    use HasFactory;
-    use SoftDeletes;
-
-
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        
         'title',
         'picture',
         'description',
-        
+        'jar_id',
+        'created_by',
     ];
 
     protected $appends = ['picture_url'];
 
     public function getPictureUrlAttribute()
     {
-        if (!$this->picture){
+        if (!$this->picture) {
             return 'https://i.ibb.co/2YvZypwJ/Jar-Quest-Placeholder.png';
         }
 
-        
-        if(Str::startsWith($this->picture, ['http://', 'https://'])) {
+        if (Str::startsWith($this->picture, ['http://', 'https://'])) {
             return $this->picture;
         }
 
         return asset('storage/' . $this->picture);
-
-
     }
 
-
-    public function jar(){
+    public function jar()
+    {
         return $this->belongsTo(Jar::class);
     }
 
-    public function likes(){
+    public function likes()
+    {
         return $this->morphMany(Like::class, 'likeable');
     }
 
-    public function user(){
+    public function user()
+    {
         return $this->belongsTo(User::class, 'created_by');
     }
 
+    public function completions()
+    {
+        return $this->hasMany(QuestCompletion::class);
+    }
 }
-
-
-
-
