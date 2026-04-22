@@ -22,6 +22,10 @@ class QuestCompletion extends Model
 
     protected $appends = ['picture_url'];
 
+    protected $casts = [
+        'completion_date' => 'datetime',
+    ];
+
     public function getPictureUrlAttribute()
     {
         if (!$this->picture) {

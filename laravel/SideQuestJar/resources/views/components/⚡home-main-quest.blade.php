@@ -3,7 +3,10 @@
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use App\Models\QuestCompletion;
+use App\Models\JarUser;
 use Illuminate\Support\Facades\Auth;
+
+
 
 new class extends Component
 {
@@ -48,6 +51,9 @@ new class extends Component
             return;
         }
 
+        $this->reset(['completionImage', 'completionDescription']);
+        $this->resetValidation();
+
         $this->showClaimModal = true;
     }
 
@@ -81,6 +87,37 @@ new class extends Component
             'user_id' => Auth::id(),
             'jar_quest_id' => $this->mainQuest->id,
         ]);
+
+            $user = Auth::user();
+
+        
+        $user->jars()->syncWithoutDetaching([
+            $this->mainJar->id => ['streak' => 0]
+        ]);
+
+        
+        $pivotRow = JarUser::where('user_id', $user->id)
+            ->where('jar_id', $this->mainJar->id)
+            ->first();
+
+        $currentStreak = $pivotRow?->streak ?? 0;
+
+        
+        $claimedYesterday = QuestCompletion::where('user_id', $user->id)
+            ->where('jar_quest_id', '!=', $this->mainQuest->id) // optional, not required
+            ->whereDate('completion_date', now()->subDay()->toDateString())
+            ->whereHas('jarQuest', function ($query) {
+                $query->where('jar_id', $this->mainJar->id);
+            })
+            ->exists();
+
+        $newStreak = $claimedYesterday ? $currentStreak + 1 : 1;
+
+        $user->jars()->updateExistingPivot($this->mainJar->id, [
+            'streak' => $newStreak,
+        ]);
+        $this->dispatch('streak-updated');
+
 
         unset($this->alreadyClaimedToday);
 
@@ -163,6 +200,25 @@ new class extends Component
 
                         <div wire:loading wire:target="completionImage" class="claim-uploading">
                             Uploading image...
+                        </div>
+
+                        <div class="mb-3 mt-4">
+                            <label for="completionDescription" class="form-label claim-label">
+                                Description <span class="opacity-75">(optional)</span>
+                            </label>
+
+                            <textarea
+                                id="completionDescription"
+                                wire:model.defer="completionDescription"
+                                class="form-control claim-input claim-textarea"
+                                rows="4"
+                                maxlength="1000"
+                                placeholder="Add a short description about this claim"
+                            ></textarea>
+
+                            @error('completionDescription')
+                                <div class="text-danger mt-2 fw-bold">{{ $message }}</div>
+                            @enderror
                         </div>
 
                         @if ($completionImage)

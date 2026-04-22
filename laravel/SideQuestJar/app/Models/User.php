@@ -74,16 +74,18 @@ class User extends Authenticatable
     //Todo JarUsers Connection type (plusz nem helyes a tabla meg)
 
 
-    public function jars(){
+   public function createdJars()
+    {
         return $this->hasMany(Jar::class, 'created_by');
     }
 
-    public function joinedJars(){
+    public function jars()
+    {
         return $this->belongsToMany(Jar::class, 'jar_users')
             ->withPivot('streak')
             ->withTimestamps();
     }
-    
+        
     
 
 
