@@ -50,7 +50,7 @@
                                     <label for="email" class="profile-label fs-4 d-flex align-self-start m-1 mb-0">E-mail</label>
                                         <div class="row">
                                             <div class="col-12 col-md-8">
-                                                <p class="profile-label fs-5 fw-light text-white d-flex align-self-center m-2 mt-0">{{ $user->email }}</p>
+                                                <p class="profile-label fs-5 fw-light text-truncate text-white d-flex align-self-center m-2 mt-0 ">{{ $user->email }}</p>
                                             </div>
                                             <div class="col-md-4">
                                                 <button class="btn edit-button fw-medium rounded-pill text-end d-flex align-self-start">Edit</button>
@@ -78,7 +78,7 @@
                     <button class="parallelogram rounded-5 m-2 w-75 h-75" style="max-width: 100vw; max-height: 75vh;">
                         <div class="row">
                             <div class="col-0 col-md-5">
-                                <img src="https://i.ibb.co/Ngk3xx10/Godly-Pfp.png" alt="Jars" class="img-fluid rounded-4 m-1 d-none d-md-block" style="height: 14vh; width: 17vw;">
+                                <img src="https://i.ibb.co/2YvZypwJ/Jar-Quest-Placeholder.png" alt="Jars" class="img-fluid rounded-4 m-1 d-none d-md-block" style="height: 14vh; width: 17vw;">
                             </div>
                             <div class="col-12 col-md-7">
                                 <p class="jar-name display-5 text-center m-2" style="transform: skew(20deg); font-size: clamp(1.5rem, 5vw, 3rem);">JARS</p>
@@ -89,7 +89,7 @@
                      <button class="parallelogram rounded-5 m-2 w-75 h-75" style="max-width: 100vw; max-height: 75vh;">
                         <div class="row">
                             <div class="col-0 col-md-5">
-                                <img src="https://i.ibb.co/Ngk3xx10/Godly-Pfp.png" alt="Library" class="img-fluid rounded-4 m-1 d-none d-md-block" style="height: 14vh; width: 17vw;">
+                                <img src="https://i.ibb.co/2YvZypwJ/Jar-Quest-Placeholder.png" alt="Library" class="img-fluid rounded-4 m-1 d-none d-md-block" style="height: 14vh; width: 17vw;">
                             </div>
                             <div class="col-12 col-md-7">
                                 <p class="jar-name display-5 text-center m-2" style="transform: skew(20deg); font-size: clamp(1.5rem, 5vw, 3rem);">LIBRARY</p>
