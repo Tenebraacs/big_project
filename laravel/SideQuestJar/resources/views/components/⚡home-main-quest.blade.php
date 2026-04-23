@@ -88,23 +88,23 @@ new class extends Component
             'jar_quest_id' => $this->mainQuest->id,
         ]);
 
-            $user = Auth::user();
+        $user = Auth::user();
 
-        
-        $user->jars()->syncWithoutDetaching([
-            $this->mainJar->id => ['streak' => 0]
-        ]);
-
-        
         $pivotRow = JarUser::where('user_id', $user->id)
             ->where('jar_id', $this->mainJar->id)
             ->first();
 
+        if (!$pivotRow) {
+            $user->jars()->attach($this->mainJar->id, ['streak' => 0]);
+
+            $pivotRow = JarUser::where('user_id', $user->id)
+                ->where('jar_id', $this->mainJar->id)
+                ->first();
+        }
+
         $currentStreak = $pivotRow?->streak ?? 0;
 
-        
         $claimedYesterday = QuestCompletion::where('user_id', $user->id)
-            ->where('jar_quest_id', '!=', $this->mainQuest->id) // optional, not required
             ->whereDate('completion_date', now()->subDay()->toDateString())
             ->whereHas('jarQuest', function ($query) {
                 $query->where('jar_id', $this->mainJar->id);
@@ -116,8 +116,8 @@ new class extends Component
         $user->jars()->updateExistingPivot($this->mainJar->id, [
             'streak' => $newStreak,
         ]);
-        $this->dispatch('streak-updated');
 
+        $this->dispatch('streak-updated');
 
         unset($this->alreadyClaimedToday);
 

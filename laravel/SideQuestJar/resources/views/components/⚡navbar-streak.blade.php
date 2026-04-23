@@ -2,7 +2,8 @@
 
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
-use App\Models\User;
+use App\Models\QuestCompletion;
+use Carbon\Carbon;
 
 new class extends Component
 {
@@ -14,11 +15,7 @@ new class extends Component
             return 0;
         }
 
-        $user = User::find(Auth::id());
-
-        if (!$user) {
-            return 0;
-        }
+        $user = Auth::user();
 
         $dailyJar = $user->jars()
             ->where('type', 'official_jar')
@@ -28,19 +25,44 @@ new class extends Component
         return $dailyJar?->pivot?->streak ?? 0;
     }
 
-    public function getCompletedDaysProperty()
-    {
-        return min($this->streak, 7);
-    }
-
     public function getTodayIndexProperty()
     {
-        return now()->dayOfWeekIso - 1;
+        return now()->dayOfWeekIso - 1; // Monday = 0, Sunday = 6
+    }
+
+    public function getFilledIndexesProperty()
+    {
+        if (!Auth::check()) {
+            return [];
+        }
+
+        $user = Auth::user();
+
+        $startOfWeek = Carbon::today()->startOfWeek(Carbon::MONDAY);
+        $endOfToday = Carbon::today()->endOfDay();
+
+        $completions = QuestCompletion::where('user_id', $user->id)
+            ->whereBetween('completion_date', [$startOfWeek, $endOfToday])
+            ->whereHas('jarQuest', function ($query) {
+                $query->whereHas('jar', function ($jarQuery) {
+                    $jarQuery->where('type', 'official_jar')
+                        ->where('name', "Today's Adventure");
+                });
+            })
+            ->get();
+
+        return $completions
+            ->map(function ($completion) {
+                return Carbon::parse($completion->completion_date)->dayOfWeekIso - 1;
+            })
+            ->unique()
+            ->values()
+            ->all();
     }
 
     public function getTodayDoneProperty()
     {
-        return $this->todayIndex < $this->completedDays;
+        return in_array($this->todayIndex, $this->filledIndexes, true);
     }
 
     public function getTodayLetterProperty()
@@ -71,7 +93,7 @@ new class extends Component
             <div class="streak-week">
                 @foreach (['M','T','W','T','F','S','S'] as $index => $day)
                     <div class="streak-day">
-                        <span class="streak-dot {{ $index < $this->completedDays ? 'filled' : '' }}"></span>
+                        <span class="streak-dot {{ in_array($index, $this->filledIndexes, true) ? 'filled' : '' }}"></span>
                         <small>{{ $day }}</small>
                     </div>
                 @endforeach

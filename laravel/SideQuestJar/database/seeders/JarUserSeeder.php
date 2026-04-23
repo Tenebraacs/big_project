@@ -8,9 +8,6 @@ use Illuminate\Database\Seeder;
 
 class JarUserSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
         $users = User::where('is_admin', false)->get();
@@ -23,7 +20,7 @@ class JarUserSeeder extends Seeder
             $officialSyncData = $users->mapWithKeys(function ($user) {
                 return [
                     $user->id => [
-                        'streak' => 0,
+                        'streak' => $user->username === 'ZoliProli2' ? 10 : 0,
                     ],
                 ];
             })->toArray();
