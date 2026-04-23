@@ -62,7 +62,7 @@
                                         <label for="password" class="profile-label fs-4 d-flex align-self-start m-1 mb-0">Password</label>
                                             <div class="row">
                                                 <div class="col-12 col-md-8">
-                                                    <p class="profile-label fs-5 fw-light text-white d-flex align-self-start m-2 mt-0">***********</p>
+                                                    <p class="profile-label fs-5 fw-light text-white text-truncate d-flex align-self-start m-2 mt-0">***********</p>
                                                 </div>
                                                 <div class="col-md-4">
                                                     <button class="btn edit-button fw-medium rounded-pill text-end d-flex align-self-start">Edit</button>
