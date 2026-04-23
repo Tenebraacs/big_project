@@ -27,8 +27,25 @@ class User extends Authenticatable
         'birth_date',
         'email',
         'password',
+        'profile_picture',
         'is_admin',
     ];
+
+
+    public function getProfilePictureUrlAttribute(): string
+    {
+        $value = $this->profile_picture;
+
+        if (!$value) {
+            return 'https://i.ibb.co/Ngk3xx10/Godly-Pfp.png';
+        }
+
+        if (str_starts_with($value, 'http://') || str_starts_with($value, 'https://')) {
+            return $value;
+        }
+
+        return asset('storage/' . $value);
+    }
 
     /**
      * The attributes that should be hidden for serialization.
