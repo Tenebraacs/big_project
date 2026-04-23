@@ -237,7 +237,7 @@ new class extends Component
                     <p class="mb-0">{{ $this->jar->users->count() }} joined</p>
                 </div>
 
-                <div class="card-body overflow-auto" style="max-height: 70vh;">
+                <div class="card-body scrolling-bar m-2 overflow-auto" style="max-height: 70vh;">
                     @if ($this->jar->users->isNotEmpty())
                         <div class="d-flex flex-column gap-2">
                             @foreach ($this->jar->users->sortByDesc(fn($user) => $user->pivot->steak ?? 0) as $user)
@@ -306,12 +306,12 @@ new class extends Component
 
                 <div class="card-body text-center flex-grow-1 d-flex flex-column">
                     <div class="p-2 mb-3">
-                        <div class="card-header shadow-black rounded-4" style="background-color: #EAB2A0">
+                        <div class="card-header shadow-black rounded-4" style="background-color: #EAB2A0;">
                             @if($this->currentQuest)
                                 <h3 class="quest-name fs-2">{{ $this->currentQuest->title }}</h3>
 
                                 @if ($this->currentQuest->description)
-                                    <p class="fs-5 quest-name overflow-auto scrolling-bar" style="max-height: 20vh">
+                                    <p class="fs-5 quest-name overflow-auto scrolling-bar" style="max-height: 20vh;">
                                         {{ $this->currentQuest->description }}
                                     </p>
                                 @else
