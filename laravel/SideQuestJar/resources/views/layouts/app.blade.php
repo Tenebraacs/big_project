@@ -49,7 +49,7 @@
                     <!-- Left -->
                     <div class="nav-left"></div>
 
-                    <!-- Center (STREAK LIVEWIRE HERE) -->
+                    <!-- Center -->
                     <div class="nav-center">
                         @auth
                             @livewire('navbar-streak')
@@ -60,17 +60,19 @@
                     <div class="nav-right">
                         <ul class="navbar-nav">
                             @guest
-                                @if (Route::has('login'))
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="{{ route('login') }}">Login</a>
-                                    </li>
-                                @endif
+                                <li class="nav-item">
+                                    <div class="auth-buttons d-flex align-items-center gap-2">
+                                        <a href="{{ route('login') }}" class="guest-auth-chip">
+                                            <i class="bi bi-box-arrow-in-right"></i>
+                                            <span>Login</span>
+                                        </a>
 
-                                @if (Route::has('register'))
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="{{ route('register') }}">Register</a>
-                                    </li>
-                                @endif
+                                        <a href="{{ route('register') }}" class="guest-auth-chip">
+                                            <i class="bi bi-person-plus"></i>
+                                            <span>Register</span>
+                                        </a>
+                                    </div>
+                                </li>
                             @else
                                 <li class="nav-item dropdown user-dropdown">
                                     <a class="nav-link dropdown-toggle user-dropdown-toggle d-flex align-items-center gap-2"
@@ -111,6 +113,12 @@
                                                     <div class="user-dropdown-email">{{ Auth::user()->email }}</div>
                                                 @endif
                                             </div>
+                                        </div>
+
+                                        <div class="dropdown-divider d-md-none"></div>
+
+                                        <div class="mobile-dropdown-streak d-md-none">
+                                            @livewire('navbar-streak-mobile')
                                         </div>
 
                                         <div class="dropdown-divider"></div>

@@ -72,40 +72,27 @@ new class extends Component
 };
 ?>
 
-<div>
-    <div class="mobile-menu-streak d-md-none">
-        <div class="mobile-streak-pill rounded-pill">
-            <div class="mobile-today-indicator">
-                <span class="mobile-streak-dot {{ $this->todayDone ? 'filled' : '' }}"></span>
-                <span class="mobile-today-label">Today ({{ $this->todayLetter }})</span>
-            </div>
-
-            <div class="mobile-streak-count">
-                <i class="bi bi-fire"></i>
-                <span class="mobile-streak-number">{{ $this->streak }}</span>
-                <span class="mobile-streak-label">day streak</span>
-            </div>
+<div class="nav-center d-none d-md-flex">
+    <div class="streak-pill px-4 py-3 rounded-pill">
+        <div class="streak-week">
+            @foreach (['M','T','W','T','F','S','S'] as $index => $day)
+                <div class="streak-day">
+                    <span class="
+                        streak-day-button
+                        {{ in_array($index, $this->filledIndexes, true) ? 'filled' : '' }}
+                        {{ $index === $this->todayIndex ? 'today' : '' }}
+                    "></span>
+                    <small>{{ $day }}</small>
+                </div>
+            @endforeach
         </div>
-    </div>
 
-    <div class="nav-center d-none d-md-flex">
-        <div class="streak-pill px-4 py-3 rounded-pill">
-            <div class="streak-week">
-                @foreach (['M','T','W','T','F','S','S'] as $index => $day)
-                    <div class="streak-day">
-                        <span class="streak-dot {{ in_array($index, $this->filledIndexes, true) ? 'filled' : '' }}"></span>
-                        <small>{{ $day }}</small>
-                    </div>
-                @endforeach
-            </div>
+        <div class="streak-divider"></div>
 
-            <div class="streak-divider"></div>
-
-            <div class="streak-count">
-                <i class="bi bi-fire"></i>
-                <span class="streak-number">{{ $this->streak }}</span>
-                <span class="streak-label">day streak</span>
-            </div>
+        <div class="streak-count">
+            <i class="bi bi-fire"></i>
+            <span class="streak-number">{{ $this->streak }}</span>
+            <span class="streak-label">day streak</span>
         </div>
     </div>
 </div>
