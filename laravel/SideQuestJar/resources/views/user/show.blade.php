@@ -10,7 +10,7 @@
                         <div class="row">
                             <div class="col-5 col-md-3 ">
                                 <div class="ratio ratio-1x1 m-2">
-                                @if ($user->profile_picture)
+                                @if ($user->profile_picture_url)
                                     <img src="{{ $user->profile_picture }}" class="img-fluid rounded-circle">
                                 @else
                                     <p>No image found.</p>

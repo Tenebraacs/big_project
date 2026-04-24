@@ -100,6 +100,13 @@
                                         Create Jar
                                     </a>
 
+                                    @if(Auth::user()->is_admin)
+                                        <a class="dropdown-item user-dropdown-item" href="{{ route('users.index') }}">
+                                            <i class="bi bi-people me-2"></i>
+                                            Manage Users
+                                        </a>
+                                    @endif
+
                                     <div class="dropdown-divider"></div>
 
                                     <form action="{{ route('logout') }}" method="POST">
@@ -218,6 +225,13 @@
                                             <i class="bi bi-plus-circle me-2"></i>
                                             Create Jar
                                         </a>
+
+                                        @if(Auth::user()->is_admin)
+                                            <a class="dropdown-item user-dropdown-item" href="{{ route('users.index') }}">
+                                                <i class="bi bi-people me-2"></i>
+                                                Manage Users
+                                            </a>
+                                        @endif
 
                                         <div class="dropdown-divider"></div>
 

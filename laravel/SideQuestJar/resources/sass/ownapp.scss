@@ -939,3 +939,260 @@ body {
 .mobile-streak-menu-week .streak-day small {
     font-size: 0.65rem;
 }
+
+
+
+
+.show-jar-card {
+    overflow: hidden;
+}
+
+.show-jar-body {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.quest-info-card {
+    background-color: #EAB2A0;
+    border-radius: 1rem;
+    padding: 1rem 1.25rem;
+}
+
+.quest-description {
+    color: #2D4356;
+    font-family: "Fredoka", sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    max-height: 90px;
+    overflow-y: auto;
+    scrollbar-width: none;
+}
+
+.quest-viewer {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr) 44px;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+.quest-image-frame {
+    width: 100%;
+    max-width: 520px;
+    height: clamp(280px, 45vh, 520px);
+    margin: 0 auto;
+    border-radius: 1rem;
+    overflow: hidden;
+    background-color: black;
+}
+
+.quest-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+.quest-arrow {
+    border: 0;
+    background: transparent;
+    color: #EAB2A0;
+    font-size: 2.5rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+@media (max-width: 991.98px) {
+    .quest-viewer {
+        grid-template-columns: 34px minmax(0, 1fr) 34px;
+        gap: 0.35rem;
+    }
+
+    .quest-image-frame {
+        height: auto;
+        aspect-ratio: 1 / 1;
+        max-width: 100%;
+    }
+
+    .quest-arrow {
+        font-size: 2rem;
+    }
+}
+
+.quest-info-card {
+    background-color: #EAB2A0;
+    border-radius: 1rem;
+    padding: 1rem 1.25rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.quest-description {
+    color: #2D4356;
+    font-family: "Fredoka", sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    max-height: 90px;
+    overflow-y: auto;
+    padding-right: 0.25rem;
+
+    scrollbar-width: none;
+}
+
+.quest-description::-webkit-scrollbar {
+    display: none;
+}
+
+.quest-info-card::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 34px;
+    background: linear-gradient(to bottom, rgba(234, 178, 160, 0), #EAB2A0 85%);
+    pointer-events: none;
+}
+
+
+.admin-users-table {
+    width: 100%;
+    font-family: "Fredoka", sans-serif;
+}
+
+.admin-users-table th,
+.admin-users-table td,
+.admin-users-table strong {
+    color: #2D4356 !important;
+    vertical-align: middle;
+}
+
+.admin-users-table thead th {
+    border-bottom: 2px solid rgba(45, 67, 86, 0.25);
+    white-space: nowrap;
+}
+
+.admin-users-table tbody td {
+    border-bottom: 1px solid rgba(45, 67, 86, 0.14);
+}
+
+.admin-users-table tbody tr:hover {
+    background-color: rgba(45, 67, 86, 0.08);
+}
+
+.admin-users-table td,
+.admin-users-table th {
+    white-space: nowrap;
+}
+
+.admin-user-cell {
+    min-width: 180px;
+}
+
+.admin-email-cell {
+    max-width: 240px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@media (max-width: 991.98px) {
+    .admin-col-extra {
+        display: none;
+    }
+}
+
+
+.admin-pagination {
+    margin-top: 1rem;
+}
+
+/* Hide Bootstrap's extra mobile Previous/Next row */
+.admin-pagination nav > div > div:first-child {
+    display: none !important;
+}
+
+/* Style the real pagination row */
+.admin-pagination nav > div > div:last-child {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.75rem;
+}
+
+.admin-pagination p {
+    margin: 0 !important;
+    color: #EAB2A0 !important;
+    font-family: "Fredoka", sans-serif;
+    text-align: center;
+}
+
+.admin-pagination .pagination {
+    margin: 0 !important;
+    gap: 0.4rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.admin-pagination .page-link {
+    background-color: #EAB2A0;
+    color: #2D4356;
+    border: 2px solid rgba(45, 67, 86, 0.25);
+    border-radius: 999px !important;
+    font-family: "Fredoka", sans-serif;
+    font-weight: 700;
+    box-shadow: 0 3px 0 rgba(0, 0, 0, 0.18);
+}
+
+.admin-pagination .page-link:hover {
+    background-color: #A76F6F;
+    color: #EAB2A0;
+    border-color: #2D4356;
+}
+
+.admin-pagination .page-item.active .page-link {
+    background-color: #2D4356;
+    color: #EAB2A0;
+    border-color: #EAB2A0;
+}
+
+.admin-pagination .page-item.disabled .page-link {
+    background-color: rgba(234, 178, 160, 0.35);
+    color: rgba(45, 67, 86, 0.55);
+    box-shadow: none;
+}
+
+.admin-table-scroll {
+    overflow-x: auto;
+    padding-bottom: 0.6rem;
+}
+
+
+.admin-table-scroll::-webkit-scrollbar {
+    height: 12px;
+}
+
+.admin-table-scroll::-webkit-scrollbar-track {
+    background-color: #243746;
+    border-radius: 999px;
+    border: 2px solid #2D4356;
+}
+
+.admin-table-scroll::-webkit-scrollbar-thumb {
+    background-color: #EAB2A0;
+    border-radius: 999px;
+    border: 3px solid #243746;
+}
+
+.admin-table-scroll::-webkit-scrollbar-thumb:hover {
+    background-color: #f3c3b3;
+}
+
+
+.admin-table-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: #EAB2A0 #243746;
+}

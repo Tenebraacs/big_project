@@ -26,6 +26,7 @@ Route::get('/user', [UserController::class, 'user'])
     ->middleware('auth')
     ->name('user');
 
+Route::get('/users', [UserController::class, 'index'])->middleware('auth')->name('users.index');
 //Route::resource('/achievement', AchievementController::class);
 //TODO (frontend needed)
 Auth::routes();

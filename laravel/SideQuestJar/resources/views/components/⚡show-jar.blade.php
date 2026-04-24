@@ -230,7 +230,7 @@ new class extends Component
     <div class="row align-items-start justify-content-center g-3">
 
         <!-- LEFT: MEMBERS -->
-        <div class="col-12 col-lg-3 order-2 order-lg-1">
+        <div class="col-12 col-lg-2 order-2 order-lg-1">
             <div class="card bg-block-blue rounded-5 h-100">
                 <div class="card-header border-0 text-center">
                     <h3 class="jar-name fs-3 fw-bold mb-1">Members</h3>
@@ -240,7 +240,7 @@ new class extends Component
                 <div class="card-body scrolling-bar m-2 overflow-auto" style="max-height: 70vh;">
                     @if ($this->jar->users->isNotEmpty())
                         <div class="d-flex flex-column gap-2">
-                            @foreach ($this->jar->users->sortByDesc(fn($user) => $user->pivot->steak ?? 0) as $user)
+                            @foreach ($this->jar->users->sortByDesc(fn($user) => $user->pivot->streak ?? 0) as $user)
                                 <div class="rounded-4 px-3 py-2" style="background-color: #EAB2A0;">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <span class="fw-bold text-dark">{{ $user->username }}</span>
@@ -272,8 +272,8 @@ new class extends Component
         </div>
 
         <!-- CENTER: MAIN JAR / QUEST -->
-        <div class="col-12 col-lg-6 order-1 order-lg-2">
-            <div class="card text-center bg-block-blue rounded-5 h-100 d-flex flex-column">
+        <div class="col-12 col-lg-7 order-1 order-lg-2">
+            <div class="card text-center bg-block-blue rounded-5 h-100 d-flex flex-column show-jar-card">
 
                 <div class="card-header border-0">
                     @if ($this->jar)
@@ -304,55 +304,56 @@ new class extends Component
                     @endif
                 </div>
 
-                <div class="card-body text-center flex-grow-1 d-flex flex-column">
+                <div class="card-body text-center flex-grow-1 d-flex flex-column show-jar-body">
                     <div class="p-2 mb-3">
-                        <div class="card-header shadow-black rounded-4" style="background-color: #EAB2A0;">
-                            @if($this->currentQuest)
-                                <h3 class="quest-name fs-2">{{ $this->currentQuest->title }}</h3>
+                        <div class="p-2 mb-3">
+                            <div class="quest-info-card">
+                                @if($this->currentQuest)
+                                    <h3 class="quest-name fs-3 mb-2">{{ $this->currentQuest->title }}</h3>
 
-                                @if ($this->currentQuest->description)
-                                    <p class="fs-5 quest-name overflow-auto scrolling-bar" style="max-height: 20vh;">
-                                        {{ $this->currentQuest->description }}
-                                    </p>
+                                    @if ($this->currentQuest->description)
+                                        <p class="quest-description scrolling-bar mb-0">
+                                            {{ $this->currentQuest->description }}
+                                        </p>
+                                    @else
+                                        <p class="quest-description mb-0">
+                                            No description yet so just figure it out.
+                                        </p>
+                                    @endif
                                 @else
-                                    <p class="fs-5 quest-name">No description yet so just figure it out</p>
+                                    <h3 class="quest-name fs-5 mb-0">No Quests inside the jar</h3>
                                 @endif
-                            @else
-                                <h3 class="quest-name fs-5">No Quests inside the jar</h3>
-                            @endif
+                            </div>
                         </div>
                     </div>
 
                     @if ($this->currentQuest)
-                        <div class="container-fluid">
-                            <div class="row justify-content-center align-items-stretch">
-                                <button
-                                    type="button"
-                                    wire:click="previous"
-                                    class="blue-button fw-bold col-1 d-flex align-items-center justify-content-center fs-1 border-0"
-                                    style="color: #EAB2A0; background-color: #2D4356;"
-                                >
-                                    ❮
-                                </button>
+                        <div class="quest-viewer">
+                            <button
+                                type="button"
+                                wire:click="previous"
+                                class="quest-arrow"
+                                aria-label="Previous quest"
+                            >
+                                ❮
+                            </button>
 
-                                <div class="col-10 p-0" style="aspect-ratio: 1/1;">
-                                    <img
-                                        src="{{ $this->currentQuest->picture_url }}"
-                                        alt="Quest picture"
-                                        class="w-100 h-100 rounded-4"
-                                        style="object-fit: cover;"
-                                    >
-                                </div>
-
-                                <button
-                                    type="button"
-                                    wire:click="next"
-                                    class="fw-bold col-1 d-flex align-items-center justify-content-center fs-1 border-0"
-                                    style="color: #EAB2A0; background-color: #2D4356;"
+                            <div class="quest-image-frame">
+                                <img
+                                    src="{{ $this->currentQuest->picture_url }}"
+                                    alt="Quest picture"
+                                    class="quest-image"
                                 >
-                                    ❯
-                                </button>
                             </div>
+
+                            <button
+                                type="button"
+                                wire:click="next"
+                                class="quest-arrow"
+                                aria-label="Next quest"
+                            >
+                                ❯
+                            </button>
                         </div>
                     @endif
                 </div>
