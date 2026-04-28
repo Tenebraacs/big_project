@@ -118,6 +118,7 @@ new class extends Component
         ]);
 
         $this->dispatch('streak-updated');
+        $this->dispatch('proof-created');
 
         unset($this->alreadyClaimedToday);
 
@@ -128,7 +129,7 @@ new class extends Component
 
 <div class="row justify-content-center mb-3">
     <div class="col-10">
-        <div class="card rounded-5 bg-block-blue m-3">
+        <div class="card rounded-5 bg-block-blue m-3 mainjar-border">
             <div class="text-center card-header border-0">
                 @if ($mainJar)
                     <h1 class="fw-bold display-3 welcome-text m-3">{{ $mainJar->name }}</h1>

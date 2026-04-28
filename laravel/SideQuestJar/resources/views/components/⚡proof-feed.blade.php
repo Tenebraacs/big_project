@@ -15,6 +15,7 @@ new class extends Component
         'open-login' => 'open',
         'refresh-likes' => '$refresh',
         'user-logged-in' => '$refresh',
+        'proof-created' => '$refresh',
     ];
 
     public function loadMore()
@@ -153,14 +154,14 @@ new class extends Component
                         @if($loopIndex >= 1) d-none d-md-block @endif
                         @if($loopIndex >= 2) d-none d-lg-block @endif
                     ">
-                        <div class="card bg-block-blue rounded-5 h-100">
+                        <div class="card bg-block-blue rounded-5 h-100 jar-card-border">
 
                             <!-- HEADER -->
                             <div class="card-header border-0 text-center">
                                 <h5 class="fw-bold jar-name fs-3 text-truncate mt-2">
                                     {{ $proof->user->username }}
                                 </h5>
-                                <p class="mb-0 mt-1 small text-light opacity-75">
+                                <p class="quest-title mb-0 mt-1">
                                     {{ $proof->jarQuest->title ?? 'Quest' }}
                                 </p>
                             </div>
@@ -177,21 +178,32 @@ new class extends Component
                                 <p class="mb-1 small quest-description">
                                     {{ $proof->description }}
                                 </p>
-                                <div class="d-flex justify-content-center align-items-center gap-2 mt-2">
+                                <div class="card-likes-bar">
                                     @auth
                                         <button
                                             wire:click="toggleLike({{ $proof->id }})"
                                             wire:key="like-{{ $proof->id }}-{{ $proof->is_liked }}"
-                                            class="btn btn-sm {{ $proof->is_liked ? 'btn-danger' : 'btn-outline-danger' }}"
-                                        >❤️</button>
+                                            class="card-like-heart-btn{{ $proof->is_liked ? ' liked' : '' }}"
+                                            aria-pressed="{{ $proof->is_liked ? 'true' : 'false' }}"
+                                            title="{{ $proof->is_liked ? 'Unlike' : 'Like' }}"
+                                        >
+                                            @if($proof->is_liked)
+                                                <i class="bi bi-heart-fill"></i>
+                                            @else
+                                                <i class="bi bi-heart"></i>
+                                            @endif
+                                        </button>
                                     @else
                                         <button
                                             wire:click="$dispatchTo('auth.login-modal', 'open-login')"
-                                            class="btn btn-sm btn-outline-danger"
-                                        >❤️</button>
+                                            class="card-like-heart-btn"
+                                            title="Login to Like"
+                                        >
+                                            <i class="bi bi-heart"></i>
+                                        </button>
                                     @endauth
-                                    <span class="small" style="color: #EAB2A0; font-family: 'Fredoka', sans-serif">
-                                        {{ $proof->likes_count }} likes
+                                    <span class="likes-badge-count">
+                                        {{ $proof->likes_count }} like{{ $proof->likes_count == 1 ? '' : 's' }}
                                     </span>
                                 </div>
                             </div>

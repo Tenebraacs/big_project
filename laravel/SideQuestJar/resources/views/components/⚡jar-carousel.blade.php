@@ -85,7 +85,7 @@ new class extends Component
                         @if($loopIndex >= 1) d-none d-md-block @endif
                         @if($loopIndex >= 2) d-none d-lg-block @endif
                     ">
-                        <div class="card bg-block-blue rounded-5 h-100">
+                        <div class="card bg-block-blue rounded-5 h-100 d-flex flex-column">
 
                             <div class="card-header border-0 text-center">
                                 <h5 class="fw-bold jar-name fs-3 text-truncate mt-2">{{ $jar->name }}</h5>
@@ -100,7 +100,7 @@ new class extends Component
                                 @endif
                             </div>
 
-                            <div class="card-body text-center">
+                            <div class="card-body text-center flex-grow-1">
                                 @if ($jar->picture_url)
                                     <img src="{{ $jar->picture_url }}" alt="{{ $jar->name }}" class="img-fluid rounded-4">
                                 @else
@@ -108,11 +108,11 @@ new class extends Component
                                 @endif
                             </div>
 
-                            <div class="card-footer border-0 d-flex justify-content-center align-items-center">
+                            <div class="p-2 mt-auto">
                                 @auth
                                     <button
                                         type="button"
-                                        class="btn fw-bold fs-5 mb-0 w-100 rounded-pill blue-button"
+                                        class="btn fw-bold fs-5 w-100 rounded-pill blue-button"
                                         onclick="window.location='{{ route('jars.show', $jar) }}'">
                                         Show Jar
                                     </button>
@@ -120,11 +120,12 @@ new class extends Component
                                     <button
                                         wire:click="$dispatchTo('auth.login-modal', 'open-login')"
                                         type="button"
-                                        class="btn fw-bold fs-5 mb-0 w-100 rounded-pill blue-button">
+                                        class="btn fw-bold fs-5 w-100 rounded-pill blue-button">
                                         Show Jar
                                     </button>
                                 @endauth
                             </div>
+            
 
                         </div>
                     </div>
