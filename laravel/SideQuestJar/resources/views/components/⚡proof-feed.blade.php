@@ -56,7 +56,7 @@ new class extends Component
 
     public function getCanSlideProperty()
     {
-        return $this->proofs->count() > 3;
+        return $this->proofs->count() > $this->visibleCount;
     }
 
     public function next()
@@ -69,7 +69,9 @@ new class extends Component
         $this->start = ($this->start + 1) % $count;
 
         
-        if (!$this->loadingMore && $this->start + 3 >= $count && $this->hasMore) {
+        $visible = $this->visibleCount;
+
+        if (!$this->loadingMore && $this->start + $visible >= $count && $this->hasMore) {
             $this->loadingMore = true;
 
             $this->limit += 9;
@@ -92,10 +94,19 @@ new class extends Component
 
         if ($count === 0) return collect();
 
-        $visibleCount = min(3, $count);
+        $visibleCount = min($this->visibleCount, $count);
 
         return collect(range(0, $visibleCount - 1))
             ->map(fn($i) => $this->proofs[($this->start + $i) % $count]);
+    }
+
+    public function getVisibleCountProperty()
+    {
+        if (request()->header('User-Agent') && str_contains(request()->header('User-Agent'), 'Mobile')) {
+            return 1;
+        }
+
+        return 3;
     }
 
    public function toggleLike($proofId)
