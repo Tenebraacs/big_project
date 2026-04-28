@@ -8,6 +8,10 @@
         :mainQuest="$mainQuest"
     />
 
+    <div class="container-fluid mt-4">
+    <livewire:proof-feed />
+    </div>
+
     <div class="container-fluid mt-5">
         <div class="mb-5">
             <livewire:jar-carousel 

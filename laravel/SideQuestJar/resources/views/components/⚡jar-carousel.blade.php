@@ -108,11 +108,23 @@ new class extends Component
                                 @endif
                             </div>
 
-                            <a href="{{ route('jars.show', $jar) }}" class="text-decoration-none text-dark">
-                                <div class="card-footer border-0 d-flex justify-content-center align-items-center">
-                                    <p class="btn fw-bold fs-5 mb-0 w-100 rounded-pill blue-button">Show Jar</p>
-                                </div>
-                            </a>
+                            <div class="card-footer border-0 d-flex justify-content-center align-items-center">
+                                @auth
+                                    <button
+                                        type="button"
+                                        class="btn fw-bold fs-5 mb-0 w-100 rounded-pill blue-button"
+                                        onclick="window.location='{{ route('jars.show', $jar) }}'">
+                                        Show Jar
+                                    </button>
+                                @else
+                                    <button
+                                        wire:click="$dispatchTo('auth.login-modal', 'open-login')"
+                                        type="button"
+                                        class="btn fw-bold fs-5 mb-0 w-100 rounded-pill blue-button">
+                                        Show Jar
+                                    </button>
+                                @endauth
+                            </div>
 
                         </div>
                     </div>

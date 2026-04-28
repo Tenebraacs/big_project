@@ -1196,3 +1196,12 @@ body {
     scrollbar-width: thin;
     scrollbar-color: #EAB2A0 #243746;
 }
+
+.quest-description {
+    color: #EAB2A0;
+    font-family: "Fredoka", sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    max-height: 90px;
+    overflow-y: auto;
+}

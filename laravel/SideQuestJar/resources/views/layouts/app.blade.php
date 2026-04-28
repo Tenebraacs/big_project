@@ -18,7 +18,12 @@
 
     @livewireStyles
 </head>
+
 <body class="background">
+
+<livewire:auth.login-modal />
+
+
 <div id="app" class="d-flex flex-column min-vh-100">
 
     <nav class="navbar-base navbar navbar-expand-md navbar-light">

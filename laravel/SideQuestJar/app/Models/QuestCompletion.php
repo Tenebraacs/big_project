@@ -48,4 +48,14 @@ class QuestCompletion extends Model
     {
         return $this->belongsTo(JarQuest::class);
     }
+
+    public function likes()
+    {
+        return $this->morphMany(Like::class, 'likeable');
+    }
+
+    public function isLikedBy($user)
+    {
+        return $this->likes()->where('user_id', $user->id)->exists();
+    }
 }
