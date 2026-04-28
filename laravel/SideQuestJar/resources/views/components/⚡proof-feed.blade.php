@@ -158,7 +158,7 @@ new class extends Component
                             <!-- HEADER -->
                             <div class="card-header border-0 text-center">
                                 <h5 class="fw-bold jar-name fs-3 text-truncate mt-2">
-                                    {{ $proof->user->name }}
+                                    {{ $proof->user->username }}
                                 </h5>
                                 <p class="mb-0 mt-1 small text-light opacity-75">
                                     {{ $proof->jarQuest->title ?? 'Quest' }}
