@@ -423,11 +423,12 @@ body {
 
 
     .brand-link {
-        flex: 1 1 auto;
+        flex: 0 0 auto !important;
+        width: auto;
         min-width: 0;
         margin-right: 0.5rem;
         display: flex;
-        align-items: center;   /* 🔥 fixes vertical alignment */
+        align-items: center;   
         justify-content: flex-start;
         text-decoration: none;
     }
@@ -1418,4 +1419,11 @@ body {
     margin-bottom: 0.15em;
     margin-top: 0.4em;
 
+}
+
+.jar-card-border {
+    border: 2.5px solid rgba(234, 178, 160, 0.33);
+    border-radius: 1.7rem;     
+    box-shadow: 0 6px 24px rgba(0,0,0,0.10);
+    transition: border-color 0.2s, box-shadow 0.2s;
 }
