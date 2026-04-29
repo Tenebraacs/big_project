@@ -8,33 +8,83 @@ new class extends Component
     public string $title = '';
     public int $start = 0;
 
+    /**
+     * Safe default for first paint (mobile).
+     * JS will update to 2/3/4 on larger screens.
+     */
+    public int $visibleCount = 1;
+
+    protected $listeners = [
+        'jar-visible-count-changed' => 'setVisibleCount',
+    ];
+
     public function mount($jars, $title = '')
     {
-        
         $this->jars = $jars;
         $this->title = $title;
     }
 
-    public function getCanSlideProperty()
+    public function setVisibleCount(int $count): void
     {
-        return count($this->jars) > 4;
+        $this->visibleCount = max(1, min(4, $count));
+        $this->clampStart();
     }
 
-    public function next()
+    private function clampStart(): void
     {
-        if(!$this->canSlide) return;
-
-
         $count = count($this->jars);
-        $this->start = ($this->start + 1) % $count;
+
+        if ($count === 0) {
+            $this->start = 0;
+            return;
+        }
+
+        $maxStart = max(0, $count - $this->visibleCount);
+
+        if ($this->start > $maxStart) {
+            $this->start = $maxStart;
+        }
     }
 
-    public function previous()
+    public function getCanGoPreviousProperty(): bool
     {
-        if(!$this->canSlide) return;
+        return $this->start > 0;
+    }
+
+    public function getCanGoNextProperty(): bool
+    {
+        $count = count($this->jars);
+        $maxStart = max(0, $count - $this->visibleCount);
+
+        return $this->start < $maxStart;
+    }
+
+    public function getCanSlideProperty(): bool
+    {
+        return count($this->jars) > $this->visibleCount;
+    }
+
+    public function next(): void
+    {
+        if (!$this->canSlide) return;
 
         $count = count($this->jars);
-        $this->start = ($this->start - 1 + $count) % $count;
+        if ($count === 0) return;
+
+        $maxStart = max(0, $count - $this->visibleCount);
+
+        if ($this->start < $maxStart) {
+            $this->start++;
+        }
+    }
+
+    public function previous(): void
+    {
+        if (!$this->canSlide) return;
+
+        if ($this->start > 0) {
+            $this->start--;
+        }
     }
 
     public function getVisibleJarsProperty()
@@ -45,15 +95,17 @@ new class extends Component
             return collect();
         }
 
-        $visibleCount = min(4, $count);
+        $visibleCount = min($this->visibleCount, $count);
 
-        return collect(range(0, $visibleCount - 1))
-            ->map(fn($i) => $this->jars[($this->start + $i) % $count]);
+        return collect($this->jars)
+            ->slice($this->start, $visibleCount)
+            ->values();
     }
 }
 ?>
 
-<div class="container-fluid">
+<div class="container-fluid jar-carousel-root"
+     wire:init="$dispatch('jar-carousel:request-visible-count')">
 
     @if ($title)
         <div class="row mb-3">
@@ -64,24 +116,27 @@ new class extends Component
     @endif
 
     <div class="row align-items-stretch">
-
-        <!-- Previous button -->
-        <div class="col-1 d-flex justify-content-center align-items-center">
-            <button wire:click="previous"
+        <!-- LEFT arrow (md+) -->
+        <div class="col-1 d-none d-md-flex justify-content-center align-items-center">
+            <button
+                wire:click="previous"
                 class="btn blue-button rounded-circle fw-bold"
-                style="color: #EAB2A0; background-color: #2D4356;"
-                @if(!$this->canSlide) disabled style="opacity: 0.4; cursor: not-allowed;" @endif>
+                style="color:#EAB2A0; background-color:#2D4356;"
+                @if(!$this->canGoPrevious) disabled style="opacity:.4; cursor:not-allowed;" @endif
+                aria-label="Previous jars"
+            >
                 ❮
             </button>
         </div>
 
-        <!-- Cards -->
-        <div class="col-10">
-            <div class="row g-3 m-1 p-0">
+        <!-- CARDS -->
+        <div class="col-12 col-md-10">
+            <div class="row g-3 m-1 p-0 justify-content-center">
                 @foreach ($this->visibleJars as $loopIndex => $jar)
                     <div class="col-12 col-md-6 col-lg-3 mb-5
                         @if($loopIndex >= 1) d-none d-md-block @endif
                         @if($loopIndex >= 2) d-none d-lg-block @endif
+                        @if($loopIndex >= 3) d-none d-xl-block @endif
                     ">
                         <div class="card bg-block-blue rounded-5 h-100 d-flex flex-column jar-card-border">
 
@@ -98,9 +153,9 @@ new class extends Component
 
                             <div class="card-body text-center flex-grow-1">
                                 @if ($jar->picture_url)
-                                    <img src="{{ $jar->picture_url }}" class="img-fluid rounded-4">
+                                    <img src="{{ $jar->picture_url }}" class="img-fluid rounded-4" alt="Jar image">
                                 @else
-                                    <p>No image found.</p>
+                                    <p class="text-light mb-0">No image found.</p>
                                 @endif
                             </div>
 
@@ -124,17 +179,76 @@ new class extends Component
                     </div>
                 @endforeach
             </div>
+
+            <!-- MOBILE arrows -->
+            <div class="d-flex d-md-none justify-content-between px-4 pb-3">
+                <button
+                    wire:click="previous"
+                    class="btn blue-button rounded-circle fw-bold"
+                    style="color:#EAB2A0; background-color:#2D4356;"
+                    @if(!$this->canGoPrevious) disabled style="opacity:.4; cursor:not-allowed;" @endif
+                    aria-label="Previous jars"
+                >
+                    ❮
+                </button>
+
+                <button
+                    wire:click="next"
+                    class="btn blue-button rounded-circle fw-bold"
+                    style="color:#EAB2A0; background-color:#2D4356;"
+                    @if(!$this->canGoNext) disabled style="opacity:.4; cursor:not-allowed;" @endif
+                    aria-label="Next jars"
+                >
+                    ❯
+                </button>
+            </div>
         </div>
 
-        <!-- Next button -->
-        <div class="col-1 d-flex justify-content-center align-items-center">
-            <button wire:click="next"
+        <!-- RIGHT arrow (md+) -->
+        <div class="col-1 d-none d-md-flex justify-content-center align-items-center">
+            <button
+                wire:click="next"
                 class="btn blue-button rounded-circle fw-bold"
-                style="color: #EAB2A0; background-color: #2D4356;"
-                @if(!$this->canSlide) disabled style="opacity: 0.4; cursor: not-allowed;" @endif>
+                style="color:#EAB2A0; background-color:#2D4356;"
+                @if(!$this->canGoNext) disabled style="opacity:.4; cursor:not-allowed;" @endif
+                aria-label="Next jars"
+            >
                 ❯
             </button>
         </div>
-
     </div>
 </div>
+
+@push('scripts')
+<script>
+(() => {
+    const computeJarVisibleCount = () => {
+        // Bootstrap breakpoints:
+        // < md: 1
+        // md: 2
+        // lg: 3
+        // xl+: 4
+        if (window.matchMedia('(min-width: 1200px)').matches) return 4;
+        if (window.matchMedia('(min-width: 992px)').matches) return 3;
+        if (window.matchMedia('(min-width: 768px)').matches) return 2;
+        return 1;
+    };
+
+    const dispatchCount = () => {
+        if (!window.Livewire?.dispatch) return;
+        Livewire.dispatch('jar-visible-count-changed', [computeJarVisibleCount()]);
+    };
+
+    window.addEventListener('jar-carousel:request-visible-count', dispatchCount);
+
+    // Run once on load too (safe)
+    dispatchCount();
+
+    let t;
+    window.addEventListener('resize', () => {
+        clearTimeout(t);
+        t = setTimeout(dispatchCount, 100);
+    });
+})();
+</script>
+@endpush
