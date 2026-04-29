@@ -166,8 +166,8 @@ new class extends Component
                     @endif
                 </div>
 
-                @auth
-                    @if ($mainQuest)
+                @if ($mainQuest)
+                    @auth
                         <button
                             wire:click="openClaimModal"
                             type="button"
@@ -176,8 +176,16 @@ new class extends Component
                         >
                             {{ $this->alreadyClaimedToday ? __('Already Claimed Today') : __('Claim') }}
                         </button>
-                    @endif
-                @endauth
+                    @else
+                        <button
+                            type="button"
+                            class="btn home-claim-button m-2 rounded-pill blue-button"
+                            wire:click="$dispatchTo('auth.login-modal', 'open-login')"
+                        >
+                            Claim
+                        </button>
+                    @endauth
+                @endif
             </div>
         </div>
     </div>

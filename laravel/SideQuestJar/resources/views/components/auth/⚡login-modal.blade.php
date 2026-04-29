@@ -51,6 +51,13 @@ new class extends Component
             $this->addError('email', 'Invalid credentials');
         }
     }
+
+    public function goToRegister()
+    {
+        $this->close();
+        return redirect()->route('register');
+    }
+
 };
 ?>
 
@@ -117,14 +124,24 @@ new class extends Component
                         </div>
                     </div>
 
-                    <div class="modal-footer border-0 claim-modal-footer">
-                        <button type="button" class="btn claim-cancel-button rounded-pill" wire:click="close">
-                            Cancel
+                    <div class="modal-footer border-0 claim-modal-footer d-flex justify-content-between">
+    
+                        <button type="button"
+                                class="guest-auth-chip border-0"
+                                wire:click="goToRegister">
+                            Register
                         </button>
 
-                        <button type="button" class="btn blue-button rounded-pill px-4" wire:click="login">
-                            Login
-                        </button>
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn claim-cancel-button rounded-pill" wire:click="close">
+                                Cancel
+                            </button>
+
+                            <button type="button" class="btn blue-button rounded-pill px-4" wire:click="login">
+                                Login
+                            </button>
+                        </div>
+
                     </div>
 
                 </div>
