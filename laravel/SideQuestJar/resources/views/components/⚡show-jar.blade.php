@@ -4,11 +4,9 @@ use Livewire\Component;
 use App\Models\Jar;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
-
 new class extends Component
 {
     use AuthorizesRequests;
-
 
     public Jar $jar;
     public ?int $quest = null;
@@ -22,6 +20,9 @@ new class extends Component
     public bool $questLiked = false;
     public int $questLikesCount = 0;
 
+    // Kick user state
+    public bool $confirmingKickUser = false;
+    public ?int $userIdToKick = null;
 
     public function mount(Jar $jar, ?int $quest = null)
     {
@@ -41,8 +42,8 @@ new class extends Component
             ->get()
             ->values();
 
-        if(auth()->check()) {
-            $this->liked = $this->jar->likes()->where('user_id', auth()->id())->exists(); //when the page loads check if the logged-in user already liked this jar
+        if (auth()->check()) {
+            $this->liked = $this->jar->likes()->where('user_id', auth()->id())->exists();
             $this->joined = $this->jar->users()->where('user_id', auth()->id())->exists();
             $this->likesCount = $this->jar->likes()->count();
         }
@@ -131,9 +132,7 @@ new class extends Component
 
         if (!$freshQuest) return;
 
-        // Replace in collection so everything stays consistent
         $this->quests[$this->currentIndex] = $freshQuest;
-
         $this->questLikesCount = $freshQuest->likes_count;
         $this->questLiked = $freshQuest->is_liked;
     }
@@ -143,7 +142,7 @@ new class extends Component
         if ($this->quests->isEmpty()) {
             return;
         }
-        
+
         $this->currentIndex = ($this->currentIndex + 1) % $this->quests->count();
         $this->updateQuestLikeState();
         $this->updateUrl();
@@ -154,33 +153,31 @@ new class extends Component
         if ($this->quests->isEmpty()) {
             return;
         }
-       
+
         $this->currentIndex = ($this->currentIndex - 1 + $this->quests->count()) % $this->quests->count();
         $this->updateQuestLikeState();
         $this->updateUrl();
     }
 
-    
-
     public function toggleLike()
     {
-        if (! auth()->check()){
+        if (!auth()->check()) {
             return;
         }
 
         $existingLike = $this->jar->likes()->where('user_id', auth()->id())->first();
 
-        if($existingLike) {
+        if ($existingLike) {
             $existingLike->delete();
             $this->liked = false;
-            $this->likesCount = $this->jar->likes()->count(); 
+            $this->likesCount = $this->jar->likes()->count();
             return;
         }
 
         $this->jar->likes()->create([
             'user_id' => auth()->id(),
         ]);
-        
+
         $this->liked = true;
         $this->likesCount = $this->jar->likes()->count();
     }
@@ -197,11 +194,8 @@ new class extends Component
 
         if ($like) {
             $like->delete();
-
             $this->questLiked = false;
             $this->questLikesCount--;
-
-            
         } else {
             $quest->likes()->create([
                 'user_id' => auth()->id(),
@@ -209,19 +203,15 @@ new class extends Component
 
             $this->questLiked = true;
             $this->questLikesCount++;
-
-            
         }
 
         $this->quests[$this->currentIndex]->likes_count = $this->questLikesCount;
         $this->quests[$this->currentIndex]->is_liked = $this->questLiked;
-
-
     }
 
     public function joinJar()
     {
-        if(! auth()->check() || $this->joined) {
+        if (!auth()->check() || $this->joined) {
             return;
         }
 
@@ -235,7 +225,7 @@ new class extends Component
 
     public function leaveJar()
     {
-        if(! auth()->check() || ! $this->joined){
+        if (!auth()->check() || !$this->joined) {
             return;
         }
 
@@ -245,8 +235,8 @@ new class extends Component
         $this->joined = false;
     }
 
-
-    public function deleteJar(){
+    public function deleteJar()
+    {
         $this->authorize('delete', $this->jar);
 
         $this->confirmingDeleteJar = false;
@@ -254,12 +244,11 @@ new class extends Component
         $this->jar->delete();
 
         return $this->redirect(route('home'), navigate: true);
-        
     }
 
     public function deleteCurrentQuest()
     {
-        if (! $this->currentQuest) {
+        if (!$this->currentQuest) {
             return;
         }
 
@@ -305,8 +294,9 @@ new class extends Component
         $this->updateUrl();
     }
 
-    public function confirmDeleteQuest(){
-        if(! $this->currentQuest){
+    public function confirmDeleteQuest()
+    {
+        if (!$this->currentQuest) {
             return;
         }
 
@@ -322,6 +312,58 @@ new class extends Component
     {
         $this->confirmingDeleteQuest = false;
         $this->confirmingDeleteJar = false;
+
+        // also closes kick modal
+        $this->confirmingKickUser = false;
+        $this->userIdToKick = null;
+    }
+
+    public function confirmKickUser(int $userId)
+    {
+        if (!auth()->check() || !($this->jar->created_by === auth()->id() || auth()->user()->is_admin)) {
+            return;
+        }
+
+        if ((int) $userId === (int) $this->jar->created_by) {
+            return;
+        }
+
+        $this->userIdToKick = $userId;
+        $this->confirmingKickUser = true;
+    }
+
+    public function kickUser()
+    {
+        if (!auth()->check() || !($this->jar->created_by === auth()->id() || auth()->user()->is_admin)) {
+            return;
+        }
+
+        if (!$this->userIdToKick) {
+            return;
+        }
+
+        if ((int) $this->userIdToKick === (int) $this->jar->created_by) {
+            $this->confirmingKickUser = false;
+            $this->userIdToKick = null;
+            return;
+        }
+
+        $this->jar->users()->detach($this->userIdToKick);
+
+        $this->jar = $this->jar->fresh()->load('users');
+
+        if ((int) $this->userIdToKick === (int) auth()->id()) {
+            $this->joined = false;
+        }
+
+        $this->confirmingKickUser = false;
+        $this->userIdToKick = null;
+    }
+
+    public function closeKickModal()
+    {
+        $this->confirmingKickUser = false;
+        $this->userIdToKick = null;
     }
 
 };
@@ -342,11 +384,11 @@ new class extends Component
                     @if ($this->jar->users->isNotEmpty())
                         <div class="d-flex flex-column gap-2">
                             @foreach ($this->jar->users->sortByDesc(fn($user) => $user->pivot->streak ?? 0) as $user)
-                                <div class="rounded-4 px-3 py-2" style="background-color: #EAB2A0;">
+                                <div wire:key="jar-user-{{ $this->jar->id }}-{{ $user->id }}" class="rounded-4 px-3 py-2" style="background-color: #EAB2A0;">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <span class="fw-bold text-dark">{{ $user->username }}</span>
 
-                                        <div class="d-flex gap-1">
+                                        <div class="d-flex gap-1 align-items-center">
                                             @if ($user->id === $this->jar->created_by)
                                                 <span class="badge text-bg-dark">Owner</span>
                                             @endif
@@ -354,6 +396,17 @@ new class extends Component
                                             @auth
                                                 @if ($user->id === auth()->id())
                                                     <span class="badge text-bg-primary">You</span>
+                                                @endif
+
+                                                {{-- KICK BUTTON (owner/admin only, cannot kick owner) --}}
+                                                @if (($this->jar->created_by === auth()->id() || auth()->user()->is_admin) && $user->id !== $this->jar->created_by)
+                                                    <button
+                                                        type="button"
+                                                        wire:click="confirmKickUser({{ $user->id }})"
+                                                        class="btn btn-sm btn-outline-danger rounded-pill"
+                                                    >
+                                                        Kick
+                                                    </button>
                                                 @endif
                                             @endauth
                                         </div>
@@ -669,6 +722,37 @@ new class extends Component
                             class="btn btn-outline-danger rounded-pill px-4"
                         >
                             Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+        @endif
+
+        {{-- KICK USER MODAL (ADDED) --}}
+        @if ($this->confirmingKickUser)
+            <div
+                class="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center"
+                style="background: rgba(0,0,0,0.5); z-index: 9999;"
+            >
+                <div class="card bg-block-blue rounded-5 p-4 text-center" style="width: min(90vw, 420px);">
+                    <h3 class="jar-name fs-3 mb-3">Kick user?</h3>
+                    <p class="kick-modal-text mb-4">Are you sure you want to remove this user from the jar?</p>
+
+                    <div class="d-flex justify-content-center gap-2">
+                        <button
+                            type="button"
+                            wire:click="closeDeleteModal"
+                            class="btn blue-button rounded-pill px-4"
+                        >
+                            Cancel
+                        </button>
+
+                        <button
+                            type="button"
+                            wire:click="kickUser"
+                            class="btn btn-outline-danger rounded-pill px-4"
+                        >
+                            Kick
                         </button>
                     </div>
                 </div>
