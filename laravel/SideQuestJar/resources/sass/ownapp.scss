@@ -166,6 +166,7 @@ body {
 .navbar-light .navbar-brand:hover{
     color: #EAB2A0;
     transform: scale(1.05);
+    transition: transform 0.2s ease;
 }
 
 .scrolling-bar::-webkit-scrollbar-track
@@ -381,6 +382,7 @@ body {
     min-height: 56px;
     gap: 0.75rem;
     flex-wrap: nowrap;
+    align-items: center;   /* 🔥 KEY FIX */
 }
 
 .mobile-streak-wrapper {
@@ -425,15 +427,14 @@ body {
         min-width: 0;
         margin-right: 0.5rem;
         display: flex;
-        align-items: center;
+        align-items: center;   /* 🔥 fixes vertical alignment */
         justify-content: flex-start;
         text-decoration: none;
     }
 
     .mobile-brand-logo {
-        display: inline-block;
+        display: inline;
         font-family: 'Rubik Bubbles', system-ui;
-        transform: translateY(1px);
         font-size: 1.9rem;
         line-height: 1;
         color: #EAB2A0;
@@ -441,8 +442,6 @@ body {
             0 3px 0 #000,
             0 4px 0 rgba(0, 0, 0, 0.45);
         letter-spacing: 0.08em;
-        text-align: left;
-        margin-left: 0.15rem;
     }
 
 
@@ -507,13 +506,14 @@ body {
         display: flex;
         align-items: center;
         justify-content: center;
-        background: rgba(234,178,160,0.70); 
+        background: rgba(234,178,160,0.70); /* soft peachy bg */
         border-radius: 999px;
         border: 2.5px solid #EAB2A0;
         box-shadow: 0 2px 9px rgba(0,0,0,0.11);
         font-size: 2rem;
         color: #2D4356;
         opacity: 0.94;
+        /* Hide outline unless focused with keyboard: */
         outline: none;
     }
     .carousel-nav-mobile.left {
@@ -522,9 +522,9 @@ body {
     .carousel-nav-mobile.right {
         right: 8px;
     }
-    
+    /* Force row and columns stacking for carousel cards */
     .carousel-card-row {
-        position: relative;  
+        position: relative;  /* for absolute nav button children */
         flex-direction: column !important;
         align-items: center !important;
     }

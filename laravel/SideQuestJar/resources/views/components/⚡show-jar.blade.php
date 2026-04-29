@@ -18,17 +18,33 @@ new class extends Component
     public bool $confirmingDeleteQuest = false;
     public bool $confirmingDeleteJar = false;
     public bool $joined = false;
+    public int $likesCount = 0;
+    public bool $questLiked = false;
+    public int $questLikesCount = 0;
 
 
     public function mount(Jar $jar, ?int $quest = null)
     {
         $this->jar = $jar->load('users');
         $this->quest = $quest;
-        $this->quests = $this->jar->quests->values();
+        $this->quests = $this->jar->quests()
+            ->withCount('likes')
+            ->withExists([
+                'likes as is_liked' => function ($query) {
+                    if (auth()->check()) {
+                        $query->where('user_id', auth()->id());
+                    } else {
+                        $query->whereRaw('1 = 0');
+                    }
+                }
+            ])
+            ->get()
+            ->values();
 
         if(auth()->check()) {
             $this->liked = $this->jar->likes()->where('user_id', auth()->id())->exists(); //when the page loads check if the logged-in user already liked this jar
             $this->joined = $this->jar->users()->where('user_id', auth()->id())->exists();
+            $this->likesCount = $this->jar->likes()->count();
         }
 
         if ($this->quests->isEmpty()) {
@@ -41,6 +57,14 @@ new class extends Component
             if ($index !== false) {
                 $this->currentIndex = $index;
             }
+        }
+
+        if ($this->currentQuest && auth()->check()) {
+            $this->questLiked = $this->currentQuest->is_liked;
+        }
+
+        if ($this->currentQuest) {
+            $this->questLikesCount = $this->currentQuest->likes_count;
         }
     }
 
@@ -88,13 +112,40 @@ new class extends Component
         ");
     }
 
+    public function updateQuestLikeState()
+    {
+        if (!$this->currentQuest) return;
+
+        $freshQuest = $this->jar->quests()
+            ->withCount('likes')
+            ->withExists([
+                'likes as is_liked' => function ($query) {
+                    if (auth()->check()) {
+                        $query->where('user_id', auth()->id());
+                    } else {
+                        $query->whereRaw('1 = 0');
+                    }
+                }
+            ])
+            ->find($this->currentQuest->id);
+
+        if (!$freshQuest) return;
+
+        // Replace in collection so everything stays consistent
+        $this->quests[$this->currentIndex] = $freshQuest;
+
+        $this->questLikesCount = $freshQuest->likes_count;
+        $this->questLiked = $freshQuest->is_liked;
+    }
+
     public function next()
     {
         if ($this->quests->isEmpty()) {
             return;
         }
-
+        
         $this->currentIndex = ($this->currentIndex + 1) % $this->quests->count();
+        $this->updateQuestLikeState();
         $this->updateUrl();
     }
 
@@ -103,8 +154,9 @@ new class extends Component
         if ($this->quests->isEmpty()) {
             return;
         }
-
+       
         $this->currentIndex = ($this->currentIndex - 1 + $this->quests->count()) % $this->quests->count();
+        $this->updateQuestLikeState();
         $this->updateUrl();
     }
 
@@ -121,6 +173,7 @@ new class extends Component
         if($existingLike) {
             $existingLike->delete();
             $this->liked = false;
+            $this->likesCount = $this->jar->likes()->count(); 
             return;
         }
 
@@ -129,6 +182,41 @@ new class extends Component
         ]);
         
         $this->liked = true;
+        $this->likesCount = $this->jar->likes()->count();
+    }
+
+    public function toggleQuestLike()
+    {
+        if (!auth()->check() || !$this->currentQuest) return;
+
+        $quest = $this->currentQuest;
+
+        $like = $quest->likes()
+            ->where('user_id', auth()->id())
+            ->first();
+
+        if ($like) {
+            $like->delete();
+
+            $this->questLiked = false;
+            $this->questLikesCount--;
+
+            
+        } else {
+            $quest->likes()->create([
+                'user_id' => auth()->id(),
+            ]);
+
+            $this->questLiked = true;
+            $this->questLikesCount++;
+
+            
+        }
+
+        $this->quests[$this->currentIndex]->likes_count = $this->questLikesCount;
+        $this->quests[$this->currentIndex]->is_liked = $this->questLiked;
+
+
     }
 
     public function joinJar()
@@ -183,7 +271,20 @@ new class extends Component
         $questToDelete->delete();
 
         $this->jar = $this->jar->fresh()->load('users');
-        $this->quests = $this->jar->quests()->orderBy('id')->get()->values();
+        $this->quests = $this->jar->quests()
+            ->withCount('likes')
+            ->withExists([
+                'likes as is_liked' => function ($query) {
+                    if (auth()->check()) {
+                        $query->where('user_id', auth()->id());
+                    } else {
+                        $query->whereRaw('1 = 0');
+                    }
+                }
+            ])
+            ->orderBy('id')
+            ->get()
+            ->values();
 
         $this->confirmingDeleteQuest = false;
 
@@ -277,18 +378,40 @@ new class extends Component
 
                 <div class="card-header border-0">
                     @if ($this->jar)
-                        <div class="d-flex">
+                        <div class="d-flex align-items-center">
                             <div class="flex-grow-1 text-center">
                                 <h1 class="jar-name display-5 fw-bold">{{ $this->jar->name }}</h1>
                             </div>
 
-                            <div class="text-start border-0">
-                                <button
-                                    type="button"
-                                    wire:click="toggleLike"
-                                    class="bg-transparent border-0 fs-2 bi {{ $this->liked ? 'bi-hand-thumbs-up-fill' : 'bi-hand-thumbs-up' }}"
-                                    style="color: #EAB2A0;"
-                                ></button>
+                            <div class="d-flex justify-content-end">
+                                <div class="card-likes-bar">
+                                    @auth
+                                        <button
+                                            wire:click="toggleLike"
+                                            wire:key="jar-like-{{ $this->jar->id }}-{{ $this->liked }}"
+                                            class="card-like-heart-btn{{ $this->liked ? ' liked' : '' }}"
+                                            aria-pressed="{{ $this->liked ? 'true' : 'false' }}"
+                                            title="{{ $this->liked ? 'Unlike' : 'Like' }}"
+                                        >
+                                            @if($this->liked)
+                                                <i class="bi bi-heart-fill"></i>
+                                            @else
+                                                <i class="bi bi-heart"></i>
+                                            @endif
+                                        </button>
+                                    @else
+                                        <button
+                                            wire:click="$dispatchTo('auth.login-modal', 'open-login')"
+                                            class="card-like-heart-btn"
+                                        >
+                                            <i class="bi bi-heart"></i>
+                                        </button>
+                                    @endauth
+
+                                    <span class="likes-badge-count">
+                                        {{ $this->likesCount }} like{{ $this->likesCount == 1 ? '' : 's' }}
+                                    </span>
+                                </div>
                             </div>
                         </div>
 
@@ -338,12 +461,42 @@ new class extends Component
                                 ❮
                             </button>
 
-                            <div class="quest-image-frame">
+                            <div class="quest-image-frame position-relative">
+
                                 <img
                                     src="{{ $this->currentQuest->picture_url }}"
                                     alt="Quest picture"
                                     class="quest-image"
                                 >
+
+                                <!-- LIKE BUTTON OVERLAY -->
+                                <div class="position-absolute top-0 end-0 m-2 text-end">
+                                    @auth
+                                        <button
+                                            wire:click="toggleQuestLike"
+                                            wire:key="quest-like-{{ $this->currentQuest->id }}-{{ $this->questLiked }}"
+                                            class="card-like-heart-btn{{ $this->questLiked ? ' liked' : '' }}"
+                                        >
+                                            @if($this->questLiked)
+                                                <i class="bi bi-heart-fill"></i>
+                                            @else
+                                                <i class="bi bi-heart"></i>
+                                            @endif
+                                        </button>
+                                    @else
+                                        <button
+                                            wire:click="$dispatchTo('auth.login-modal', 'open-login')"
+                                            class="card-like-heart-btn"
+                                        >
+                                            <i class="bi bi-heart"></i>
+                                        </button>
+                                    @endauth
+
+                                    <span class="likes-badge-count">
+                                        {{ $this->questLikesCount }}
+                                    </span>
+                                </div>
+
                             </div>
 
                             <button
