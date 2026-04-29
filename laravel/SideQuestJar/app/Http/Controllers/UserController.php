@@ -51,8 +51,14 @@ class UserController extends Controller
 
     public function user()
     {
+        $user = auth()->user();
+
         return view('user.show', [
-            'user' => auth()->user()
+            'user' => $user,
+
+            'myJars' => $user->jars()->with('user')->latest()->get(),
+
+            'joinedJars' => $user->jars()->with('user')->latest()->get(),
         ]);
     }
 }
