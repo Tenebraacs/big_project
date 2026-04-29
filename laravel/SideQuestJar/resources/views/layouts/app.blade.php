@@ -23,7 +23,6 @@
 
 <livewire:auth.login-modal />
 
-
 <div id="app" class="d-flex flex-column min-vh-100">
 
     <nav class="navbar-base navbar navbar-expand-md navbar-light">
@@ -31,98 +30,21 @@
 
             <!-- Top row -->
             <div class="nav-top w-100 d-flex align-items-center justify-content-between">
-                <a class="navbar-brand mb-0 brand-link"
-                    href="{{ url('/') }}">
+                <a class="navbar-brand mb-0 brand-link" href="{{ url('/') }}">
+                    <span class="mobile-brand-logo d-md-none">SQJ</span>
 
-                        <span class="mobile-brand-logo d-md-none">SQJ</span>
-
-                        <span class="logo-second fs-3 d-none d-md-inline"
-                            style="text-shadow: 0px 3px black; color: #EAB2A0;">
-                            {{ config('app.name', 'SideQuestJar') }}
-                        </span>
-                    </a>
+                    <span class="logo-second fs-3 d-none d-md-inline"
+                          style="text-shadow: 0px 3px black; color: #EAB2A0;">
+                        {{ config('app.name', 'SideQuestJar') }}
+                    </span>
+                </a>
 
                 {{-- Mobile: user menu only --}}
                 <div class="d-flex d-md-none align-items-center">
                     @auth
                         <ul class="navbar-nav">
-                            <li class="nav-item dropdown user-dropdown">
-                                <a class="nav-link dropdown-toggle user-dropdown-toggle d-flex align-items-center gap-2"
-                                href="#"
-                                role="button"
-                                data-bs-toggle="dropdown"
-                                aria-expanded="false">
-
-                                    <span class="user-avatar">
-                                        @if (!empty(Auth::user()->profile_picture))
-                                            <img src="{{ Auth::user()->profile_picture_url }}" alt="{{ Auth::user()->username }}">
-                                        @else
-                                            <span class="user-avatar-fallback">
-                                                {{ strtoupper(substr(Auth::user()->username, 0, 1)) }}
-                                            </span>
-                                        @endif
-                                    </span>
-
-                                    <span class="user-name">{{ Auth::user()->username }}</span>
-                                </a>
-
-                                <div class="dropdown-menu dropdown-menu-end user-dropdown-menu">
-
-                                    <div class="user-dropdown-header">
-                                        <div class="user-dropdown-avatar">
-                                            @if (!empty(Auth::user()->profile_picture))
-                                                <img src="{{ Auth::user()->profile_picture_url }}" alt="{{ Auth::user()->username }}">
-                                            @else
-                                                <span class="user-avatar-fallback">
-                                                    {{ strtoupper(substr(Auth::user()->username, 0, 1)) }}
-                                                </span>
-                                            @endif
-                                        </div>
-
-                                        <div class="user-dropdown-info">
-                                            <div class="user-dropdown-name">{{ Auth::user()->username }}</div>
-                                            @if (!empty(Auth::user()->email))
-                                                <div class="user-dropdown-email">{{ Auth::user()->email }}</div>
-                                            @endif
-                                        </div>
-                                    </div>
-
-                                    <div class="dropdown-divider"></div>
-
-                                    <div class="mobile-dropdown-streak">
-                                        @livewire('navbar-streak-mobile')
-                                    </div>
-
-                                    <div class="dropdown-divider"></div>
-
-                                    <a class="dropdown-item user-dropdown-item" href="{{ route('user') }}">
-                                        <i class="bi bi-person-circle me-2"></i>
-                                        Profile
-                                    </a>
-
-                                    <a class="dropdown-item user-dropdown-item" href="{{ route('jars.create') }}">
-                                        <i class="bi bi-plus-circle me-2"></i>
-                                        Create Jar
-                                    </a>
-
-                                    @if(Auth::user()->is_admin)
-                                        <a class="dropdown-item user-dropdown-item" href="{{ route('users.index') }}">
-                                            <i class="bi bi-people me-2"></i>
-                                            Manage Users
-                                        </a>
-                                    @endif
-
-                                    <div class="dropdown-divider"></div>
-
-                                    <form action="{{ route('logout') }}" method="POST">
-                                        @csrf
-                                        <button type="submit" class="dropdown-item user-dropdown-item user-dropdown-logout">
-                                            <i class="bi bi-box-arrow-right me-2"></i>
-                                            Logout
-                                        </button>
-                                    </form>
-                                </div>
-                            </li>
+                            {{-- ✅ Livewire user menu (file: livewire/navbar/user-menu.blade.php) --}}
+                            <livewire:navbar.user-menu wire:key="navbar-user-menu-mobile" />
                         </ul>
                     @else
                         <div class="auth-buttons d-flex align-items-center gap-2">
@@ -158,7 +80,7 @@
 
                     <div class="nav-center">
                         @auth
-                            @livewire('navbar-streak')
+                            <livewire:navbar.navbar-streak />
                         @endauth
                     </div>
 
@@ -179,76 +101,8 @@
                                     </div>
                                 </li>
                             @else
-                                <li class="nav-item dropdown user-dropdown">
-                                    <a class="nav-link dropdown-toggle user-dropdown-toggle d-flex align-items-center gap-2"
-                                    href="#"
-                                    role="button"
-                                    data-bs-toggle="dropdown"
-                                    aria-expanded="false">
-
-                                        <span class="user-avatar">
-                                            @if (!empty(Auth::user()->profile_picture))
-                                                <img src="{{ Auth::user()->profile_picture_url }}" alt="{{ Auth::user()->username }}">
-                                            @else
-                                                <span class="user-avatar-fallback">
-                                                    {{ strtoupper(substr(Auth::user()->username, 0, 1)) }}
-                                                </span>
-                                            @endif
-                                        </span>
-
-                                        <span class="user-name">{{ Auth::user()->username }}</span>
-                                    </a>
-
-                                    <div class="dropdown-menu dropdown-menu-end user-dropdown-menu">
-                                        <div class="user-dropdown-header">
-                                            <div class="user-dropdown-avatar">
-                                                @if (!empty(Auth::user()->profile_picture))
-                                                    <img src="{{ Auth::user()->profile_picture_url }}" alt="{{ Auth::user()->username }}">
-                                                @else
-                                                    <span class="user-avatar-fallback">
-                                                        {{ strtoupper(substr(Auth::user()->username, 0, 1)) }}
-                                                    </span>
-                                                @endif
-                                            </div>
-
-                                            <div class="user-dropdown-info">
-                                                <div class="user-dropdown-name">{{ Auth::user()->username }}</div>
-                                                @if (!empty(Auth::user()->email))
-                                                    <div class="user-dropdown-email">{{ Auth::user()->email }}</div>
-                                                @endif
-                                            </div>
-                                        </div>
-
-                                        <div class="dropdown-divider"></div>
-
-                                        <a class="dropdown-item user-dropdown-item" href="{{ route('user') }}">
-                                            <i class="bi bi-person-circle me-2"></i>
-                                            Profile
-                                        </a>
-
-                                        <a class="dropdown-item user-dropdown-item" href="{{ route('jars.create') }}">
-                                            <i class="bi bi-plus-circle me-2"></i>
-                                            Create Jar
-                                        </a>
-
-                                        @if(Auth::user()->is_admin)
-                                            <a class="dropdown-item user-dropdown-item" href="{{ route('users.index') }}">
-                                                <i class="bi bi-people me-2"></i>
-                                                Manage Users
-                                            </a>
-                                        @endif
-
-                                        <div class="dropdown-divider"></div>
-
-                                        <form action="{{ route('logout') }}" method="POST">
-                                            @csrf
-                                            <button type="submit" class="dropdown-item user-dropdown-item user-dropdown-logout">
-                                                <i class="bi bi-box-arrow-right me-2"></i>
-                                                Logout
-                                            </button>
-                                        </form>
-                                    </div>
-                                </li>
+                                {{-- ✅ Livewire user menu (file: livewire/navbar/user-menu.blade.php) --}}
+                                <livewire:navbar.user-menu wire:key="navbar-user-menu-desktop" />
                             @endguest
                         </ul>
                     </div>

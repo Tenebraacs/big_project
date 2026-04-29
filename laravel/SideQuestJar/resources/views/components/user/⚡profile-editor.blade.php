@@ -1,12 +1,15 @@
 <?php
 
 use Livewire\Component;
+use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 
 new class extends Component
 {
+    use WithFileUploads;
+
     public string $username = '';
     public string $email = '';
 
@@ -17,6 +20,11 @@ new class extends Component
     public bool $editUsername = false;
     public bool $editEmail = false;
     public bool $editPassword = false;
+
+    
+    public bool $editPicture = false;
+    public $profile_picture_upload = null; // TemporaryUploadedFile|null
+    
 
     public function mount(): void
     {
@@ -31,6 +39,7 @@ new class extends Component
         $this->editUsername = false;
         $this->editEmail = false;
         $this->editPassword = false;
+        $this->editPicture = false;
 
         $this->resetValidation();
 
@@ -39,9 +48,13 @@ new class extends Component
         $this->new_password = '';
         $this->new_password_confirmation = '';
 
+        // reset file input when switching edits
+        $this->profile_picture_upload = null;
+
         if ($field === 'username') $this->editUsername = true;
         if ($field === 'email') $this->editEmail = true;
         if ($field === 'password') $this->editPassword = true;
+        if ($field === 'picture') $this->editPicture = true;
     }
 
     public function cancelEdit(): void
@@ -54,12 +67,15 @@ new class extends Component
         $this->editUsername = false;
         $this->editEmail = false;
         $this->editPassword = false;
+        $this->editPicture = false;
 
         $this->resetValidation();
 
         $this->current_password = '';
         $this->new_password = '';
         $this->new_password_confirmation = '';
+
+        $this->profile_picture_upload = null;
     }
 
     public function saveUsername(): void
@@ -81,6 +97,8 @@ new class extends Component
 
         $this->editUsername = false;
         session()->flash('profile_saved', 'Username updated.');
+
+        $this->dispatch('profile-updated');
     }
 
     public function saveEmail(): void
@@ -101,6 +119,7 @@ new class extends Component
 
         $this->editEmail = false;
         session()->flash('profile_saved', 'E-mail updated.');
+        $this->dispatch('profile-updated');
     }
 
     public function savePassword(): void
@@ -117,7 +136,7 @@ new class extends Component
             return;
         }
 
-        // Your User model casts password => 'hashed', so plain assignment is OK.
+        // Your User model casts password => 'hashed'
         $user->password = $this->new_password;
         $user->save();
 
@@ -127,6 +146,29 @@ new class extends Component
         $this->new_password_confirmation = '';
 
         session()->flash('profile_saved', 'Password updated.');
+        $this->dispatch('profile-updated');
+    }
+
+    // NEW: save profile picture
+    public function savePicture(): void
+    {
+        $user = Auth::user();
+
+        $this->validate([
+            'profile_picture_upload' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
+        ]);
+
+       
+        $path = $this->profile_picture_upload->store('profile-pictures', 'public');
+
+        $user->profile_picture = $path; 
+        $user->save();
+
+        $this->editPicture = false;
+        $this->profile_picture_upload = null;
+
+        session()->flash('profile_saved', 'Profile picture updated.');
+        $this->dispatch('profile-updated');
     }
 };
 ?>
@@ -137,6 +179,40 @@ new class extends Component
             {{ session('profile_saved') }}
         </div>
     @endif
+
+    {{-- Profile Picture --}}
+    <div class="mb-4">
+        <label class="profile-label fs-4 d-flex align-self-start m-1 mb-0">Profile picture</label>
+
+        @if ($editPicture)
+            <div class="d-flex flex-column gap-2 align-items-start">
+                <input type="file" class="form-control" wire:model="profile_picture_upload" accept="image/*">
+
+                @error('profile_picture_upload')
+                    <div class="text-danger">{{ $message }}</div>
+                @enderror
+
+                {{-- preview --}}
+                @if ($profile_picture_upload)
+                    <img
+                        src="{{ $profile_picture_upload->temporaryUrl() }}"
+                        class="img-fluid rounded-4"
+                        style="max-width: 220px; aspect-ratio: 1/1; object-fit: cover;"
+                        alt="Preview"
+                    >
+                @endif
+
+                <div class="d-flex gap-2">
+                    <button class="btn edit-button fw-medium rounded-pill" wire:click="savePicture" type="button">Save</button>
+                    <button class="btn btn-secondary fw-medium rounded-pill" wire:click="cancelEdit" type="button">Cancel</button>
+                </div>
+            </div>
+        @else
+            <div class="d-flex gap-2 align-items-center">
+                <button class="btn edit-button fw-medium rounded-pill" wire:click="startEdit('picture')" type="button">Edit</button>
+            </div>
+        @endif
+    </div>
 
     {{-- Username --}}
     <div class="mb-3">

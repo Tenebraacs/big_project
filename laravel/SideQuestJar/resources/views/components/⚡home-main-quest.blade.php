@@ -5,8 +5,7 @@ use Livewire\WithFileUploads;
 use App\Models\QuestCompletion;
 use App\Models\JarUser;
 use Illuminate\Support\Facades\Auth;
-
-
+use Illuminate\Support\Facades\DB;
 
 new class extends Component
 {
@@ -66,7 +65,7 @@ new class extends Component
 
     public function claimQuest()
     {
-        if (!Auth::check() || !$this->mainQuest) {
+        if (!Auth::check() || !$this->mainQuest || !$this->mainJar) {
             return;
         }
 
@@ -77,48 +76,61 @@ new class extends Component
 
         $this->validate();
 
-        $imagePath = $this->completionImage->store('quest-completions', 'public');
+        DB::transaction(function () {
+            $imagePath = $this->completionImage->store('quest-completions', 'public');
 
-        QuestCompletion::create([
-            'completion_date' => now(),
-            'picture' => $imagePath,
-            'description' => $this->completionDescription,
-            'type' => 'public_post',
-            'user_id' => Auth::id(),
-            'jar_quest_id' => $this->mainQuest->id,
-        ]);
+            // 1) Create completion
+            QuestCompletion::create([
+                'completion_date' => now(),
+                'picture' => $imagePath,
+                'description' => $this->completionDescription,
+                'type' => 'public_post',
+                'user_id' => Auth::id(),
+                'jar_quest_id' => $this->mainQuest->id,
+            ]);
 
-        $user = Auth::user();
+            // 2) Increase quest completions count
+            $this->mainQuest->increment('completions');
 
-        $pivotRow = JarUser::where('user_id', $user->id)
-            ->where('jar_id', $this->mainJar->id)
-            ->first();
+            // 3) Award XP (xp_gain on jar_quests, fallback to 25)
+            $xpGained = (int) ($this->mainQuest->xp_gain ?? 25);
 
-        if (!$pivotRow) {
-            $user->jars()->attach($this->mainJar->id, ['streak' => 0]);
+            $user = Auth::user()->fresh();
+            $user->increment('user_xp', $xpGained);
 
+            // 4) Streak logic (your original logic)
             $pivotRow = JarUser::where('user_id', $user->id)
                 ->where('jar_id', $this->mainJar->id)
                 ->first();
-        }
 
-        $currentStreak = $pivotRow?->streak ?? 0;
+            if (!$pivotRow) {
+                $user->jars()->attach($this->mainJar->id, ['streak' => 0]);
 
-        $claimedYesterday = QuestCompletion::where('user_id', $user->id)
-            ->whereDate('completion_date', now()->subDay()->toDateString())
-            ->whereHas('jarQuest', function ($query) {
-                $query->where('jar_id', $this->mainJar->id);
-            })
-            ->exists();
+                $pivotRow = JarUser::where('user_id', $user->id)
+                    ->where('jar_id', $this->mainJar->id)
+                    ->first();
+            }
 
-        $newStreak = $claimedYesterday ? $currentStreak + 1 : 1;
+            $currentStreak = $pivotRow?->streak ?? 0;
 
-        $user->jars()->updateExistingPivot($this->mainJar->id, [
-            'streak' => $newStreak,
-        ]);
+            $claimedYesterday = QuestCompletion::where('user_id', $user->id)
+                ->whereDate('completion_date', now()->subDay()->toDateString())
+                ->whereHas('jarQuest', function ($query) {
+                    $query->where('jar_id', $this->mainJar->id);
+                })
+                ->exists();
 
+            $newStreak = $claimedYesterday ? $currentStreak + 1 : 1;
+
+            $user->jars()->updateExistingPivot($this->mainJar->id, [
+                'streak' => $newStreak,
+            ]);
+        });
+
+        // Refresh UI
         $this->dispatch('streak-updated');
         $this->dispatch('proof-created');
+        $this->dispatch('profile-updated'); // ✅ updates navbar + profile header XP/level
 
         unset($this->alreadyClaimedToday);
 
@@ -137,7 +149,7 @@ new class extends Component
                     <h1 class="fs-1 fw-bold welcome-text">No Usable Adventure Found</h1>
                 @endif
             </div>
-            
+
             <div class="card-body text-center">
                 <div class="row">
                     @if ($mainQuest)
@@ -147,7 +159,8 @@ new class extends Component
 
                         <div class="col-sm-4">
                             <div style="aspect-ratio: 1/1;">
-                                <img src="{{ $mainQuest->picture_url }}" alt="Jar picture" class="img-fluid w-100 h-100 rounded-5" style="object-fit: cover;">
+                                <img src="{{ $mainQuest->picture_url }}" alt="Jar picture"
+                                     class="img-fluid w-100 h-100 rounded-5" style="object-fit: cover;">
                             </div>
                         </div>
                     @endif
@@ -165,7 +178,6 @@ new class extends Component
                         </button>
                     @endif
                 @endauth
-
             </div>
         </div>
     </div>

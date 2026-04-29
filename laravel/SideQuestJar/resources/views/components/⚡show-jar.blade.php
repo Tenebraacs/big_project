@@ -194,19 +194,13 @@ new class extends Component
 
         if ($like) {
             $like->delete();
-            $this->questLiked = false;
-            $this->questLikesCount--;
         } else {
             $quest->likes()->create([
                 'user_id' => auth()->id(),
             ]);
-
-            $this->questLiked = true;
-            $this->questLikesCount++;
         }
 
-        $this->quests[$this->currentIndex]->likes_count = $this->questLikesCount;
-        $this->quests[$this->currentIndex]->is_liked = $this->questLiked;
+        $this->updateQuestLikeState();
     }
 
     public function joinJar()

@@ -7,37 +7,12 @@
                 <div class="card rounded-5 bg-block-blue m-3">
                     <div class="text-center card-body border-0">
 
-                        <div class="row">
-                            <div class="col-5 col-md-3">
-                                <div class="ratio ratio-1x1 m-2">
-                                    <img src="{{ $user->profile_picture_url }}" class="img-fluid rounded-circle" alt="Profile picture">
-                                </div>
-                            </div>
-
-                            <div class="col-7 col-md-9">
-                                <h1 class="fw-bold jar-name display-5 m-2"
-                                    style="font-size: clamp(1.5rem, 5vw, 3rem);">
-                                    {{ $user->username }}
-                                </h1>
-
-                                <!--Levels-->
-                                <div class="rounded-4 m-2 d-flex justify-content-center align-items-center mx-auto"
-                                     style="background-color: #A76F6F; max-height: 10vh; max-width: 5vw;">
-                                    <p class="jar-name fs-2 m-0">1</p>
-                                </div>
-
-                                <!--XP-->
-                                <div class="progress m-1" role="progressbar" aria-label="XP Bar" aria-valuenow="25"
-                                     aria-valuemin="0" aria-valuemax="100">
-                                    <div class="progress-bar" style="width: 25%"></div>
-                                </div>
-                                <p class="jar-name text-start m-1">100/500</p>
-                            </div>
-                        </div>
+                        {{-- ✅ Livewire header: big avatar + big username + xp/level --}}
+                        <livewire:user.profile-header />
 
                         <div class="row m-2">
                             <div class="col-12 col-lg-3 col-xl-5">
-                                {{-- This is where the editable fields go --}}
+                                {{-- ✅ Livewire editor: edit username/email/password/picture --}}
                                 <livewire:user.profile-editor />
                             </div>
 
