@@ -67,7 +67,7 @@ new class extends Component
 
             <div class="dropdown-divider"></div>
 
-            <a class="dropdown-item user-dropdown-item" href="{{ route('user.profile') }}">
+            <a class="dropdown-item user-dropdown-item" href="{{ route('users.profile') }}">
                 <i class="bi bi-person-circle me-2"></i>
                 Profile
             </a>

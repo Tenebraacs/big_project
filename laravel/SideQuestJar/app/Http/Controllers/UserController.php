@@ -14,7 +14,7 @@ class UserController extends Controller
     {
         abort_unless(auth()->user()?->is_admin, 403);
 
-        return view('user.index');
+        return view('users.index');
     }
 
     /**
@@ -67,7 +67,7 @@ class UserController extends Controller
     {
         $user = auth()->user();
 
-        return view('user.profile', [
+        return view('users.profile', [
             'user' => $user,
 
             'myJars' => $user->jars()->with('user')->latest()->get(),
