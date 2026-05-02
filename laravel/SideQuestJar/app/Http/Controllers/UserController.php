@@ -30,12 +30,20 @@ class UserController extends Controller
      */
     public function show(string $username)
     {
-        $user = User::where('username', $username)->firstOrFail();
+        $user = User::query()
+            ->where('username', $username)
+            ->firstOrFail();
 
-        return view('user.show', [
+        // If your profile page needs jars like your own profile page does:
+        // Adjust these queries to match your actual relationships/DB schema.
+
+        $myJars = $user->jars ?? collect();          // replace with real relation/query
+        $joinedJars = $user->joinedJars ?? collect(); // replace with real relation/query
+
+        return view('users.show', [
             'user' => $user,
-            'myJars' => $user->jars()->with('user')->latest()->get(),
-            'joinedJars' => $user->jars()->with('user')->latest()->get(),
+            'myJars' => $myJars,
+            'joinedJars' => $joinedJars,
         ]);
     }
 

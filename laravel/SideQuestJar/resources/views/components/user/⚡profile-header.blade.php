@@ -2,19 +2,31 @@
 
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 
 new class extends Component
 {
+    public ?User $user = null;
+
     protected $listeners = [
         'profile-updated' => '$refresh',
     ];
 
-    public function getUserProperty()
+    public function mount(?User $user = null): void
     {
-        return Auth::user()?->fresh();
+        // If a user is passed (users.show page), use it.
+        // Otherwise fall back to the logged-in user (profile page).
+        $this->user = $user ?? Auth::user();
     }
 
-    // You can tweak this anytime
+    // Make sure $this->user stays fresh when it's the auth user
+    public function getUserProperty()
+    {
+        return $this->user?->id
+            ? $this->user->fresh()
+            : null;
+    }
+
     public function getXpPerLevelProperty(): int
     {
         return 500;
@@ -27,7 +39,6 @@ new class extends Component
 
     public function getLevelProperty(): int
     {
-        // Level 1 at 0 XP
         return intdiv($this->totalXp, $this->xpPerLevel) + 1;
     }
 
