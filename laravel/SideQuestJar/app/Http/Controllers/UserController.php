@@ -28,9 +28,15 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $username)
     {
-        //
+        $user = User::where('username', $username)->firstOrFail();
+
+        return view('user.show', [
+            'user' => $user,
+            'myJars' => $user->jars()->with('user')->latest()->get(),
+            'joinedJars' => $user->jars()->with('user')->latest()->get(),
+        ]);
     }
 
     /**
@@ -53,7 +59,7 @@ class UserController extends Controller
     {
         $user = auth()->user();
 
-        return view('user.show', [
+        return view('user.profile', [
             'user' => $user,
 
             'myJars' => $user->jars()->with('user')->latest()->get(),

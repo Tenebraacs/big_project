@@ -231,7 +231,7 @@ new class extends Component
                             <textarea
                                 id="completionDescription"
                                 wire:model.defer="completionDescription"
-                                class="form-control claim-input claim-textarea"
+                                class="form-control claim-input claim-textarea theme-scrollbar"
                                 rows="4"
                                 maxlength="1000"
                                 placeholder="Add a short description about this claim"

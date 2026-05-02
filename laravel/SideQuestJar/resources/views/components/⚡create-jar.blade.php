@@ -30,6 +30,9 @@ new class extends Component
         if ($this->picture) {
             $validated['picture'] = $this->picture->store('jars', 'public');
         }
+        else{
+            unset($validated['picture']);
+        }
 
         $jar = Jar::create($validated);
 

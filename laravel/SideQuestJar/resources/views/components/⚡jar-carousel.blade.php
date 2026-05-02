@@ -145,8 +145,18 @@ new class extends Component
 
                                 @if ($jar->user)
                                     <p class="mb-0 mt-1 small text-light opacity-75">by</p>
-                                    <p class="mb-0 fw-bold" style="color: #EAB2A0; font-size: 1rem;">
-                                        &#64;{{ $jar->user->username ?? $jar->user->name ?? 'unknown' }}
+                                    <p class="mb-0 fw-bold" style="font-size: 1rem;">
+                                        @if($jar->user?->username)
+                                            <a
+                                                href="{{ route('users.show', ['username' => $jar->user->username]) }}"
+                                                class="text-decoration-none"
+                                                style="color:#EAB2A0;"
+                                            >
+                                                &#64;{{ $jar->user->username }}
+                                            </a>
+                                        @else
+                                            <span style="color:#EAB2A0;">&#64;unknown</span>
+                                        @endif
                                     </p>
                                 @endif
                             </div>

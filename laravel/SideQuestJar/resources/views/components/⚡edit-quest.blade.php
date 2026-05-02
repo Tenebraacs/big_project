@@ -60,7 +60,10 @@ new class extends Component
 
         $this->jarQuest->update($validated);
 
-        return redirect()->route('jars.show', $this->jar->id)
+        return redirect()->route('jars.show', [
+                'jar' => $this->jar->id,
+                'quest' => $this->jarQuest->id,
+            ])
             ->with('success', 'Quest updated successfully');
     }
 };

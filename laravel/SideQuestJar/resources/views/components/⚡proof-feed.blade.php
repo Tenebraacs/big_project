@@ -309,7 +309,8 @@ new class extends Component
         return 1;
     };
 
-    window.addEventListener('request-visible-count', () => {
+    // Livewire v4: use Livewire.on + dispatch with params ARRAY
+    Livewire.on('request-visible-count', () => {
         Livewire.dispatch('visible-count-changed', [computeVisibleCount()]);
     });
 

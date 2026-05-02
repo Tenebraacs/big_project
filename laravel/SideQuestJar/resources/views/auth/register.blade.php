@@ -3,122 +3,183 @@
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col"> 
-                <div class="row rounded-5 bg-block-blue p-4 align-item-center ">
-                    <div class="col-md-6">
-                        <h2 class="logo-first mt-3">SIDE QUEST</h2>
-                        <h1 class="logo-second display-1">JAR</h1>
-                        <br>
-                        <p class="welcome-text m-1.5 fs-1" style="transform: rotate(5deg);">Welcome to The Amazing Digital Side Quest Jar!</p>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="card block-radius">
-                        <div class="card-header form-text">
-                            <h3>{{ __('Register') }}</h3>
-                    </div>
+        <div class="col">
+            <div class="row rounded-5 bg-block-blue p-4 align-item-center">
+                <div class="col-md-6">
+                    <h2 class="logo-first mt-3">SIDE QUEST</h2>
+                    <h1 class="logo-second display-1">JAR</h1>
+                    <br>
+                    <p class="welcome-text m-1.5 fs-1" style="transform: rotate(5deg);">
+                        Welcome to The Amazing Digital Side Quest Jar!
+                    </p>
+                </div>
 
-                        <div class="card-body rounded-2xl form-text">
+                <div class="col-md-6">
+                    <div class="card claim-modal-content rounded-5 border-0">
+                        <div class="card-header border-0 claim-modal-header" style="background: transparent;">
+                            <h5 class="claim-modal-title m-0">{{ __('Register') }}</h5>
+                        </div>
+
+                        <div class="card-body claim-modal-body">
                             <form method="POST" action="{{ route('register') }}">
                                 @csrf
 
-                                
-                                <div class="row mb-3">
-                                    
-                                    <label for="username" class="row-md-4 col-form-label text-md-start">{{ __('UserName') }}</label>
-                                    <div class="row-md-6">
-                                        <input id="username" type="text" class="form-control @error('username') is-invalid @enderror" name="username" value="{{ old('username') }}" placeholder="Username" required autocomplete="username" autofocus>
+                                <div class="mb-3">
+                                    <label for="username" class="claim-label">{{ __('UserName') }}</label>
+                                    <input
+                                        id="username"
+                                        type="text"
+                                        class="form-control claim-input @error('username') is-invalid @enderror"
+                                        name="username"
+                                        value="{{ old('username') }}"
+                                        placeholder="Username"
+                                        required
+                                        autocomplete="username"
+                                        autofocus
+                                    >
+                                    @error('username')
+                                        <div class="mt-2 small fw-bold" style="color:#FFD2C4;">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
+                                </div>
 
-                                        @error('username')
-                                            <span class="invalid-feedback" role="alert">
-                                                <strong>{{ $message }}</strong>
-                                            </span>
-                                        @enderror
+                                <div class="mb-3">
+                                    <label for="birth_date" class="claim-label">{{ __('Birth Date') }}</label>
+
+                                    <div class="input-group claim-input-group">
+                                        <span class="input-group-text claim-input-addon">
+                                        <i class="bi bi-calendar3"></i>
+                                        </span>
+
+                                        <input
+                                            id="birth_date"
+                                            type="text"
+                                            class="form-control claim-input claim-date js-birthdate @error('birth_date') is-invalid @enderror"
+                                            name="birth_date"
+                                            value="{{ old('birth_date') }}"
+                                            placeholder="YYYY-MM-DD"
+                                            autocomplete="bday"
+                                            />
+                                    </div>
+
+                                    <div class="claim-help">You must be 16+</div>
+
+                                    @error('birth_date')
+                                        <div class="mt-2 small fw-bold" style="color:#FFD2C4;">
+                                        {{ $message }}
+                                        </div>
+                                    @enderror
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="claim-label">{{ __('Full Name') }}</label>
+                                    <div class="row g-2">
+                                        <div class="col-12 col-sm-6">
+                                            <input
+                                                id="first_name"
+                                                type="text"
+                                                class="form-control claim-input @error('first_name') is-invalid @enderror"
+                                                name="first_name"
+                                                value="{{ old('first_name') }}"
+                                                placeholder="First Name"
+                                                required
+                                                autocomplete="given-name"
+                                            >
+                                            @error('first_name')
+                                                <div class="mt-2 small fw-bold" style="color:#FFD2C4;">
+                                                    {{ $message }}
+                                                </div>
+                                            @enderror
+                                        </div>
+
+                                        <div class="col-12 col-sm-6">
+                                            <input
+                                                id="last_name"
+                                                type="text"
+                                                class="form-control claim-input @error('last_name') is-invalid @enderror"
+                                                name="last_name"
+                                                value="{{ old('last_name') }}"
+                                                placeholder="Last Name"
+                                                required
+                                                autocomplete="family-name"
+                                            >
+                                            @error('last_name')
+                                                <div class="mt-2 small fw-bold" style="color:#FFD2C4;">
+                                                    {{ $message }}
+                                                </div>
+                                            @enderror
+                                        </div>
                                     </div>
                                 </div>
 
-                                <div class="row mb-3">
-                                    <label for="birth_date" class="row-md-4 col-form-label text-md-start">{{ __('Birth Date') }}</label>
-
-                                    <div class="row-md-6">
-                                        <input id="birth_date" type="date" class="form-control @error('birth_date') is-invalid @enderror" name="birth_date" value="{{ old('birth_date') }}" max="{{ date( 'Y-m-d') }}" autocomplete="birth_date" autofocus>
-
-                                        @error('birth_date')
-                                            <span class="invalid-feedback" role="alert">
-                                                <strong>{{ $message }}</strong>
-                                            </span>
-                                        @enderror
-                                    </div>
-                                </div>
-                                    
-                                <div class="row mb-3">       
-                                    <label for="first_name" class="row-md-4 col-form-label text-md-start">{{ __('Full Name') }}</label>
-                                    <div class="col">    
-                                        
-                                        <input id="first_name" type="text" class="form-control @error('first_name') is-invalid @enderror" name="first_name" value="{{ old('first_name') }}" placeholder="First Name" required autocomplete="given-name">
-                                        @error('first_name')
-                                            <span class="invalid-feedback" role="alert">
-                                                <strong>{{ $message }}</strong>
-                                            </span>
-                                        @enderror
-                                    </div>
-
-                                    <div class="col">                               
-                                        <input id="last_name" type="text" class="form-control @error('last_name') is-invalid @enderror" name="last_name" value="{{ old('last_name') }}" placeholder="Last Name" required autocomplete="family-name">
-                                        @error('last_name')
-                                            <span class="invalid-feedback" role="alert">
-                                                <strong>{{ $message }}</strong>
-                                            </span>
-                                        @enderror
-                                    </div>
-                                </div>
-                            
-                                <div class="row mb-3">
-                                    <label for="email" class="row-md-4 -form-label text-md-start">{{ __('Email Address') }}</label>
-
-                                    <div class="row-md-6">
-                                        <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" placeholder="hello@example.com" required autocomplete="email">
-
-                                        @error('email')
-                                            <span class="invalid-feedback" role="alert">
-                                                <strong>{{ $message }}</strong>
-                                            </span>
-                                        @enderror
-                                    </div>
+                                <div class="mb-3">
+                                    <label for="email" class="claim-label">{{ __('Email Address') }}</label>
+                                    <input
+                                        id="email"
+                                        type="email"
+                                        class="form-control claim-input @error('email') is-invalid @enderror"
+                                        name="email"
+                                        value="{{ old('email') }}"
+                                        placeholder="hello@example.com"
+                                        required
+                                        autocomplete="email"
+                                    >
+                                    @error('email')
+                                        <div class="mt-2 small fw-bold" style="color:#FFD2C4;">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
                                 </div>
 
-                                <div class="row mb-3">
-                                    <label for="password" class="row-md-4 col-form-label text-md-start">{{ __('Password') }}</label>
-
-                                    <div class="row-md-6">
-                                        <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" placeholder="Password" required autocomplete="new-password">
-
-                                        @error('password')
-                                            <span class="invalid-feedback" role="alert">
-                                                <strong>{{ $message }}</strong>
-                                            </span>
-                                        @enderror
-                                    </div>
+                                <div class="mb-3">
+                                    <label for="password" class="claim-label">{{ __('Password') }}</label>
+                                    <input
+                                        id="password"
+                                        type="password"
+                                        class="form-control claim-input @error('password') is-invalid @enderror"
+                                        name="password"
+                                        placeholder="••••••••"
+                                        required
+                                        autocomplete="new-password"
+                                    >
+                                    @error('password')
+                                        <div class="mt-2 small fw-bold" style="color:#FFD2C4;">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
                                 </div>
 
-                                <div class="row mb-3">
-                                    <label for="password-confirm" class="row-md-4 col-form-label text-md-start">{{ __('Confirm Password') }}</label>
-
-                                    <div class="row-md-6">
-                                        <input id="password-confirm" type="password" class="form-control" name="password_confirmation" placeholder="Confrim Password" required autocomplete="new-password">
-                                    </div>
+                                <div class="mb-3">
+                                    <label for="password-confirm" class="claim-label">{{ __('Confirm Password') }}</label>
+                                    <input
+                                        id="password-confirm"
+                                        type="password"
+                                        class="form-control claim-input"
+                                        name="password_confirmation"
+                                        placeholder="••••••••"
+                                        required
+                                        autocomplete="new-password"
+                                    >
                                 </div>
 
-                                <div class="row mb-0">
-                                    <div class="col">
-                                        <button type="submit" class="btn w-100 blue-button rounded-pill">
-                                            {{ __('Register') }}
-                                        </button>
-                                    </div>
+                                <div class="d-flex flex-column gap-2 mt-3">
+                                    <button type="submit" class="btn w-100 blue-button rounded-pill">
+                                        {{ __('Register') }}
+                                    </button>
+
+                                    {{-- optional: add a consistent "back to login" link (doesn't change fundamentals) --}}
+                                    <a class="btn btn-link p-0 text-decoration-none" style="color:#FFD2C4;"
+                                       href="{{ route('login') }}">
+                                        Already have an account? Login
+                                    </a>
                                 </div>
+
                             </form>
                         </div>
-                        </div>
                     </div>
+                    {{-- /card --}}
+                </div>
             </div>
         </div>
     </div>

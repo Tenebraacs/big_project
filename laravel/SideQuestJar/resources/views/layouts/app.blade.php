@@ -43,7 +43,7 @@
                 <div class="d-flex d-md-none align-items-center">
                     @auth
                         <ul class="navbar-nav">
-                            {{-- ✅ Livewire user menu (file: livewire/navbar/user-menu.blade.php) --}}
+                            
                             <livewire:navbar.user-menu wire:key="navbar-user-menu-mobile" />
                         </ul>
                     @else
@@ -101,7 +101,7 @@
                                     </div>
                                 </li>
                             @else
-                                {{-- ✅ Livewire user menu (file: livewire/navbar/user-menu.blade.php) --}}
+                                
                                 <livewire:navbar.user-menu wire:key="navbar-user-menu-desktop" />
                             @endguest
                         </ul>

@@ -24,12 +24,24 @@ Route::get('/jars/{jar}/{quest?}', [JarController::class, 'show'])->name('jars.s
 
 Route::get('/user', [UserController::class, 'user'])
     ->middleware('auth')
-    ->name('user');
+    ->name('user.profile');
+
+
+
+
 
 Route::get('/users', [UserController::class, 'index'])->middleware('auth')->name('users.index');
-//Route::resource('/achievement', AchievementController::class);
-//TODO (frontend needed)
+
+
+
+Route::get('/users/{username}', [UserController::class, 'show'])
+    ->middleware('auth')
+    ->name('users.show');
+
+
 Auth::routes();
+
+
 
 //Route::get('/home', [JarController::class, 'home'])->name('home');
 //Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

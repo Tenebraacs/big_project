@@ -9,80 +9,92 @@
                     <h2 class="logo-first mt-3">SIDE QUEST</h2>
                     <h1 class="logo-second display-1">JAR</h1>
                     <br>
-                    <p class="welcome-text m-1.5 fs-1" style="transform: rotate(5deg);">Welcome to The Amazing Digital Side Quest Jar!</p>
+                    <p class="welcome-text m-1.5 fs-1" style="transform: rotate(5deg);">
+                        Welcome to The Amazing Digital Side Quest Jar!
+                    </p>
                 </div>
+
                 <div class="col-md-6">
-                    <div class="card block-radius">
+                    {{-- keep it a "card", but style it like the modal --}}
+                    <div class="card claim-modal-content rounded-5 border-0">
+                        <div class="card-header border-0 claim-modal-header" style="background: transparent;">
+                            <h5 class="claim-modal-title m-0">{{ __('Login') }}</h5>
+                        </div>
 
-                    <div class="card-header form-text"><h3>{{ __('Login') }}</h3></div>
+                        <div class="card-body claim-modal-body">
+                            <form method="POST" action="{{ route('login') }}">
+                                @csrf
 
-                    <div class="card-body rounded-2xl form-text">
-                        <form method="POST" action="{{ route('login') }}">
-                            @csrf
-
-                            
-                            <div class="row mb-3">
-                                <label for="email" class="row-md-4 col-form-label text-md-start">{{ __('Email Address') }}</label>
-                                <div class="row-md-6">
-                                    <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" placeholder="hello@example.com" required autocomplete="email" autofocus>
-
+                                <div class="mb-3">
+                                    <label for="email" class="claim-label">{{ __('Email Address') }}</label>
+                                    <input
+                                        id="email"
+                                        type="email"
+                                        class="form-control claim-input @error('email') is-invalid @enderror"
+                                        name="email"
+                                        value="{{ old('email') }}"
+                                        placeholder="you@example.com"
+                                        required
+                                        autocomplete="email"
+                                        autofocus
+                                    >
                                     @error('email')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
+                                        <div class="mt-2 small fw-bold" style="color:#FFD2C4;">
+                                            {{ $message }}
+                                        </div>
                                     @enderror
                                 </div>
-                            </div>
 
-                            <div class="row mb-3">
-                                <label for="password" class="row-md-4 col-form-label text-md-start">{{ __('Password') }}</label>
-
-                                <div class="row-md-6">
-                                    <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" placeholder="Password" required autocomplete="current-password">
-
+                                <div class="mb-3">
+                                    <label for="password" class="claim-label">{{ __('Password') }}</label>
+                                    <input
+                                        id="password"
+                                        type="password"
+                                        class="form-control claim-input @error('password') is-invalid @enderror"
+                                        name="password"
+                                        placeholder="••••••••"
+                                        required
+                                        autocomplete="current-password"
+                                    >
                                     @error('password')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
+                                        <div class="mt-2 small fw-bold" style="color:#FFD2C4;">
+                                            {{ $message }}
+                                        </div>
                                     @enderror
                                 </div>
-                            </div>
 
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
-
-                                        <label class="form-check-label" for="remember">
-                                            {{ __('Remember Me') }}
-                                        </label>
-                                    </div>
+                                <div class="form-check mb-3">
+                                    <input
+                                        class="form-check-input claim-check"
+                                        type="checkbox"
+                                        name="remember"
+                                        id="remember"
+                                        {{ old('remember') ? 'checked' : '' }}
+                                    >
+                                    <label class="form-check-label claim-check-label" for="remember">
+                                        {{ __('Remember Me') }}
+                                    </label>
                                 </div>
-                            </div>
 
-                            <div class="row">
-                                    <button type="submit" class="btn w-100 blue-button rounded-pill">
+                                <div class="d-flex flex-column gap-2">
+                                    <button type="submit" class="btn blue-button rounded-pill w-100">
                                         {{ __('Login') }}
                                     </button>
 
                                     @if (Route::has('password.request'))
-                                        <a class="btn btn-link text-black" href="{{ route('password.request') }}">
+                                        <a class="btn btn-link p-0 text-decoration-none" style="color:#FFD2C4;"
+                                           href="{{ route('password.request') }}">
                                             {{ __('Forgot Your Password?') }}
                                         </a>
                                     @endif
                                 </div>
 
-                            <div class="row mb-0">
-                                
-                            </div>
-                        </form>
+                            </form>
+                        </div>
                     </div>
-
-                </div>
+                    {{-- /card --}}
                 </div>
             </div>
-            
-
         </div>
     </div>
 </div>

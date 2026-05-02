@@ -13,7 +13,8 @@
 
 // Bootstrap
 @import 'bootstrap/scss/bootstrap';
-
+// Flatpicker
+@import "flatpickr/dist/flatpickr.css";
 
 body {
     -webkit-user-select: none;
@@ -1457,4 +1458,136 @@ body {
   font-family: "Fredoka", sans-serif;
   font-weight: bolder;      /* optional: match the heading weight vibe */
   text-shadow: 0px 4px black; /* optional: same shadow as .jar-name */
+}
+
+
+/* Reusable themed scrollbar */
+.theme-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: #EAB2A0 rgba(45, 67, 86, 0.55);
+}
+
+.theme-scrollbar::-webkit-scrollbar { width: 12px; }
+.theme-scrollbar::-webkit-scrollbar-track {
+    background: rgba(45, 67, 86, 0.55);
+    border: 2px solid rgba(234, 178, 160, 0.25);
+    border-radius: 999px;
+}
+.theme-scrollbar::-webkit-scrollbar-thumb {
+    background: #EAB2A0;
+    border: 3px solid rgba(45, 67, 86, 0.55);
+    border-radius: 999px;
+}
+.theme-scrollbar::-webkit-scrollbar-thumb:hover { background: #f3c3b3; }
+
+
+.claim-input-group .claim-input {
+  border-left: 0;
+}
+
+.claim-input-addon {
+  background-color: rgba(234, 178, 160, 0.12);
+  border: 2px solid rgba(234, 178, 160, 0.28);
+  border-right: 0;
+  color: #EAB2A0;
+  border-radius: 1rem 0 0 1rem;
+  padding: 0.8rem 0.9rem;
+}
+
+.claim-input-group .claim-input {
+  border: 2px solid rgba(234, 178, 160, 0.28);
+  border-radius: 0 1rem 1rem 0;
+}
+
+.claim-date {
+  color-scheme: dark; /* makes the native picker fit dark-ish themes in many browsers */
+}
+
+/* Make the date text readable and consistent */
+.claim-date::-webkit-datetime-edit {
+  color: #fff;
+}
+.claim-date::-webkit-calendar-picker-indicator {
+  filter: invert(84%) sepia(24%) saturate(273%) hue-rotate(327deg) brightness(101%) contrast(92%);
+  opacity: 0.95;
+  cursor: pointer;
+}
+
+.claim-help {
+  margin-top: 0.35rem;
+  font-size: 0.85rem;
+  color: rgba(234, 178, 160, 0.85);
+  font-family: "Fredoka", sans-serif;
+  font-weight: 600;
+}
+
+
+/* --- Flatpickr theme override to match Side Quest Jar --- */
+.flatpickr-calendar {
+  background: linear-gradient(180deg, #365066 0%, #2D4356 100%);
+  border: 2px solid rgba(234, 178, 160, 0.35);
+  box-shadow: 0 18px 40px rgba(0,0,0,0.35);
+  border-radius: 1rem;
+  overflow: hidden;
+  font-family: "Fredoka", sans-serif;
+}
+
+.flatpickr-months .flatpickr-month,
+.flatpickr-current-month,
+.flatpickr-current-month input.cur-year {
+  color: #EAB2A0;
+}
+
+.flatpickr-months .flatpickr-prev-month,
+.flatpickr-months .flatpickr-next-month {
+  color: #EAB2A0;
+  fill: #EAB2A0;
+}
+
+.flatpickr-weekdays {
+  background: rgba(234, 178, 160, 0.08);
+}
+
+span.flatpickr-weekday {
+  color: rgba(234, 178, 160, 0.9);
+  font-weight: 700;
+}
+
+.flatpickr-day {
+  color: rgba(255, 255, 255, 0.88);
+  border-radius: 0.85rem;
+}
+
+.flatpickr-day:hover {
+  background: rgba(234, 178, 160, 0.20);
+  border-color: transparent;
+}
+
+.flatpickr-day.today {
+  border-color: rgba(234, 178, 160, 0.85);
+}
+
+.flatpickr-day.selected,
+.flatpickr-day.startRange,
+.flatpickr-day.endRange {
+  background: #EAB2A0;
+  color: #2D4356;
+  border-color: #FFD2C4;
+  font-weight: 800;
+}
+
+.flatpickr-time input,
+.flatpickr-time .flatpickr-am-pm {
+  color: #EAB2A0;
+}
+
+/* Make the altInput match your claim-input styling */
+input.flatpickr-input[readonly],
+.flatpickr-alt-input {
+  background-color: rgba(234, 178, 160, 0.12) !important;
+  border: 2px solid rgba(234, 178, 160, 0.28) !important;
+  color: #fff !important;
+  border-radius: 1rem !important;
+  padding: 0.8rem 1rem !important;
+  font-family: "Fredoka", sans-serif !important;
 }
