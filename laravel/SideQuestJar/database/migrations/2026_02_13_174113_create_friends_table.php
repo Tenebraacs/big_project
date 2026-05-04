@@ -13,7 +13,11 @@ return new class extends Migration
     {
         Schema::create('friends', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('friend_id')->constrained('users')->cascadeOnDelete();
+            $table->enum('status', ['pending', 'accepted'])->default('pending');
             $table->timestamps();
+            $table->unique(['user_id', 'friend_id']);
         });
     }
 

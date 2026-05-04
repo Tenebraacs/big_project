@@ -23,17 +23,18 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
+        $username = fake()->unique()->userName();
         return [
-            'username' => fake()->name(),
-            'nickname' => fake()->name(),
+            'username' => $username,
+            'nickname' => fake()->firstName(),
             'fullname' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
             'password' => static::$password ??= Hash::make('password'),
-            'profile_picture' => 'https://i.ibb.co/Ngk3xx10/Godly-Pfp.png',
+            'profile_picture' => "https://api.dicebear.com/7.x/avataaars/svg?seed=$username",
             'birth_date' => fake()->date("Y-m-d"),
-            'joined_date' => fake()->dateTime(),
-            'user_xp' => fake()->numberBetween(0,1000000),
-            'is_customized' => fake()->boolean(50),
+            'joined_date' => fake()->dateTimeBetween('-1 year', 'now'),
+            'user_xp' => fake()->numberBetween(0, 5000),
+            'is_customized' => fake()->boolean(20),
             'remember_token' => Str::random(10),
         ];
     }

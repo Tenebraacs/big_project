@@ -72,6 +72,16 @@ new class extends Component
                 Profile
             </a>
 
+            <a class="dropdown-item user-dropdown-item" href="{{ route('friends.index') }}">
+                <i class="bi bi-people-fill me-2"></i>
+                Friends
+            </a>
+
+            <a class="dropdown-item user-dropdown-item" href="{{ route('chat.index') }}">
+                <i class="bi bi-chat-dots-fill me-2"></i>
+                Chat
+            </a>
+
             <a class="dropdown-item user-dropdown-item" href="{{ route('jars.create') }}">
                 <i class="bi bi-plus-circle me-2"></i>
                 Create Jar

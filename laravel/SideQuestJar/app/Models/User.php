@@ -108,5 +108,30 @@ class User extends Authenticatable
     
 
 
+    public function friends()
+    {
+        return $this->belongsToMany(User::class, 'friends', 'user_id', 'friend_id')
+            ->withPivot('status')
+            ->wherePivot('status', 'accepted');
+    }
 
+    public function friendRequestsSent()
+    {
+        return $this->hasMany(Friend::class, 'user_id')->where('status', 'pending');
+    }
+
+    public function friendRequestsReceived()
+    {
+        return $this->hasMany(Friend::class, 'friend_id')->where('status', 'pending');
+    }
+
+    public function sentMessages()
+    {
+        return $this->hasMany(Message::class, 'sender_id');
+    }
+
+    public function receivedMessages()
+    {
+        return $this->hasMany(Message::class, 'receiver_id');
+    }
 }

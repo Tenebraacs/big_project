@@ -27,6 +27,11 @@ class StoreJarRequest extends FormRequest
      */
     public function rules(): array
     {
+        $types = ['public_jar', 'private_jar', 'friends_only_jar', 'invite_only_jar'];
+        if (auth()->check() && auth()->user()->is_admin) {
+            $types[] = 'official_jar';
+        }
+
         return [
             'name' => [
                 'required',
@@ -38,6 +43,7 @@ class StoreJarRequest extends FormRequest
             ],
             'description' => ['nullable', 'string'],
             'picture' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
+            'type' => ['required', Rule::in($types)],
         ];
     }
 }

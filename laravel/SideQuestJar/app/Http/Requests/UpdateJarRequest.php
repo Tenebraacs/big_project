@@ -22,6 +22,11 @@ class UpdateJarRequest extends FormRequest
      */
     public function rules(): array
     {
+        $types = ['public_jar', 'private_jar', 'friends_only_jar', 'invite_only_jar'];
+        if (auth()->check() && auth()->user()->is_admin) {
+            $types[] = 'official_jar';
+        }
+
         return [
             
             //TODO: 14-19 videok //Puszi a Pocidra Voros
@@ -32,10 +37,11 @@ class UpdateJarRequest extends FormRequest
                 'max:255',
                 Rule::unique('jars')->where(function ($query) {
                     return $query->where('created_by', auth()->id());
-                }),
+                })->ignore($this->route('jar')),
             ],
             'description' => ['nullable', 'string'],
             'picture' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
+            'type' => ['required', Rule::in($types)],
 
         ];
         

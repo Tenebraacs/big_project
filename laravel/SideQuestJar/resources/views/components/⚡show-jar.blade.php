@@ -379,8 +379,8 @@ new class extends Component
                         <div class="d-flex flex-column gap-2">
                             @foreach ($this->jar->users->sortByDesc(fn($user) => $user->pivot->streak ?? 0) as $user)
                                 <div wire:key="jar-user-{{ $this->jar->id }}-{{ $user->id }}" class="rounded-4 px-3 py-2" style="background-color: #EAB2A0;">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <span class="fw-bold text-dark">{{ $user->username }}</span>
+                                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+                                        <span class="fw-bold text-dark text-break">{{ $user->username }}</span>
 
                                         <div class="d-flex gap-1 align-items-center">
                                             @if ($user->id === $this->jar->created_by)
@@ -564,7 +564,7 @@ new class extends Component
 
                             <a
                                 href="{{ route('jars.quests.create', ['jar' => $this->jar->id]) }}"
-                                class="btn fw-medium pink-button rounded-pill w-50 fs-3 p-0 m-1"
+                                class="btn fw-medium pink-button rounded-pill w-75 w-lg-50 fs-5 fs-md-4 px-3 py-2 m-1"
                             >
                                 Add New Quest
                             </a>
@@ -572,7 +572,7 @@ new class extends Component
                             @if($this->currentQuest && $this->jar->quests->isNotEmpty())
                                 <a
                                     href="{{ route('jars.quests.edit', ['jar' => $this->jar->id, 'jarQuest' => $this->currentQuest->id]) }}"
-                                    class="btn fw-medium pink-button rounded-pill w-50 fs-3 p-0 m-1"
+                                    class="btn fw-medium pink-button rounded-pill w-75 w-lg-50 fs-5 fs-md-4 px-3 py-2 m-1"
                                 >
                                     Edit Current Quest
                                 </a>
@@ -582,7 +582,7 @@ new class extends Component
                                 <button
                                     type="button"
                                     wire:click="confirmDeleteQuest"
-                                    class="w-50 border-0 btn btn-outline-danger rounded-pill fs-4 p-0 m-1"
+                                    class="border-0 btn btn-outline-danger rounded-pill w-75 w-lg-50 fs-5 fs-md-4 px-3 py-2 m-1"
                                 >
                                     Delete Quest
                                 </button>
@@ -592,7 +592,7 @@ new class extends Component
                                 <button
                                     type="button"
                                     wire:click="leaveJar"
-                                    class="btn fw-medium pink-button rounded-pill w-50 fs-3 p-0 m-1"
+                                    class="btn fw-medium pink-button rounded-pill w-75 w-lg-50 fs-5 fs-md-4 px-3 py-2 m-1"
                                 >
                                     Leave Jar
                                 </button>
@@ -600,7 +600,7 @@ new class extends Component
                                 <button
                                     type="button"
                                     wire:click="joinJar"
-                                    class="btn fw-medium pink-button rounded-pill w-50 fs-3 p-0 m-1"
+                                    class="btn fw-medium pink-button rounded-pill w-75 w-lg-50 fs-5 fs-md-4 px-3 py-2 m-1"
                                 >
                                     Join Jar
                                 </button>
@@ -640,7 +640,7 @@ new class extends Component
 
                             <a
                                 href="{{ route('jars.edit', $this->jar) }}"
-                                class="btn fw-medium pink-button rounded-pill w-75 fs-5 p-0"
+                                class="btn fw-medium pink-button rounded-pill w-75 px-3 py-2 fs-5 fs-md-4"
                             >
                                 Edit Jar
                             </a>
@@ -648,7 +648,7 @@ new class extends Component
                             <button
                                 type="button"
                                 wire:click="confirmDeleteJar"
-                                class="w-75 border-0 btn btn-outline-danger rounded-pill fs-5 p-0"
+                                class="w-75 border-0 btn btn-outline-danger rounded-pill px-3 py-2 fs-5 fs-md-4"
                             >
                                 Delete Jar
                             </button>

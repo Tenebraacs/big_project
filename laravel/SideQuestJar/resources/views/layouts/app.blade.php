@@ -42,7 +42,10 @@
                 {{-- Mobile: user menu only --}}
                 <div class="d-flex d-md-none align-items-center">
                     @auth
-                        <ul class="navbar-nav">
+                        <div class="me-3 d-flex align-items-center">
+                            <livewire:navbar.navbar-streak />
+                        </div>
+                        <ul class="navbar-nav m-0 p-0">
                             
                             <livewire:navbar.user-menu wire:key="navbar-user-menu-mobile" />
                         </ul>
@@ -118,17 +121,17 @@
 
     <footer class="mt-auto">
         <div class="footer-base py-3">
-            <div class="container-fluid d-flex justify-content-center align-items-center">
+            <div class="container-fluid">
+                <div class="row align-items-center">
+                    <div class="col-12 col-md-6 text-center text-md-start mb-2 mb-md-0">
+                        <p class="mb-0">+36 20 261 9875</p>
+                        <p class="mb-0">sidequestjar@gmail.com</p>
+                    </div>
 
-                <div class="col-6 text-start">
-                    <p class="mb-0">+36 20 261 9875</p>
-                    <p class="mb-0">sidequestjar@gmail.com</p>
+                    <div class="col-12 col-md-6 text-center text-md-end">
+                        <p class="mb-0">© 2026 SideQuestJar</p>
+                    </div>
                 </div>
-
-                <div class="col-6 text-end">
-                    <p class="mb-0">© 2026 SideQuestJar</p>
-                </div>
-
             </div>
         </div>
     </footer>

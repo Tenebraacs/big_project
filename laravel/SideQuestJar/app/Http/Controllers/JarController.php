@@ -68,6 +68,32 @@ class JarController extends Controller
 
         $baseQuery = Jar::where('type', '!=', 'official_jar');
 
+        if (!auth()->check()) {
+            $baseQuery->where('type', 'public_jar');
+        } else {
+            $userId = auth()->id();
+            $friendIds = auth()->user()->friends()->pluck('users.id')->toArray();
+
+            $baseQuery->where(function($q) use ($userId, $friendIds) {
+                // Public jars are visible to everyone
+                $q->where('type', 'public_jar')
+                  // My own jars are always visible
+                  ->orWhere('created_by', $userId)
+                  // Friends only jars where the creator is a friend
+                  ->orWhere(function($subQ) use ($friendIds) {
+                      $subQ->where('type', 'friends_only_jar')
+                           ->whereIn('created_by', $friendIds);
+                  })
+                  // Invite only jars where I am a participant
+                  ->orWhere(function($subQ) use ($userId) {
+                      $subQ->where('type', 'invite_only_jar')
+                           ->whereHas('users', function($userQ) use ($userId) {
+                               $userQ->where('users.id', $userId);
+                           });
+                  });
+            });
+        }
+
         $mostPopularJars = (clone $baseQuery)
             ->with('user')
             ->withCount('users')
@@ -81,7 +107,7 @@ class JarController extends Controller
             ->get();
 
         $myJars = auth()->check()
-            ? (clone $baseQuery)->with('user')->where('created_by', auth()->id())->get()
+            ? Jar::with('user')->where('created_by', auth()->id())->get()
             : collect();
 
         return view('home', compact(

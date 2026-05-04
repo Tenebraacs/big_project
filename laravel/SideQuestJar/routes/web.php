@@ -34,13 +34,35 @@ Route::get('/users', [UserController::class, 'index'])->middleware('auth')->name
 
 
 
+Route::get('/users/search', [UserController::class, 'search'])
+    ->middleware('auth')
+    ->name('users.search');
+
 Route::get('/users/{username}', [UserController::class, 'show'])
     ->middleware('auth')
     ->name('users.show');
 
 
+use App\Http\Controllers\FriendController;
+use App\Http\Controllers\MessageController;
+
 Auth::routes();
 
+Route::middleware('auth')->group(function () {
+    // Friends
+    Route::get('/friends', [FriendController::class, 'index'])->name('friends.index');
+    Route::post('/friends/add', [FriendController::class, 'addByUsername'])->name('friends.add');
+    Route::post('/friends/{user}', [FriendController::class, 'store'])->name('friends.store');
+    Route::post('/friends/{user}/accept', [FriendController::class, 'accept'])->name('friends.accept');
+    Route::post('/friends/{user}/decline', [FriendController::class, 'decline'])->name('friends.decline');
+    Route::delete('/friends/{user}', [FriendController::class, 'destroy'])->name('friends.destroy');
+
+    // Chat
+    Route::get('/chat', [MessageController::class, 'index'])->name('chat.index');
+    Route::get('/chat/{user}', [MessageController::class, 'show'])->name('chat.show');
+    Route::get('/chat/{user}/messages', [MessageController::class, 'fetchMessages'])->name('chat.fetch');
+    Route::post('/chat/{user}/messages', [MessageController::class, 'store'])->name('chat.store');
+});
 
 
 //Route::get('/home', [JarController::class, 'home'])->name('home');

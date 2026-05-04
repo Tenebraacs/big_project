@@ -10,5 +10,18 @@ class Friend extends Model
 {
     /** @use HasFactory<\Database\Factories\FriendFactory> */
     use HasFactory;
-    use SoftDeletes;
+    
+    // We don't use softdeletes in the updated migration, so I'll remove it.
+    // Also, setting fillable and relationships.
+    protected $fillable = ['user_id', 'friend_id', 'status'];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function friend()
+    {
+        return $this->belongsTo(User::class, 'friend_id');
+    }
 }

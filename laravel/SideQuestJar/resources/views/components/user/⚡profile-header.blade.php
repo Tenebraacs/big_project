@@ -14,9 +14,9 @@ new class extends Component
 
     public function mount(?User $user = null): void
     {
-        // If a user is passed (users.show page), use it.
+        // If a user is passed (users.show page) and exists, use it.
         // Otherwise fall back to the logged-in user (profile page).
-        $this->user = $user ?? Auth::user();
+        $this->user = ($user && $user->exists) ? $user : Auth::user();
     }
 
     // Make sure $this->user stays fresh when it's the auth user
@@ -96,5 +96,45 @@ new class extends Component
             {{ $this->xpIntoLevel }}/{{ $this->xpPerLevel }}
             <span class="opacity-75"> ({{ $this->xpToNextLevel }} to next level)</span>
         </p>
+
+        <!-- Actions (Friend/Message) -->
+        @if(auth()->check() && auth()->id() !== $this->user->id)
+            <div class="d-flex mt-3 gap-2">
+                @php
+                    $friendStatus = \App\Models\Friend::where(function($q) {
+                        $q->where('user_id', auth()->id())->where('friend_id', $this->user->id);
+                    })->orWhere(function($q) {
+                        $q->where('user_id', $this->user->id)->where('friend_id', auth()->id());
+                    })->first();
+                @endphp
+
+                @if(!$friendStatus)
+                    <form action="{{ route('friends.store', $this->user) }}" method="POST">
+                        @csrf
+                        <button type="submit" class="btn btn-sm btn-primary rounded-pill px-3">Add Friend</button>
+                    </form>
+                @elseif($friendStatus->status === 'pending')
+                    @if($friendStatus->user_id === auth()->id())
+                        <button class="btn btn-sm btn-secondary rounded-pill px-3" disabled>Request Sent</button>
+                    @else
+                        <form action="{{ route('friends.accept', $this->user) }}" method="POST">
+                            @csrf
+                            <button type="submit" class="btn btn-sm btn-success rounded-pill px-3">Accept Request</button>
+                        </form>
+                        <form action="{{ route('friends.decline', $this->user) }}" method="POST">
+                            @csrf
+                            <button type="submit" class="btn btn-sm btn-danger rounded-pill px-3">Decline</button>
+                        </form>
+                    @endif
+                @elseif($friendStatus->status === 'accepted')
+                    <a href="{{ route('chat.show', $this->user) }}" class="btn btn-sm btn-info rounded-pill px-3 text-white">Message</a>
+                    <form action="{{ route('friends.destroy', $this->user) }}" method="POST">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-sm btn-danger rounded-pill px-3">Remove</button>
+                    </form>
+                @endif
+            </div>
+        @endif
     </div>
 </div>
