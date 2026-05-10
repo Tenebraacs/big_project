@@ -54,7 +54,7 @@ class MessageController extends Controller
             ];
         });
 
-        $invitations = \App\Models\JarInvitation::with(['jar', 'invitee'])->where(function ($q) use ($user) {
+        $invitations = \App\Models\JarInvitation::with(['jar' => function($q) { $q->withTrashed(); }, 'invitee' => function($q) { $q->withTrashed(); }])->where(function ($q) use ($user) {
             $q->where('inviter_id', auth()->id())->where('invitee_id', $user->id);
         })->orWhere(function ($q) use ($user) {
             $q->where('inviter_id', $user->id)->where('invitee_id', auth()->id());
@@ -63,9 +63,9 @@ class MessageController extends Controller
                 'type' => 'invite',
                 'id' => $inv->id,
                 'sender_id' => $inv->inviter_id,
-                'content' => 'Invite sent to ' . $inv->invitee->username,
-                'jar_name' => $inv->jar->name,
-                'jar_thumb' => $inv->jar->picture_url,
+                'content' => 'Invite sent to ' . ($inv->invitee ? $inv->invitee->username : 'Unknown User'),
+                'jar_name' => $inv->jar ? $inv->jar->name : 'Deleted Jar',
+                'jar_thumb' => $inv->jar ? $inv->jar->picture_url : '',
                 'status' => $inv->status,
                 'created_at' => $inv->created_at,
                 'updated_at' => $inv->updated_at,

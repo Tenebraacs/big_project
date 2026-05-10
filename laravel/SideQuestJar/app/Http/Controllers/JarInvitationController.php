@@ -39,8 +39,10 @@ class JarInvitationController extends Controller
         // We update created_at so that a re-invite appears at the bottom of the chat timeline.
         $invitation = JarInvitation::updateOrCreate(
             ['jar_id' => $jar->id, 'invitee_id' => $invitee->id],
-            ['inviter_id' => $auth->id, 'status' => 'pending', 'created_at' => now()]
+            ['inviter_id' => $auth->id, 'status' => 'pending']
         );
+        $invitation->created_at = now();
+        $invitation->save();
 
         return response()->json(['message' => 'Invitation sent!', 'invitation' => $invitation]);
     }
