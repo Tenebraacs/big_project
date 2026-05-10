@@ -2,12 +2,19 @@
 
 use Livewire\Component;
 use Livewire\Attributes\Computed;
+use Livewire\WithFileUploads;
 use App\Models\Jar;
+use App\Models\QuestCompletion;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
+use Illuminate\Support\Str;
 
 new class extends Component
 {
-    use AuthorizesRequests;
+    use AuthorizesRequests, WithFileUploads;
 
     public Jar $jar;
     public ?int $quest = null;
@@ -27,6 +34,11 @@ new class extends Component
 
     // Comments
     public string $newComment = '';
+
+    // Claim Quest
+    public bool $showClaimModal = false;
+    public $completionImage = null;
+    public string $completionDescription = '';
 
     public function mount(Jar $jar, ?int $quest = null)
     {
@@ -71,6 +83,85 @@ new class extends Component
         if ($this->currentQuest) {
             $this->questLikesCount = $this->currentQuest->likes_count;
         }
+    }
+
+    public function getAlreadyClaimedTodayProperty()
+    {
+        if (!auth()->check() || !$this->currentQuest) {
+            return false;
+        }
+
+        return QuestCompletion::where('user_id', auth()->id())
+            ->where('jar_quest_id', $this->currentQuest->id)
+            ->whereDate('completion_date', now()->toDateString())
+            ->exists();
+    }
+
+    public function openClaimModal()
+    {
+        if (!auth()->check() || !$this->currentQuest || $this->alreadyClaimedToday) {
+            return;
+        }
+
+        $this->reset(['completionImage', 'completionDescription']);
+        $this->resetValidation();
+
+        $this->showClaimModal = true;
+    }
+
+    public function closeClaimModal()
+    {
+        $this->showClaimModal = false;
+        $this->reset(['completionImage', 'completionDescription']);
+        $this->resetValidation();
+    }
+
+    public function claimQuest()
+    {
+        if (!auth()->check() || !$this->currentQuest || !$this->jar) {
+            return;
+        }
+
+        if ($this->alreadyClaimedToday) {
+            $this->closeClaimModal();
+            return;
+        }
+
+        $this->validate([
+            'completionImage' => 'required|image|max:2048',
+            'completionDescription' => 'nullable|string|max:1000',
+        ]);
+
+        DB::transaction(function () {
+            $manager = new ImageManager(new Driver());
+            $image = $manager->read($this->completionImage->getRealPath());
+            $image->scaleDown(1200, 1200);
+
+            $filename = 'quest-completions/' . Str::random(40) . '.webp';
+            Storage::disk('public')->put($filename, (string) $image->toWebp(80));
+
+            $imagePath = $filename;
+
+            // 1) Create completion
+            QuestCompletion::create([
+                'completion_date' => now(),
+                'picture' => $imagePath,
+                'description' => $this->completionDescription,
+                'type' => 'public_post',
+                'user_id' => auth()->id(),
+                'jar_quest_id' => $this->currentQuest->id,
+            ]);
+
+            // 2) Increase quest completions count
+            $this->currentQuest->increment('completions');
+        });
+
+        // Refresh UI
+        $this->dispatch('proof-created');
+
+        unset($this->alreadyClaimedToday);
+
+        $this->closeClaimModal();
     }
 
     public function getCurrentQuestProperty()
@@ -572,6 +663,27 @@ new class extends Component
                                 </p>
                             @endif
                         </div>
+
+                        <div class="text-center mt-3 mb-2">
+                            @auth
+                                <button
+                                    wire:click="openClaimModal"
+                                    type="button"
+                                    class="btn home-claim-button m-2 rounded-pill {{ $this->alreadyClaimedToday ? 'claim-button-disabled' : 'blue-button' }}"
+                                    @if($this->alreadyClaimedToday) disabled @endif
+                                >
+                                    {{ $this->alreadyClaimedToday ? __('Already Claimed Today') : __('Claim') }}
+                                </button>
+                            @else
+                                <button
+                                    type="button"
+                                    class="btn home-claim-button m-2 rounded-pill blue-button"
+                                    wire:click="$dispatchTo('auth.login-modal', 'open-login')"
+                                >
+                                    Claim
+                                </button>
+                            @endauth
+                        </div>
                     @else
                         <div class="d-flex align-items-center justify-content-center h-100">
                             <div class="quest-info-card w-100">
@@ -707,6 +819,13 @@ new class extends Component
 
     </div>
 
+    <!-- JAR COMPLETIONS FEED -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <livewire:proof-feed :jarId="$this->jar->id" title="Jar Completions" wire:key="jar-proof-feed-{{ $this->jar->id }}" />
+        </div>
+    </div>
+
     <div>
         @if ($this->confirmingDeleteQuest)
             <div
@@ -795,8 +914,72 @@ new class extends Component
                             Kick
                         </button>
                     </div>
+            </div>
+        @endif
+
+        @if ($showClaimModal)
+            <div class="modal d-block claim-modal-backdrop" tabindex="-1" wire:click="closeClaimModal">
+                <div class="modal-dialog modal-dialog-centered" wire:click.stop>
+                    <div class="modal-content claim-modal-content rounded-5 border-0">
+                        <div class="modal-header claim-modal-header border-0">
+                            <h5 class="modal-title claim-modal-title">Claim Quest</h5>
+                            <button type="button" class="btn-close claim-modal-close" wire:click="closeClaimModal"></button>
+                        </div>
+
+                        <div class="modal-body claim-modal-body text-start">
+                            <div class="mb-3">
+                                <label class="form-label claim-label">Upload an image</label>
+
+                                <x-image-cropper property="completionImage" label="Choose Image" />
+
+                                @error('completionImage')
+                                    <div class="text-danger mt-2 fw-bold">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div wire:loading wire:target="completionImage" class="claim-uploading">
+                                Uploading image...
+                            </div>
+
+                            <div class="mb-3 mt-4">
+                                <label for="completionDescription" class="form-label claim-label">
+                                    Description <span class="opacity-75">(optional)</span>
+                                </label>
+
+                                <textarea
+                                    id="completionDescription"
+                                    wire:model.defer="completionDescription"
+                                    class="form-control claim-input claim-textarea theme-scrollbar"
+                                    rows="4"
+                                    maxlength="1000"
+                                    placeholder="Add a short description about this claim"
+                                ></textarea>
+
+                                @error('completionDescription')
+                                    <div class="text-danger mt-2 fw-bold">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            @if ($completionImage)
+                                <div class="mt-4 text-center">
+                                    <p class="claim-preview-label mb-2">Preview</p>
+                                    <img src="{{ $completionImage->temporaryUrl() }}" class="img-fluid rounded-4 claim-preview-image">
+                                </div>
+                            @endif
+                        </div>
+
+                        <div class="modal-footer claim-modal-footer border-0">
+                            <button type="button" class="btn claim-cancel-button rounded-pill" wire:click="closeClaimModal">
+                                Cancel
+                            </button>
+                            <button type="button" class="btn blue-button rounded-pill px-4" wire:click="claimQuest">
+                                Submit
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         @endif
+
     </div>
 </div>

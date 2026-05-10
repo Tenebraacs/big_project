@@ -26,7 +26,7 @@ new class extends Component
 
     public function setVisibleCount(int $count): void
     {
-        $this->visibleCount = max(1, min(4, $count));
+        $this->visibleCount = max(1, min(3, $count));
         $this->clampStart();
     }
 
@@ -133,10 +133,9 @@ new class extends Component
         <div class="col-12 col-md-10">
             <div class="row g-3 m-1 p-0 justify-content-center">
                 @foreach ($this->visibleJars as $loopIndex => $jar)
-                    <div class="col-12 col-md-6 col-lg-3 mb-5
+                    <div class="col-12 col-md-6 col-lg-4 mb-5
                         @if($loopIndex >= 1) d-none d-md-block @endif
                         @if($loopIndex >= 2) d-none d-lg-block @endif
-                        @if($loopIndex >= 3) d-none d-xl-block @endif
                     ">
                         <div class="card bg-block-blue rounded-5 h-100 d-flex flex-column jar-card-border">
 
@@ -236,9 +235,7 @@ new class extends Component
         // Bootstrap breakpoints:
         // < md: 1
         // md: 2
-        // lg: 3
-        // xl+: 4
-        if (window.matchMedia('(min-width: 1200px)').matches) return 4;
+        // lg+: 3
         if (window.matchMedia('(min-width: 992px)').matches) return 3;
         if (window.matchMedia('(min-width: 768px)').matches) return 2;
         return 1;

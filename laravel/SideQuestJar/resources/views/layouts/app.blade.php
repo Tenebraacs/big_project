@@ -14,6 +14,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css" rel="stylesheet"/>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
 
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+
     @vite(['resources/sass/ownapp.scss','resources/sass/app.scss', 'resources/js/app.js'])
 
     @livewireStyles
@@ -140,5 +143,32 @@
 
 @livewireScripts
 @stack('scripts')
+<script>
+function updateWordCount(textarea, counterId, max) {
+    max = max || 250;
+    var text = textarea.value.trim();
+    var words = text === '' ? 0 : text.split(/\s+/).length;
+    var el = document.getElementById(counterId);
+    if (!el) return;
+    el.textContent = words + ' / ' + max + ' words';
+    if (words > max) {
+        el.style.color = '#e74c3c';
+        // Trim to max words
+        textarea.value = text.split(/\s+/).slice(0, max).join(' ');
+        el.textContent = max + ' / ' + max + ' words';
+    } else {
+        el.style.color = words >= max * 0.9 ? '#e67e22' : '';
+    }
+}
+// Init counters for pre-filled edit forms
+document.addEventListener('DOMContentLoaded', function () {
+    ['jar-description','quest-description'].forEach(function(id) {
+        var ta = document.getElementById(id);
+        if (!ta) return;
+        var counter = ta.getAttribute('oninput')?.match(/'([^']+)'/)?.[1];
+        if (counter) updateWordCount(ta, counter);
+    });
+});
+</script>
 </body>
 </html>

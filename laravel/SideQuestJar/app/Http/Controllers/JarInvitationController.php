@@ -36,9 +36,10 @@ class JarInvitationController extends Controller
         }
 
         // Create or update the invitation (allow re-invite if previously declined)
+        // We update created_at so that a re-invite appears at the bottom of the chat timeline.
         $invitation = JarInvitation::updateOrCreate(
             ['jar_id' => $jar->id, 'invitee_id' => $invitee->id],
-            ['inviter_id' => $auth->id, 'status' => 'pending']
+            ['inviter_id' => $auth->id, 'status' => 'pending', 'created_at' => now()]
         );
 
         return response()->json(['message' => 'Invitation sent!', 'invitation' => $invitation]);
@@ -47,15 +48,27 @@ class JarInvitationController extends Controller
     /**
      * Accept a pending invitation.
      */
-    public function accept(JarInvitation $jarInvitation)
+    public function accept(Request $request, JarInvitation $jarInvitation)
     {
         abort_unless(auth()->id() === $jarInvitation->invitee_id, 403);
         abort_unless($jarInvitation->status === 'pending', 422);
+
+        // Check 5 min expiration
+        if ($jarInvitation->updated_at->addMinutes(5)->isPast()) {
+            if ($request->expectsJson()) {
+                return response()->json(['error' => 'Invitation has expired.'], 422);
+            }
+            return back()->with('error', 'Invitation has expired.');
+        }
 
         $jarInvitation->update(['status' => 'accepted']);
 
         // Add the user to the jar
         $jarInvitation->jar->users()->syncWithoutDetaching([auth()->id()]);
+
+        if ($request->expectsJson()) {
+            return response()->json(['message' => 'Jar joined successfully!']);
+        }
 
         return redirect()->route('jars.show', $jarInvitation->jar)
             ->with('success', 'You joined the jar!');
@@ -64,12 +77,23 @@ class JarInvitationController extends Controller
     /**
      * Decline a pending invitation.
      */
-    public function decline(JarInvitation $jarInvitation)
+    public function decline(Request $request, JarInvitation $jarInvitation)
     {
         abort_unless(auth()->id() === $jarInvitation->invitee_id, 403);
         abort_unless($jarInvitation->status === 'pending', 422);
 
+        if ($jarInvitation->updated_at->addMinutes(5)->isPast()) {
+            if ($request->expectsJson()) {
+                return response()->json(['error' => 'Invitation has expired.'], 422);
+            }
+            return back()->with('error', 'Invitation has expired.');
+        }
+
         $jarInvitation->update(['status' => 'declined']);
+
+        if ($request->expectsJson()) {
+            return response()->json(['message' => 'Invitation declined.']);
+        }
 
         return back()->with('success', 'Invitation declined.');
     }

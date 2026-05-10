@@ -6,8 +6,16 @@ use Illuminate\Support\Facades\Auth;
 
 new class extends Component
 {
+    public ?int $jarId = null;
+    public string $title = "Today's Solutions";
     public int $start = 0;
     public int $limit = 9;
+
+    public function mount(?int $jarId = null, string $title = "Today's Solutions")
+    {
+        $this->jarId = $jarId;
+        $this->title = $title;
+    }
 
     /**
      * Safe default for first paint (mobile).
@@ -31,12 +39,20 @@ new class extends Component
 
     public function getProofsProperty()
     {
-        return QuestCompletion::query()
+        $query = QuestCompletion::query()
             ->whereNotNull('picture')
             ->where('picture', '!=', '')
-            ->where('type', 'public_post')
-            ->whereDate('completion_date', today())
-            ->orderByDesc('completion_date')
+            ->where('type', 'public_post');
+
+        if ($this->jarId) {
+            $query->whereHas('jarQuest', function($q) {
+                $q->where('jar_id', $this->jarId);
+            });
+        } else {
+            $query->whereDate('completion_date', today());
+        }
+
+        return $query->orderByDesc('completion_date')
             ->orderByDesc('id')
             ->with(['user', 'jarQuest'])
             ->withCount('likes')
@@ -71,12 +87,20 @@ new class extends Component
 
     public function getHasMoreProperty(): bool
     {
-        return QuestCompletion::query()
+        $query = QuestCompletion::query()
             ->whereNotNull('picture')
             ->where('picture', '!=', '')
-            ->where('type', 'public_post')
-            ->whereDate('completion_date', today())
-            ->orderByDesc('completion_date')
+            ->where('type', 'public_post');
+
+        if ($this->jarId) {
+            $query->whereHas('jarQuest', function($q) {
+                $q->where('jar_id', $this->jarId);
+            });
+        } else {
+            $query->whereDate('completion_date', today());
+        }
+
+        return $query->orderByDesc('completion_date')
             ->orderByDesc('id')
             ->skip($this->limit)
             ->take(1)
@@ -139,14 +163,22 @@ new class extends Component
 
         $userId = Auth::id();
 
-        // Constrain to the same rules as "Today's Solutions"
-        $proof = QuestCompletion::query()
+        // Constrain to the same rules
+        $query = QuestCompletion::query()
             ->whereKey($proofId)
             ->whereNotNull('picture')
             ->where('picture', '!=', '')
-            ->where('type', 'public_post')
-            ->whereDate('completion_date', today())
-            ->firstOrFail();
+            ->where('type', 'public_post');
+
+        if ($this->jarId) {
+            $query->whereHas('jarQuest', function($q) {
+                $q->where('jar_id', $this->jarId);
+            });
+        } else {
+            $query->whereDate('completion_date', today());
+        }
+
+        $proof = $query->firstOrFail();
 
         $like = $proof->likes()
             ->where('user_id', $userId)
@@ -170,9 +202,8 @@ new class extends Component
 <div class="container-fluid mt-5 todays-solutions-root" wire:init="$dispatch('request-visible-count')">
     <div class="row mb-3">
         <div class="col-12 text-center">
-            <h2 class="fw-bold welcome-text">Today's Solutions</h2>
+            <h2 class="fw-bold welcome-text">{{ $title }}</h2>
         </div>
-
     </div>
 
     <div class="row align-items-stretch">

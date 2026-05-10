@@ -24,8 +24,8 @@ class UpdateJarQuestRequest extends FormRequest
         return [
             //
 
-            "title" => ["required", "string"],
-            "description" => ["nullable", "string"],
+            "title" => ["required", "string", "max:60"],
+            "description" => ["nullable", "string", "max:1500"],
             'picture' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'], //Majd kitalalom mi legyen vele => kitalaltam
         ];
     }

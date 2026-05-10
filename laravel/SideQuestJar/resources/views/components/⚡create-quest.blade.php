@@ -3,6 +3,10 @@
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 use App\Models\Jar;
 
 
@@ -24,13 +28,20 @@ new class extends Component
         $this->authorize('update', $this->jar);
 
         $validated = $this->validate([
-            'title' => ['required', 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
+            'title' => ['required', 'string', 'max:60'],
+            'description' => ['nullable', 'string', 'max:1500'],
             'picture' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
         ]);
 
         if ($this->picture) {
-            $validated['picture'] = $this->picture->store('quests', 'public');
+            $manager = new ImageManager(new Driver());
+            $image = $manager->read($this->picture->getRealPath());
+            $image->scaleDown(1200, 1200);
+
+            $filename = 'quests/' . Str::random(40) . '.webp';
+            Storage::disk('public')->put($filename, (string) $image->toWebp(80));
+
+            $validated['picture'] = $filename;
         } else {
             $validated['picture'] = 'https://i.ibb.co/2YvZypwJ/Jar-Quest-Placeholder.png';
         }
@@ -82,11 +93,12 @@ new class extends Component
                     <label for="title" class="text-light opacity-75 small fw-semibold text-uppercase" style="letter-spacing:.06em;">Quest Title</label>
                     <input
                         wire:model="title"
-                        type="text" id="title" required
+                        type="text" id="title" required maxlength="60"
                         class="form-control rounded-pill border-0 px-3 py-2"
                         style="background-color: rgba(234,178,160,0.18); color: #fff;"
                         placeholder="Name the quest…"
                     >
+                    <div class="d-flex justify-content-end"><span class="text-light opacity-40" style="font-size:0.72rem;">{{ strlen($title) }}/60</span></div>
                     @error('title')<span class="text-danger small">{{ $message }}</span>@enderror
                 </div>
 
@@ -97,11 +109,16 @@ new class extends Component
                     </label>
                     <textarea
                         wire:model="description"
-                        id="description" rows="3"
+                        id="quest-description" rows="3"
                         class="form-control rounded-4 border-0 px-3 py-2"
                         style="background-color: rgba(234,178,160,0.18); color: #fff; resize: none;"
                         placeholder="Describe what needs to be done…"
+                        maxlength="1500"
+                        oninput="updateWordCount(this,'quest-desc-count')"
                     ></textarea>
+                    <div class="d-flex justify-content-end">
+                        <span id="quest-desc-count" class="text-light opacity-40" style="font-size:0.72rem;">0 / 250 words</span>
+                    </div>
                     @error('description')<span class="text-danger small">{{ $message }}</span>@enderror
                 </div>
 
@@ -117,15 +134,7 @@ new class extends Component
                             <img src="https://i.ibb.co/2YvZypwJ/Jar-Quest-Placeholder.png" alt="Placeholder" class="w-100 h-100" style="object-fit:cover; opacity:0.55;">
                         @endif
                     </div>
-                    <div class="custom-upload-wrapper">
-                        <label class="custom-upload-button">
-                            <input type="file" wire:model="picture" accept="image/*" hidden>
-                            <span><i class="bi bi-upload me-1"></i> Choose Image</span>
-                        </label>
-                        <span class="custom-upload-filename">
-                            {{ $picture ? $picture->getClientOriginalName() : 'No file selected' }}
-                        </span>
-                    </div>
+                    <x-image-cropper property="picture" label="Choose Image" />
                     <div wire:loading wire:target="picture" class="text-center text-light small opacity-75">Uploading…</div>
                     @error('picture')<span class="text-danger small">{{ $message }}</span>@enderror
                 </div>

@@ -5,6 +5,10 @@ use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Storage;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
+use Illuminate\Support\Str;
 
 new class extends Component
 {
@@ -158,10 +162,14 @@ new class extends Component
             'profile_picture_upload' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
         ]);
 
-       
-        $path = $this->profile_picture_upload->store('profile-pictures', 'public');
+        $manager = new ImageManager(new Driver());
+        $image = $manager->read($this->profile_picture_upload->getRealPath());
+        $image->cover(400, 400);
 
-        $user->profile_picture = $path; 
+        $filename = 'profile-pictures/' . Str::random(40) . '.webp';
+        Storage::disk('public')->put($filename, (string) $image->toWebp(80));
+
+        $user->profile_picture = $filename; 
         $user->save();
 
         $this->editPicture = false;
@@ -186,7 +194,7 @@ new class extends Component
 
         @if ($editPicture)
             <div class="d-flex flex-column gap-2 align-items-start">
-                <input type="file" class="form-control" wire:model="profile_picture_upload" accept="image/*">
+                <x-image-cropper property="profile_picture_upload" label="Choose Image" />
 
                 @error('profile_picture_upload')
                     <div class="text-danger">{{ $message }}</div>

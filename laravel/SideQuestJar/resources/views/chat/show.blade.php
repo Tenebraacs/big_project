@@ -21,8 +21,8 @@
         background: #1e2a3a;
         border: 1px solid rgba(234,178,160,0.2);
         border-radius: 20px;
-        padding: 2rem;
-        width: 100%; max-width: 480px;
+        padding: 1.25rem 1.5rem;
+        width: 100%; max-width: 460px;
         box-shadow: 0 20px 60px rgba(0,0,0,0.5);
         animation: modalSlideIn 0.25s ease;
     }
@@ -32,14 +32,44 @@
     }
     .invite-jar-option {
         cursor: pointer;
-        padding: 0.6rem 0.9rem;
-        border-radius: 12px;
+        padding: 0.35rem 0.75rem;
+        border-radius: 10px;
         border: 1px solid transparent;
         transition: all 0.2s;
         background: rgba(234,178,160,0.08);
     }
     .invite-jar-option:hover,
     .invite-jar-option.selected { border-color: #EAB2A0; background: rgba(234,178,160,0.18); }
+    .invite-jar-option .jar-name {
+        overflow: hidden; white-space: nowrap; text-overflow: ellipsis; min-width: 0;
+    }
+
+    /* Invite sent bubble in chat */
+    .chat-invite-bubble {
+        align-self: flex-end;
+        max-width: 340px;
+        background: linear-gradient(135deg, #A76F6F 0%, #7a4f6d 100%);
+        border-radius: 18px 18px 4px 18px;
+        padding: 0.65rem 0.9rem;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        animation: bubbleIn 0.3s cubic-bezier(.34,1.56,.64,1) both;
+    }
+    @keyframes bubbleIn {
+        from { transform: scale(0.7) translateY(10px); opacity: 0; }
+        to   { transform: scale(1)   translateY(0);    opacity: 1; }
+    }
+    .chat-invite-bubble .invite-jar-thumb {
+        width: 36px; height: 36px; border-radius: 50%; object-fit: cover;
+        border: 2px solid rgba(255,255,255,0.3);
+    }
+    .chat-invite-bubble .invite-label {
+        font-size: 0.7rem; text-transform: uppercase; letter-spacing: .08em;
+        color: rgba(255,255,255,0.6); margin-bottom: 2px;
+    }
+    .chat-invite-bubble .invite-jar-title {
+        font-size: 0.92rem; font-weight: 600; color: #fff;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
 
     /* Pending invitations panel */
     .inv-card {
@@ -56,6 +86,33 @@
         display: inline-flex; align-items: center; justify-content: center;
         vertical-align: top; margin-left: 4px;
     }
+
+    /* Custom Mobile Friend Selector */
+    .mobile-friend-dropdown .dropdown-toggle::after {
+        display: none;
+    }
+    .mobile-friend-dropdown .dropdown-menu {
+        background: #1e2a3a;
+        border: 1px solid rgba(234,178,160,0.3);
+        border-radius: 18px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+        padding: 8px;
+        backdrop-filter: blur(10px);
+    }
+    .mobile-friend-dropdown .dropdown-item {
+        color: rgba(255,255,255,0.9);
+        border-radius: 12px;
+        padding: 8px 12px;
+        transition: all 0.2s;
+    }
+    .mobile-friend-dropdown .dropdown-item:hover {
+        background: rgba(234,178,160,0.15);
+        color: #fff;
+    }
+    .mobile-friend-dropdown .dropdown-item.active {
+        background: #A76F6F;
+        color: #fff;
+    }
 </style>
 
 <div class="container text-light mt-2" style="max-width: 1200px; height: calc(100vh - 200px); min-height: 400px;">
@@ -64,14 +121,7 @@
         {{-- Friends sidebar --}}
         <div class="col-12 col-md-3 d-none d-md-flex flex-column h-100 gap-2">
 
-            {{-- Pending jar invitations panel --}}
-            <div class="card bg-block-blue rounded-4 p-3 border-0" id="inv-panel" style="display:none!important;">
-                <h6 class="jar-name mb-2">
-                    Jar Invites
-                    <span class="inv-badge" id="inv-count">0</span>
-                </h6>
-                <div id="inv-list" style="max-height:200px; overflow-y:auto;"></div>
-            </div>
+
 
             {{-- Friends list --}}
             <div class="card bg-block-blue rounded-4 p-3 border-0 flex-grow-1 overflow-auto chat-scroll">
@@ -96,17 +146,48 @@
 
                 {{-- Header --}}
                 <div class="card-header border-0 pb-0 pt-3 d-flex align-items-center justify-content-between">
-                    <div class="d-flex align-items-center gap-2">
-                        <img src="{{ $user->profile_picture_url }}" class="rounded-circle" style="width:50px;height:50px;object-fit:cover;">
-                        <a href="{{ route('users.show', $user->username) }}" class="text-light text-decoration-none">
-                            <h3 class="jar-name m-0">{{ $user->username }}</h3>
-                        </a>
+                    <div class="d-flex flex-column gap-1">
+                        <div class="d-flex align-items-center gap-2">
+                            <img src="{{ $user->profile_picture_url }}" class="rounded-circle" style="width:50px;height:50px;object-fit:cover;">
+                            <a href="{{ route('users.show', $user->username) }}" class="text-light text-decoration-none">
+                                <h3 class="jar-name m-0">{{ $user->username }}</h3>
+                            </a>
+                        </div>
+                        {{-- Mobile Friend Selector --}}
+                        <div class="d-md-none mt-1 mobile-friend-dropdown">
+                            <div class="dropdown">
+                                <button class="btn btn-sm text-light border-0 rounded-pill d-flex align-items-center justify-content-between px-3 w-100" 
+                                        type="button" data-bs-toggle="dropdown" aria-expanded="false"
+                                        style="background: rgba(234,178,160,0.18); border: 1px solid rgba(234,178,160,0.15) !important;">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="bi bi-people-fill small opacity-75"></i>
+                                        <span class="small fw-semibold">Switch Chat</span>
+                                    </div>
+                                    <i class="bi bi-chevron-expand small opacity-50"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-dark w-100">
+                                    @foreach($users as $friend)
+                                        <li>
+                                            <a class="dropdown-item d-flex align-items-center gap-2 {{ $user->id === $friend->id ? 'active' : '' }}" 
+                                               href="{{ route('chat.show', $friend) }}">
+                                                <img src="{{ $friend->profile_picture_url }}" class="rounded-circle" style="width:24px;height:24px;object-fit:cover;">
+                                                <span>{{ $friend->username }}</span>
+                                            </a>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        </div>
                     </div>
 
                     {{-- Invite to Jar button --}}
+                    @php
+                        $invitableJars = $myJars->filter(fn($j) => !in_array($j->id, $inviteeJarIds));
+                    @endphp
                     @if($myJars->count())
                     <button id="open-invite-modal" class="btn btn-sm pink-button rounded-pill px-3"
-                            title="Invite {{ $user->username }} to a Jar">
+                            title="Invite {{ $user->username }} to a Jar"
+                            {{ $invitableJars->isEmpty() ? 'data-all-joined=true' : '' }}>
                         🏺 Invite to Jar
                     </button>
                     @endif
@@ -142,16 +223,21 @@
             <button class="btn btn-sm text-light" id="close-invite-modal" style="font-size:1.4rem;line-height:1;">&times;</button>
         </div>
 
-        <p class="text-muted small mb-3">Select one of your jars below:</p>
+        <p class="text-muted small mb-2">Select one of your jars below:</p>
 
-        <div class="d-flex flex-column gap-2 mb-4" id="jar-list">
-            @foreach($myJars as $jar)
+        <div class="d-flex flex-column gap-1 mb-3" id="jar-list" style="max-height: 340px; overflow-y: auto;">
+            @forelse($myJars->filter(fn($j) => !in_array($j->id, $inviteeJarIds)) as $jar)
                 <div class="invite-jar-option d-flex align-items-center gap-2"
                      data-jar-id="{{ $jar->id }}" onclick="selectJar(this)">
-                    <img src="{{ $jar->picture_url }}" class="rounded-circle" style="width:36px;height:36px;object-fit:cover;">
-                    <span class="jar-name">{{ $jar->name }}</span>
+                    <img src="{{ $jar->picture_url }}" class="rounded-circle" style="width:28px;height:28px;object-fit:cover;">
+                    <span class="jar-name" style="font-size:0.9rem;">{{ $jar->name }}</span>
                 </div>
-            @endforeach
+            @empty
+                <div class="text-center py-3" style="color: rgba(234,178,160,0.6);">
+                    <div style="font-size:2rem;">🏺</div>
+                    <p class="small mt-1 mb-0">{{ $user->username }} is already in all your jars!</p>
+                </div>
+            @endforelse
         </div>
 
         <div id="invite-feedback" class="mb-2" style="min-height:24px;"></div>
@@ -183,16 +269,65 @@ document.addEventListener('DOMContentLoaded', function () {
         fetch(fetchUrl)
             .then(r => r.json())
             .then(messages => {
-                chatBox.innerHTML = '';
+                let newHtml = '';
                 messages.forEach(msg => {
                     const isMine = msg.sender_id === authId;
-                    chatBox.innerHTML += `
-                        <div class="message ${isMine ? 'align-self-end' : 'align-self-start'} py-2 px-3 mb-1 text-light shadow-sm"
-                             style="max-width:75%;background-color:${isMine ? '#A76F6F' : '#6c757d'};border-radius:15px;">
-                            ${msg.content}
-                        </div>`;
+                    if (msg.type === 'invite') {
+                        const bgStyle = isMine 
+                            ? 'background: linear-gradient(135deg, #A76F6F 0%, #7a4f6d 100%);' 
+                            : 'background: #50585f;';
+
+                        let actionHtml = '';
+                        // Backend uses updated_at for expiration logic. ISO strings are UTC.
+                        const inviteDate = new Date(msg.updated_at);
+                        const isExpired = (Date.now() - inviteDate.getTime()) > 5 * 60 * 1000;
+                        
+                        if (msg.status === 'pending') {
+                            if (isExpired) {
+                                actionHtml = `<div class="mt-2 text-warning small fw-bold">Expired</div>`;
+                            } else {
+                                if (!isMine) {
+                                    actionHtml = `
+                                        <div class="mt-2 d-flex gap-2">
+                                            <button class="btn btn-sm pink-button rounded-pill px-3" onclick="acceptJarInvite(${msg.id})">Accept</button>
+                                            <button class="btn btn-sm btn-secondary rounded-pill px-3" onclick="declineJarInvite(${msg.id})">Decline</button>
+                                        </div>`;
+                                } else {
+                                    actionHtml = `<div class="mt-2 text-light opacity-75 small">Pending</div>`;
+                                }
+                            }
+                        } else if (msg.status === 'accepted') {
+                            actionHtml = `<div class="mt-2 text-success small fw-bold">Accepted</div>`;
+                        } else if (msg.status === 'declined') {
+                            actionHtml = `<div class="mt-2 text-danger small fw-bold">Declined</div>`;
+                        }
+
+                        newHtml += `
+                            <div class="chat-invite-bubble mb-1 ${isMine ? 'align-self-end' : 'align-self-start'}" style="${bgStyle} animation: none;">
+                                <div class="invite-label">🏺 Jar Invite ${isMine ? 'Sent' : 'Received'}</div>
+                                <div class="d-flex align-items-center gap-2 mt-1">
+                                    ${msg.jar_thumb ? `<img src="${msg.jar_thumb}" class="invite-jar-thumb" alt="">` : ''}
+                                    <div class="invite-jar-title">${msg.jar_name}</div>
+                                </div>
+                                <div style="font-size:0.75rem; color:rgba(255,255,255,0.55); margin-top:4px;">
+                                    ${msg.content}
+                                </div>
+                                ${actionHtml}
+                            </div>`;
+                    } else {
+                        newHtml += `
+                            <div class="message ${isMine ? 'align-self-end' : 'align-self-start'} py-2 px-3 mb-1 text-light shadow-sm"
+                                 style="max-width:75%;background-color:${isMine ? '#A76F6F' : '#6c757d'};border-radius:15px;">
+                                ${msg.content}
+                            </div>`;
+                    }
                 });
-                if (isScrolledToBottom) chatBox.scrollTop = chatBox.scrollHeight;
+
+                if (chatBox.dataset.lastHtml !== newHtml) {
+                    chatBox.innerHTML = newHtml;
+                    chatBox.dataset.lastHtml = newHtml;
+                    if (isScrolledToBottom) chatBox.scrollTop = chatBox.scrollHeight;
+                }
             });
     }
 
@@ -214,49 +349,39 @@ document.addEventListener('DOMContentLoaded', function () {
     fetchMessages();
     setInterval(fetchMessages, 3000);
 
-    // ── Pending Invitations ───────────────────────────────
-    const pendingUrl = "{{ route('jar-invitations.pending') }}";
-    const invPanel   = document.getElementById('inv-panel');
-    const invList    = document.getElementById('inv-list');
-    const invCount   = document.getElementById('inv-count');
+    const jarInvitesBaseUrl = "{{ url('/jar-invitations') }}";
 
-    function fetchPendingInvitations() {
-        fetch(pendingUrl)
-            .then(r => r.json())
-            .then(invitations => {
-                if (invitations.length === 0) {
-                    invPanel.style.setProperty('display', 'none', 'important');
-                    return;
-                }
-                invPanel.style.setProperty('display', 'block', 'important');
-                invCount.textContent = invitations.length;
-                invList.innerHTML = '';
-                invitations.forEach(inv => {
-                    const acceptUrl  = `/jar-invitations/${inv.id}/accept`;
-                    const declineUrl = `/jar-invitations/${inv.id}/decline`;
-                    invList.innerHTML += `
-                        <div class="inv-card">
-                            <div class="small mb-1">
-                                <strong>${inv.inviter.username}</strong> invited you to
-                                <strong>${inv.jar.name}</strong>
-                            </div>
-                            <div class="d-flex gap-2 mt-1">
-                                <form method="POST" action="${acceptUrl}" style="display:inline;">
-                                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                    <button class="btn btn-sm pink-button rounded-pill px-3">Accept</button>
-                                </form>
-                                <form method="POST" action="${declineUrl}" style="display:inline;">
-                                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                    <button class="btn btn-sm btn-secondary rounded-pill px-3">Decline</button>
-                                </form>
-                            </div>
-                        </div>`;
-                });
-            });
-    }
+    window.acceptJarInvite = function(id) {
+        console.log('Accepting invite:', id);
+        fetch(`${jarInvitesBaseUrl}/${id}/accept`, {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value 
+            }
+        }).then(r => r.json()).then(data => {
+            console.log('Accept response:', data);
+            if(data.error) alert(data.error);
+            fetchMessages();
+        }).catch(err => console.error('Accept error:', err));
+    };
 
-    fetchPendingInvitations();
-    setInterval(fetchPendingInvitations, 10000);
+    window.declineJarInvite = function(id) {
+        console.log('Declining invite:', id);
+        fetch(`${jarInvitesBaseUrl}/${id}/decline`, {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value 
+            }
+        }).then(r => r.json()).then(data => {
+            console.log('Decline response:', data);
+            if(data.error) alert(data.error);
+            fetchMessages();
+        }).catch(err => console.error('Decline error:', err));
+    };
 
     // ── Invite Modal ──────────────────────────────────────
     const backdrop       = document.getElementById('invite-modal-backdrop');
@@ -295,22 +420,68 @@ document.addEventListener('DOMContentLoaded', function () {
 
         fetch("{{ route('jar-invitations.store') }}", {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value },
+            headers: { 
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value 
+            },
             body: JSON.stringify({ jar_id: selectedJarId, invitee_id: {{ $user->id }} })
         })
-        .then(r => r.json())
+        .then(async r => {
+            if (!r.ok) {
+                const err = await r.json().catch(() => ({}));
+                throw new Error(err.error || err.message || 'Server error');
+            }
+            return r.json();
+        })
         .then(data => {
             if (data.message) {
-                inviteFeedback.innerHTML = `<span class="text-success small">✅ ${data.message}</span>`;
+                // Grab jar details from the selected option before hiding it
+                const sentOption = document.querySelector(`.invite-jar-option[data-jar-id="${selectedJarId}"]`);
+                const jarName  = sentOption ? sentOption.querySelector('.jar-name')?.textContent.trim() : 'a Jar';
+                const jarThumb = sentOption ? sentOption.querySelector('img')?.src : '';
+
+                // Close modal
+                backdrop.classList.remove('open');
+
+                // Inject invite bubble into chat box
+                const bubble = document.createElement('div');
+                bubble.className = 'chat-invite-bubble mb-1';
+                bubble.innerHTML = `
+                    <div class="invite-label">🏺 Jar Invite Sent</div>
+                    <div class="d-flex align-items-center gap-2 mt-1">
+                        ${jarThumb ? `<img src="${jarThumb}" class="invite-jar-thumb" alt="">` : ''}
+                        <div class="invite-jar-title">${jarName}</div>
+                    </div>
+                    <div style="font-size:0.75rem; color:rgba(255,255,255,0.55); margin-top:4px;">
+                        Invite sent to {{ $user->username }}
+                    </div>`;
+                chatBox.appendChild(bubble);
+                chatBox.scrollTop = chatBox.scrollHeight;
+
+                // Hide the jar from modal list
+                if (sentOption) sentOption.style.display = 'none';
                 clearSelection();
-            } else {
-                inviteFeedback.innerHTML = `<span class="text-danger small">⚠️ ${data.error ?? 'Something went wrong.'}</span>`;
+
+                // If no visible jar options remain, show empty state
+                const remaining = document.querySelectorAll('.invite-jar-option:not([style*="display: none"])');
+                if (remaining.length === 0) {
+                    document.getElementById('jar-list').innerHTML = `
+                        <div class="text-center py-3" style="color: rgba(234,178,160,0.6);">
+                            <div style="font-size:2rem;">🏺</div>
+                            <p class="small mt-1 mb-0">{{ $user->username }} is now in all your jars!</p>
+                        </div>`;
+                    sendBtn.disabled = true;
+                }
+            } else if (data.error) {
+                inviteFeedback.innerHTML = `<div class="text-danger small">${data.error}</div>`;
                 sendBtn.disabled = false;
+                sendBtn.textContent = 'Send Invite';
             }
-            sendBtn.textContent = 'Send Invite';
         })
-        .catch(() => {
-            inviteFeedback.innerHTML = `<span class="text-danger small">⚠️ Network error.</span>`;
+        .catch(err => {
+            console.error('Send invite error:', err);
+            inviteFeedback.innerHTML = `<div class="text-danger small">Error: ${err.message}</div>`;
             sendBtn.disabled = false;
             sendBtn.textContent = 'Send Invite';
         });

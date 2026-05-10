@@ -23,9 +23,19 @@ class MessageController extends Controller
 
         $users = auth()->user()->friends;
 
-        $myJars = auth()->user()->jars()->get()->merge(auth()->user()->createdJars()->get())->unique('id');
+        // All jars I'm in (joined + created)
+        $myJars = auth()->user()->jars()->get()
+            ->merge(auth()->user()->createdJars()->get())
+            ->unique('id');
 
-        return view('chat.show', compact('user', 'users', 'myJars'));
+        // Jar IDs the invitee is already part of (as member or creator)
+        $inviteeJarIds = $user->jars()->pluck('jars.id')
+            ->merge($user->createdJars()->pluck('id'))
+            ->unique()
+            ->values()
+            ->toArray();
+
+        return view('chat.show', compact('user', 'users', 'myJars', 'inviteeJarIds'));
     }
 
     public function fetchMessages(User $user)
@@ -34,14 +44,42 @@ class MessageController extends Controller
             $q->where('sender_id', auth()->id())->where('receiver_id', $user->id);
         })->orWhere(function ($q) use ($user) {
             $q->where('sender_id', $user->id)->where('receiver_id', auth()->id());
-        })->orderBy('created_at', 'asc')->get();
+        })->get()->map(function ($msg) {
+            return [
+                'type' => 'chat',
+                'id' => $msg->id,
+                'sender_id' => $msg->sender_id,
+                'content' => $msg->content,
+                'created_at' => $msg->created_at,
+            ];
+        });
+
+        $invitations = \App\Models\JarInvitation::with(['jar', 'invitee'])->where(function ($q) use ($user) {
+            $q->where('inviter_id', auth()->id())->where('invitee_id', $user->id);
+        })->orWhere(function ($q) use ($user) {
+            $q->where('inviter_id', $user->id)->where('invitee_id', auth()->id());
+        })->get()->map(function ($inv) {
+            return [
+                'type' => 'invite',
+                'id' => $inv->id,
+                'sender_id' => $inv->inviter_id,
+                'content' => 'Invite sent to ' . $inv->invitee->username,
+                'jar_name' => $inv->jar->name,
+                'jar_thumb' => $inv->jar->picture_url,
+                'status' => $inv->status,
+                'created_at' => $inv->created_at,
+                'updated_at' => $inv->updated_at,
+            ];
+        });
+
+        $timeline = $messages->concat($invitations)->sortBy('created_at')->values();
 
         Message::where('sender_id', $user->id)
             ->where('receiver_id', auth()->id())
             ->whereNull('read_at')
             ->update(['read_at' => now()]);
 
-        return response()->json($messages);
+        return response()->json($timeline);
     }
 
     public function store(Request $request, User $user)

@@ -6,6 +6,10 @@ use App\Models\QuestCompletion;
 use App\Models\JarUser;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
+use Illuminate\Support\Str;
 
 new class extends Component
 {
@@ -77,7 +81,14 @@ new class extends Component
         $this->validate();
 
         DB::transaction(function () {
-            $imagePath = $this->completionImage->store('quest-completions', 'public');
+            $manager = new ImageManager(new Driver());
+            $image = $manager->read($this->completionImage->getRealPath());
+            $image->scaleDown(1200, 1200);
+
+            $filename = 'quest-completions/' . Str::random(40) . '.webp';
+            Storage::disk('public')->put($filename, (string) $image->toWebp(80));
+
+            $imagePath = $filename;
 
             // 1) Create completion
             QuestCompletion::create([
@@ -207,16 +218,7 @@ new class extends Component
                         <div class="mb-3">
                             <label class="form-label claim-label">Upload an image</label>
 
-                            <div class="custom-upload-wrapper">
-                                <label class="custom-upload-button">
-                                    <input type="file" wire:model="completionImage" hidden>
-                                    <span><i class="bi bi-upload me-1"></i> Choose Image</span>
-                                </label>
-
-                                <span class="custom-upload-filename">
-                                    {{ $completionImage ? $completionImage->getClientOriginalName() : 'No file selected' }}
-                                </span>
-                            </div>
+                            <x-image-cropper property="completionImage" label="Choose Image" />
 
                             @error('completionImage')
                                 <div class="text-danger mt-2 fw-bold">{{ $message }}</div>

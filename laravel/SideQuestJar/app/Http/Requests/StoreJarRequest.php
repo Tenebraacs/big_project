@@ -36,12 +36,12 @@ class StoreJarRequest extends FormRequest
             'name' => [
                 'required',
                 'string',
-                'max:255',
+                'max:50',
                 Rule::unique('jars')->where(function ($query) {
                     return $query->where('created_by', auth()->id());
                 }),
             ],
-            'description' => ['nullable', 'string'],
+            'description' => ['nullable', 'string', 'max:1500'],
             'picture' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
             'type' => ['required', Rule::in($types)],
         ];
