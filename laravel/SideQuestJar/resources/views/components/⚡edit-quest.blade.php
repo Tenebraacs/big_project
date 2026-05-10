@@ -32,12 +32,9 @@ new class extends Component
 
     public function save()
     {
-        
-
         abort_if($this->jarQuest->jar_id !== $this->jar->id, 404);
 
         $this->authorize('update', $this->jar);
-
 
         $validated = $this->validate([
             'title' => ['required', 'string', 'max:255'],
@@ -55,8 +52,6 @@ new class extends Component
 
             $validated['picture'] = $this->picture->store('quests', 'public');
         }
-            
-        
 
         $this->jarQuest->update($validated);
 
@@ -69,123 +64,100 @@ new class extends Component
 };
 ?>
 
+<style>
+    .sqj-form input::placeholder,
+    .sqj-form textarea::placeholder { color: rgba(255,255,255,0.4); }
+    .sqj-form .form-control:focus { box-shadow: 0 0 0 3px rgba(234,178,160,0.3); background-color: rgba(234,178,160,0.25) !important; color: #fff; border-color: transparent; }
+</style>
 
-<div class="container-fluid">
-    <div class="row justify-content-center">
-        <div class="col-12 col-md-10 col-lg-8 col-xl-4">
-            <form wire:submit="save">
+<div class="container py-4" style="max-width: 540px;">
+    <form wire:submit="save" class="sqj-form">
+        <div class="card bg-block-blue rounded-5 border-0 overflow-hidden shadow-lg">
 
-                <div class="card text-center h-100 d-flex flex-column bg-block-blue rounded-5" style="">
-                    
-                    <div class="card-header border-0">
-                        
-                        <h1 class="fs-1 jar-name">{{ $jar->name }}</h1>
+            {{-- Header --}}
+            <div class="card-header border-0 text-center pt-4 pb-3 px-4">
+                <h1 class="jar-name display-5 fw-bold mb-1">Edit Quest</h1>
+                <p class="text-light opacity-50 small mb-0">{{ $jar->name }}</p>
+            </div>
 
-                        @if($jar->description)
-                            <h2 class="jar-name fs-3">{{ $jar->description }}</h2>
-                        @else
-                            <h2 class="jar-name fs-3">No current description found</h2>
-                        @endif
-                                   
-                    </div>   
-
-                    <div class="card-body text-center flex-grow-1 d-flex flex-column p-0 mb-2">
-                        
-                        <div class="row p-1">
-                            <label for="title" class="jar-name fs-4">Quest Title</label>
-                        </div>
-                        <div class="row justify-content-center">
-                            <input 
-                                wire:model="title"
-                                class="text-center col-8 p-1 rounded-3"
-                                style="background-color: #eab3a0d5;"
-                                required
-                                type="text"
-                                id="title"
-                                placeholder="QuestTitle"
-                            >
-                        </div>
-                        @error('title')
-                            <div class="text-danger mt-2">{{ $message }}</div>
-                        @enderror
-
-                        <div class="row p-1">
-                            <label for="description" class="jar-name fs-4">Quest Description</label>
-                        </div>
-                        <div class="row justify-content-center pb-2">
-                            <textarea 
-                                wire:model="description"
-                                class=" text-center col-8 p-2 rounded-3"
-                                style="background-color: #eab3a0d5;"
-                                id="description"
-                                placeholder="QuestDescription"
-                            ></textarea>
-                        </div>
-                        @error('description')
-                            <div class="text-danger mt-2">{{ $message }}</div>
-                        @enderror
-
-                        <div class="row">
-                            <label for="picture" class="jar-name fs-4">Quest Picture</label>
-                        </div>
-                        <div class="row justify-content-center p-2">
-                            <input 
-                                wire:model="picture"    
-                                type="file"
-                                id="picture"
-                                accept="image/*"
-                                class="col-8"    
-                            >
-                        </div>
-                        @error('picture')
-                            <div class="text-danger mt-2">{{ $message }}</div>
-                        @enderror
-
-                        <div wire:loading wire:target="picture" class="text-light mt-2">
-                            Uploading image...
-                        </div>
-
-                        <div class="row justify-content-center align-items-stretch">
-                            <div class="col-10 p-0" style="aspect-ratio: 1/1;">
-                                @if ($picture)
-                                    <img
-                                        src="{{ $picture->temporaryUrl() }}"
-                                        alt="Quest preview"
-                                        class="w-100 h-100"
-                                        style="object-fit: cover;"
-                                    >
-                                @else
-                                    <img
-                                        src="{{ $jarQuest->picture_url }}"
-                                        alt="Quest picture"
-                                        class="w-100 h-100"
-                                        style="object-fit: cover;"
-                                    >
-                                @endif
-                            </div>
-                        </div>
-
-                        
-                        
+            @if ($errors->any())
+                <div class="px-4 pt-2">
+                    <div class="alert alert-danger rounded-4 py-2 small mb-0">
+                        <ul class="mb-0 ps-3">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
                     </div>
-                    
-                    <div class="card-footer p-0 border-0">
-                        
-                        <div>
-                            <button 
-                                type="submit"
-                                class="btn w-50 h-100 pink-button rounded-pill fs-3 p-0 m-2"
-                                wire:loading.attr="disabled"    
-                            >
-                                Update Quest
-                            </button>
-                        </div>    
-                                        
-                    </div>
-
                 </div>
-            </form>
-        </div>
-    </div>
-</div>
+            @endif
 
+            {{-- Body --}}
+            <div class="card-body px-4 py-3 d-flex flex-column gap-3">
+
+                {{-- Title --}}
+                <div class="d-flex flex-column gap-1">
+                    <label for="title" class="text-light opacity-75 small fw-semibold text-uppercase" style="letter-spacing:.06em;">Quest Title</label>
+                    <input
+                        wire:model="title"
+                        type="text" id="title" required
+                        class="form-control rounded-pill border-0 px-3 py-2"
+                        style="background-color: rgba(234,178,160,0.18); color: #fff;"
+                        placeholder="Name the quest…"
+                    >
+                    @error('title')<span class="text-danger small">{{ $message }}</span>@enderror
+                </div>
+
+                {{-- Description --}}
+                <div class="d-flex flex-column gap-1">
+                    <label for="description" class="text-light opacity-75 small fw-semibold text-uppercase" style="letter-spacing:.06em;">
+                        Description <span class="opacity-50 fw-normal text-lowercase">(optional)</span>
+                    </label>
+                    <textarea
+                        wire:model="description"
+                        id="description" rows="3"
+                        class="form-control rounded-4 border-0 px-3 py-2"
+                        style="background-color: rgba(234,178,160,0.18); color: #fff; resize: none;"
+                        placeholder="Describe what needs to be done…"
+                    ></textarea>
+                    @error('description')<span class="text-danger small">{{ $message }}</span>@enderror
+                </div>
+
+                {{-- Picture --}}
+                <div class="d-flex flex-column gap-2">
+                    <label class="text-light opacity-75 small fw-semibold text-uppercase" style="letter-spacing:.06em;">Quest Picture</label>
+                    <div class="rounded-4 overflow-hidden" style="aspect-ratio:1/1; max-height:260px;">
+                        @if ($picture)
+                            <img src="{{ $picture->temporaryUrl() }}" alt="Preview" class="w-100 h-100" style="object-fit:cover;">
+                        @else
+                            <img src="{{ $jarQuest->picture_url }}" alt="Current picture" class="w-100 h-100" style="object-fit:cover;">
+                        @endif
+                    </div>
+                    <div class="custom-upload-wrapper">
+                        <label class="custom-upload-button">
+                            <input type="file" wire:model="picture" accept="image/*" hidden>
+                            <span><i class="bi bi-upload me-1"></i> Change Image</span>
+                        </label>
+                        <span class="custom-upload-filename">
+                            {{ $picture ? $picture->getClientOriginalName() : 'No file selected' }}
+                        </span>
+                    </div>
+                    <div wire:loading wire:target="picture" class="text-center text-light small opacity-75">Uploading…</div>
+                    @error('picture')<span class="text-danger small">{{ $message }}</span>@enderror
+                </div>
+
+            </div>
+
+            {{-- Footer --}}
+            <div class="card-footer border-0 px-4 pb-4 pt-2 text-center">
+                <button type="submit"
+                    class="btn pink-button rounded-pill px-5 py-2 fs-5 w-75"
+                    wire:loading.attr="disabled">
+                    <span wire:loading.remove>Update Quest</span>
+                    <span wire:loading>Saving…</span>
+                </button>
+            </div>
+
+        </div>
+    </form>
+</div>

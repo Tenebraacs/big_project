@@ -23,7 +23,9 @@ class MessageController extends Controller
 
         $users = auth()->user()->friends;
 
-        return view('chat.show', compact('user', 'users'));
+        $myJars = auth()->user()->jars()->get()->merge(auth()->user()->createdJars()->get())->unique('id');
+
+        return view('chat.show', compact('user', 'users', 'myJars'));
     }
 
     public function fetchMessages(User $user)

@@ -151,16 +151,18 @@ new class extends Component
             </div>
 
             <div class="card-body text-center p-3 p-md-4">
-                <div class="row">
+                <div class="row align-items-center g-3">
                     @if ($mainQuest)
-                        <div class="col-12 col-md-8 text-center align-self-center d-flex justify-content-center mb-3 mb-md-0">
-                            <p class="jar-name fs-2 fs-md-1 text-center">{{ $mainQuest->description }}</p>
+                        <div class="col-12 col-md-7 text-center text-md-start d-flex flex-column justify-content-center px-md-4">
+                            <h2 class="fw-bold welcome-text mb-3" style="font-size: clamp(1.6rem, 3vw, 2.4rem);">{{ $mainQuest->title }}</h2>
+                            <p class="jar-name mb-0" style="font-size: clamp(1rem, 2vw, 1.35rem); opacity: 0.9; line-height: 1.5;">{{ $mainQuest->description }}</p>
                         </div>
 
-                        <div class="col-8 col-sm-6 col-md-4 mx-auto">
+                        <div class="col-10 col-sm-8 col-md-5 mx-auto">
                             <div style="aspect-ratio: 1/1;">
-                                <img src="{{ $mainQuest->picture_url }}" alt="Jar picture"
-                                     class="img-fluid w-100 h-100 rounded-5" style="object-fit: cover;">
+                                <img src="{{ $mainQuest->picture_url }}" alt="Quest picture"
+                                     class="img-fluid w-100 h-100 rounded-5"
+                                     style="object-fit: cover; box-shadow: 0 0 28px rgba(234,178,160,0.25), 0 8px 24px rgba(0,0,0,0.35);">
                             </div>
                         </div>
                     @endif

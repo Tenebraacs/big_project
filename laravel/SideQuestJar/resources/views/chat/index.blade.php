@@ -1,9 +1,9 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container-fluid text-light mt-4">
+<div class="container text-light mt-2" style="max-width: 1200px;">
     <div class="row justify-content-center">
-        <div class="col-md-8">
+        <div class="col-12 col-md-8">
             <div class="card bg-block-blue rounded-4 p-4 border-0 mb-4">
                 <h2 class="jar-name text-center mb-4">My Chats</h2>
                 @if($users->isEmpty())

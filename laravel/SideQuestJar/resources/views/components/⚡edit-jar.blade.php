@@ -63,130 +63,118 @@ new class extends Component
 };
 ?>
 
-<!-- Meg basic kinezettel szorakozok --> 
+<style>
+    .sqj-form input::placeholder,
+    .sqj-form textarea::placeholder { color: rgba(255,255,255,0.4); }
+    .sqj-form select option { background: #1e2a3a; color: #fff; }
+    .sqj-form .form-control:focus,
+    .sqj-form .form-select:focus { box-shadow: 0 0 0 3px rgba(234,178,160,0.3); background-color: rgba(234,178,160,0.25) !important; color: #fff; border-color: transparent; }
+</style>
 
-<div class="container-fluid">
-    <div class="row justify-content-center">
-        <div class="col-12 col-md-10 col-lg-8 col-xl-4">
-            <form wire:submit="save">
-            
-                <div class="card text-center bg-block-blue rounded-5 h-100 d-flex flex-column" style="">
-                    <div class="card-header border-0">
-                        
-                        <div class="row">
-                            <label for="name" class="jar-name fs-4">Jar Name</label>
-                        </div>
-                        <div class="row justify-content-center">
-                            <input 
-                                wire:model="name"
-                                class="text-center col-10 col-md-8 col-lg-6 rounded-2 p-1"
-                                style="background-color: #eab3a0d5;"                             
-                                type="text"
-                                id="name"
-                                placeholder="JarName"
-                                required
-                                >
-                        </div>
-                        @error('name')
-                            <div class="text-danger mt-2">{{ $message }}</div>
-                        @enderror
+<div class="container py-4" style="max-width: 540px;">
+    <form wire:submit="save" class="sqj-form">
+        <div class="card bg-block-blue rounded-5 border-0 overflow-hidden shadow-lg">
 
-                        <div class="row mt-3">
-                            <label for="type" class="jar-name fs-4">Visibility</label>
-                        </div>
-                        <div class="row justify-content-center p-2">
-                            <select wire:model="type" id="type" class="text-center col-10 col-md-8 col-lg-6 rounded-2 p-1" style="background-color: #eab3a0d5;">
-                                <option value="public_jar">Public</option>
-                                <option value="private_jar">Private</option>
-                                <option value="friends_only_jar">Friends Only</option>
-                                @if(auth()->user()?->is_admin)
-                                <option value="official_jar">Official Jar</option>
-                                @endif
-                            </select>
-                            @error('type')
-                                <div class="text-danger mt-2">{{ $message }}</div>
-                            @enderror
-                        </div>
-                                    
-                    </div>
-
-                    <div class="card-body text-center flex-grow-1 d-flex flex-column p-0 mb-2">
-                        
-                        
-                        <div class="row">
-                            <label for="description" class="jar-name fs-4">Jar Description</label>
-                        </div>
-                        <div class="row justify-content-center p-2">
-                            <textarea 
-                                wire:model="description"    
-                                class=" text-center col-10 col-md-8 p-2 rounded-3"
-                                style="background-color: #eab3a0d5;" 
-                                id="description" 
-                                placeholder="JarDescription"
-                            ></textarea>
-                        </div>
-                        @error('description')
-                            <div class="text-danger mt-2">{{ $message }}</div>
-                        @enderror
-
-                        <div class="row">
-                            <label for="picture" class="jar-name fs-4">Jar Picture</label>
-                        </div>
-                        <div class="row justify-content-center p-2">
-                            <input
-                                wire:model="picture"
-                                type="file"
-                                id="picture"
-                                accept="image/*"
-                                class="col-10 col-md-8 text-center"    
-                            >
-
-                        </div>
-                        
-                        <div wire:loading wire:target="picture" class="text-light mt-2">
-                            Uploading image...
-                        </div>
-
-                        <div class="row justify-content-center align-items-stretch">
-                            <div class="col-10 p-0 m-2" style="aspect-ratio: 1/1;">
-                                @if ($picture)
-                                    <img
-                                        src="{{ $picture->temporaryUrl() }}"
-                                        alt="Jar preview"
-                                        class="w-100 h-100 rounded-5"
-                                        style="object-fit: cover;"
-                                    >
-                                @else
-                                    <img
-                                        src="{{ $jar->picture_url }}"
-                                        alt="Jar picture"
-                                        class="w-100 h-100 rounded-5"
-                                        style="object-fit: cover;"
-                                    >
-                                @endif
-                            </div>
-                        </div>
-
-                        
-                        
-                    </div>
-                    
-                    <div class="card-footer p-0 border-0">
-                        
-                        <div>
-                            <button
-                                type="submit"
-                                class="w-75 w-md-50 pink-button rounded-pill fs-5 fs-md-4 px-3 py-2 mb-3"
-                                wire:loading.attr="disabled"    
-                            >
-                                Update Jar
-                            </button>
-                        </div>    
-                                        
-                    </div>
-                    
-                </form>
+            {{-- Header --}}
+            <div class="card-header border-0 text-center pt-4 pb-3 px-4">
+                <h1 class="jar-name display-5 fw-bold mb-1">Edit Jar</h1>
+                <p class="text-light opacity-50 small mb-0">{{ $jar->name }}</p>
             </div>
+
+            @if ($errors->any())
+                <div class="px-4 pt-2">
+                    <div class="alert alert-danger rounded-4 py-2 small mb-0">
+                        <ul class="mb-0 ps-3">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+            @endif
+
+            {{-- Body --}}
+            <div class="card-body px-4 py-3 d-flex flex-column gap-3">
+
+                {{-- Name --}}
+                <div class="d-flex flex-column gap-1">
+                    <label for="name" class="text-light opacity-75 small fw-semibold text-uppercase" style="letter-spacing:.06em;">Jar Name</label>
+                    <input
+                        wire:model="name"
+                        type="text" id="name" required
+                        class="form-control rounded-pill border-0 px-3 py-2"
+                        style="background-color: rgba(234,178,160,0.18); color: #fff;"
+                        placeholder="Give your jar a name…"
+                    >
+                    @error('name')<span class="text-danger small">{{ $message }}</span>@enderror
+                </div>
+
+                {{-- Visibility --}}
+                <div class="d-flex flex-column gap-1">
+                    <label for="type" class="text-light opacity-75 small fw-semibold text-uppercase" style="letter-spacing:.06em;">Visibility</label>
+                    <select wire:model="type" id="type"
+                        class="form-select rounded-pill border-0 px-3 py-2"
+                        style="background-color: rgba(234,178,160,0.18); color: #fff;">
+                        <option value="public_jar">🌍 Public</option>
+                        <option value="private_jar">🔒 Private</option>
+                        <option value="friends_only_jar">👥 Friends Only</option>
+                        @if(auth()->user()?->is_admin)
+                            <option value="official_jar">⭐ Official Jar</option>
+                        @endif
+                    </select>
+                    @error('type')<span class="text-danger small">{{ $message }}</span>@enderror
+                </div>
+
+                {{-- Description --}}
+                <div class="d-flex flex-column gap-1">
+                    <label for="description" class="text-light opacity-75 small fw-semibold text-uppercase" style="letter-spacing:.06em;">
+                        Description <span class="opacity-50 fw-normal text-lowercase">(optional)</span>
+                    </label>
+                    <textarea
+                        wire:model="description"
+                        id="description" rows="3"
+                        class="form-control rounded-4 border-0 px-3 py-2"
+                        style="background-color: rgba(234,178,160,0.18); color: #fff; resize: none;"
+                        placeholder="Describe what this jar is about…"
+                    ></textarea>
+                    @error('description')<span class="text-danger small">{{ $message }}</span>@enderror
+                </div>
+
+                {{-- Picture --}}
+                <div class="d-flex flex-column gap-2">
+                    <label class="text-light opacity-75 small fw-semibold text-uppercase" style="letter-spacing:.06em;">Jar Picture</label>
+                    <div class="rounded-4 overflow-hidden" style="aspect-ratio:1/1; max-height:260px;">
+                        @if ($picture)
+                            <img src="{{ $picture->temporaryUrl() }}" alt="Preview" class="w-100 h-100" style="object-fit:cover;">
+                        @else
+                            <img src="{{ $jar->picture_url }}" alt="Current picture" class="w-100 h-100" style="object-fit:cover;">
+                        @endif
+                    </div>
+                    <div class="custom-upload-wrapper">
+                        <label class="custom-upload-button">
+                            <input type="file" wire:model="picture" accept="image/*" hidden>
+                            <span><i class="bi bi-upload me-1"></i> Change Image</span>
+                        </label>
+                        <span class="custom-upload-filename">
+                            {{ $picture ? $picture->getClientOriginalName() : 'No file selected' }}
+                        </span>
+                    </div>
+                    <div wire:loading wire:target="picture" class="text-center text-light small opacity-75">Uploading…</div>
+                    @error('picture')<span class="text-danger small">{{ $message }}</span>@enderror
+                </div>
+
+            </div>
+
+            {{-- Footer --}}
+            <div class="card-footer border-0 px-4 pb-4 pt-2 text-center">
+                <button type="submit"
+                    class="btn pink-button rounded-pill px-5 py-2 fs-5 w-75"
+                    wire:loading.attr="disabled">
+                    <span wire:loading.remove>Update Jar</span>
+                    <span wire:loading>Saving…</span>
+                </button>
+            </div>
+
         </div>
-    </div>
+    </form>
 </div>

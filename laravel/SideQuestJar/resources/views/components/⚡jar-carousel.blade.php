@@ -169,17 +169,17 @@ new class extends Component
                                 @endif
                             </div>
 
-                            <div class="p-2 mt-auto">
+                            <div class="px-1 pb-3 pt-2 mt-auto d-flex justify-content-center">
                                 @auth
                                     <button
-                                        class="btn fw-bold fs-5 w-100 rounded-pill blue-button"
+                                        class="btn home-claim-button m-2 rounded-pill blue-button"
                                         onclick="window.location='{{ route('jars.show', $jar) }}'">
                                         Show Jar
                                     </button>
                                 @else
                                     <button
                                         wire:click="$dispatchTo('auth.login-modal', 'open-login')"
-                                        class="btn fw-bold fs-5 w-100 rounded-pill blue-button">
+                                        class="btn home-claim-button m-2 rounded-pill blue-button">
                                         Show Jar
                                     </button>
                                 @endauth

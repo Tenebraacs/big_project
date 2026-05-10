@@ -3,6 +3,7 @@
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\JarController;
 use App\Http\Controllers\JarQuestController;
+use App\Http\Controllers\JarInvitationController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -62,6 +63,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/chat/{user}', [MessageController::class, 'show'])->name('chat.show');
     Route::get('/chat/{user}/messages', [MessageController::class, 'fetchMessages'])->name('chat.fetch');
     Route::post('/chat/{user}/messages', [MessageController::class, 'store'])->name('chat.store');
+
+    // Jar Invitations
+    Route::get('/jar-invitations/pending', [JarInvitationController::class, 'pending'])->name('jar-invitations.pending');
+    Route::post('/jar-invitations', [JarInvitationController::class, 'store'])->name('jar-invitations.store');
+    Route::post('/jar-invitations/{jarInvitation}/accept', [JarInvitationController::class, 'accept'])->name('jar-invitations.accept');
+    Route::post('/jar-invitations/{jarInvitation}/decline', [JarInvitationController::class, 'decline'])->name('jar-invitations.decline');
 });
 
 

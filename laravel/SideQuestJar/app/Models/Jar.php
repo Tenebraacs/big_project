@@ -84,4 +84,9 @@ class Jar extends Model
     {
         return $this->belongsTo(JarQuest::class, 'previous_daily_quest_id');
     }
+
+    public function comments()
+    {
+        return $this->hasMany(JarComment::class);
+    }
 }

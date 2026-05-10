@@ -1,6 +1,7 @@
 <?php
 
 use Livewire\Component;
+use Livewire\Attributes\Computed;
 use App\Models\Jar;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
@@ -23,6 +24,9 @@ new class extends Component
     // Kick user state
     public bool $confirmingKickUser = false;
     public ?int $userIdToKick = null;
+
+    // Comments
+    public string $newComment = '';
 
     public function mount(Jar $jar, ?int $quest = null)
     {
@@ -360,6 +364,30 @@ new class extends Component
         $this->userIdToKick = null;
     }
 
+    #[Computed]
+    public function comments()
+    {
+        return $this->jar->comments()->with('user')->oldest()->get();
+    }
+
+    public function addComment()
+    {
+        if (!auth()->check() || (!$this->joined && $this->jar->created_by !== auth()->id() && !auth()->user()->is_admin)) {
+            return;
+        }
+
+        $this->validate([
+            'newComment' => 'required|string|max:1000',
+        ]);
+
+        $this->jar->comments()->create([
+            'user_id' => auth()->id(),
+            'content' => $this->newComment,
+        ]);
+
+        $this->newComment = '';
+    }
+
 };
 ?>
 
@@ -423,82 +451,57 @@ new class extends Component
         <div class="col-12 col-lg-7 order-1 order-lg-2">
             <div class="card text-center bg-block-blue rounded-5 h-100 d-flex flex-column show-jar-card">
 
-                <div class="card-header border-0">
+                <div class="card-header border-0 position-relative pb-0">
                     @if ($this->jar)
-                        <div class="d-flex align-items-center">
-                            <div class="flex-grow-1 text-center">
-                                <h1 class="jar-name display-5 fw-bold">{{ $this->jar->name }}</h1>
-                            </div>
-
-                            <div class="d-flex justify-content-end">
-                                <div class="card-likes-bar">
-                                    @auth
-                                        <button
-                                            wire:click="toggleLike"
-                                            wire:key="jar-like-{{ $this->jar->id }}-{{ $this->liked }}"
-                                            class="card-like-heart-btn{{ $this->liked ? ' liked' : '' }}"
-                                            aria-pressed="{{ $this->liked ? 'true' : 'false' }}"
-                                            title="{{ $this->liked ? 'Unlike' : 'Like' }}"
-                                        >
-                                            @if($this->liked)
-                                                <i class="bi bi-heart-fill"></i>
-                                            @else
-                                                <i class="bi bi-heart"></i>
-                                            @endif
-                                        </button>
-                                    @else
-                                        <button
-                                            wire:click="$dispatchTo('auth.login-modal', 'open-login')"
-                                            class="card-like-heart-btn"
-                                        >
-                                            <i class="bi bi-heart"></i>
-                                        </button>
-                                    @endauth
-
-                                    <span class="likes-badge-count">
-                                        {{ $this->likesCount }} like{{ $this->likesCount == 1 ? '' : 's' }}
-                                    </span>
-                                </div>
-                            </div>
+                        <div class="jar-name-container text-center w-100" style="padding-right: 4rem;">
+                            <h1 class="jar-name display-6 fw-bold mb-1">{{ $this->jar->name }}</h1>
                         </div>
 
                         @if($this->jar->description)
-                            <h2 class="jar-name fs-2 overflow-auto scrolling-bar" style="max-height: 20vh;">
+                            <p class="jar-name fs-5 overflow-auto scrolling-bar mb-0" style="max-height: 10vh; font-weight: normal;">
                                 {{ $this->jar->description }}
-                            </h2>
+                            </p>
                         @else
-                            <h2 class="jar-name fs-2">No current description found</h2>
+                            <p class="jar-name fs-6 mb-0 opacity-75 fw-normal">No current description found</p>
                         @endif
+
+                        {{-- JAR LIKE BUTTON (top-right) --}}
+                        <div class="position-absolute top-0 end-0 d-flex align-items-center gap-1 p-2">
+                            @auth
+                                <button
+                                    wire:click="toggleLike"
+                                    wire:key="jar-like-{{ $this->jar->id }}-{{ $this->liked }}"
+                                    class="card-like-heart-btn{{ $this->liked ? ' liked' : '' }}"
+                                    style="width: 2.2em; height: 2.2em; font-size: 1.3rem;"
+                                >
+                                    @if($this->liked)
+                                        <i class="bi bi-heart-fill"></i>
+                                    @else
+                                        <i class="bi bi-heart"></i>
+                                    @endif
+                                </button>
+                            @else
+                                <button
+                                    wire:click="$dispatchTo('auth.login-modal', 'open-login')"
+                                    class="card-like-heart-btn"
+                                    style="width: 2.2em; height: 2.2em; font-size: 1.3rem;"
+                                >
+                                    <i class="bi bi-heart"></i>
+                                </button>
+                            @endauth
+                            <span class="likes-badge-count fs-5 text-light" style="text-shadow: none; font-weight: 700;">
+                                {{ $this->likesCount }}
+                            </span>
+                        </div>
                     @else
-                        <h1 class="jar-name fs-1 fw-bold">No Usable Adventure Found</h1>
+                        <h1 class="jar-name fs-3 fw-bold mb-0">No Usable Adventure Found</h1>
                     @endif
                 </div>
 
-                <div class="card-body text-center flex-grow-1 d-flex flex-column show-jar-body">
-                    <div class="p-2 mb-3">
-                        <div class="p-2 mb-3">
-                            <div class="quest-info-card">
-                                @if($this->currentQuest)
-                                    <h3 class="quest-name fs-3 mb-2">{{ $this->currentQuest->title }}</h3>
-
-                                    @if ($this->currentQuest->description)
-                                        <p class="quest-description scrolling-bar mb-0">
-                                            {{ $this->currentQuest->description }}
-                                        </p>
-                                    @else
-                                        <p class="quest-description mb-0">
-                                            No description yet so just figure it out.
-                                        </p>
-                                    @endif
-                                @else
-                                    <h3 class="quest-name fs-5 mb-0">No Quests inside the jar</h3>
-                                @endif
-                            </div>
-                        </div>
-                    </div>
+                <div class="card-body text-center flex-grow-1 d-flex flex-column show-jar-body p-2 p-md-3">
 
                     @if ($this->currentQuest)
-                        <div class="quest-viewer">
+                        <div class="quest-viewer mb-3">
                             <button
                                 type="button"
                                 wire:click="previous"
@@ -543,7 +546,6 @@ new class extends Component
                                         {{ $this->questLikesCount }}
                                     </span>
                                 </div>
-
                             </div>
 
                             <button
@@ -554,6 +556,27 @@ new class extends Component
                             >
                                 ❯
                             </button>
+                        </div>
+
+                        <!-- QUEST INFO CARD BELOW IMAGE -->
+                        <div class="quest-info-card mx-auto w-100 p-3 text-start shadow-sm" style="max-width: 95%; background: linear-gradient(145deg, #EAB2A0, #D9A08E); border-radius: 1.2rem; border: 1px solid rgba(255,255,255,0.2);">
+                            <h3 class="quest-name fs-4 fw-bold mb-1" style="color: #2D4356; letter-spacing: 0.5px;">{{ $this->currentQuest->title }}</h3>
+                            
+                            @if ($this->currentQuest->description)
+                                <p class="quest-description scrolling-bar mb-0" style="color: #2D4356; font-size: 0.95rem; max-height: 80px; overflow-y: auto; opacity: 0.95; font-weight: 600;">
+                                    {{ $this->currentQuest->description }}
+                                </p>
+                            @else
+                                <p class="quest-description mb-0 opacity-75" style="color: #2D4356; font-style: italic; font-weight: normal;">
+                                    No description yet so just figure it out.
+                                </p>
+                            @endif
+                        </div>
+                    @else
+                        <div class="d-flex align-items-center justify-content-center h-100">
+                            <div class="quest-info-card w-100">
+                                <h3 class="quest-name fs-4 mb-0">No Quests inside the jar</h3>
+                            </div>
                         </div>
                     @endif
                 </div>
@@ -611,49 +634,72 @@ new class extends Component
             </div>
         </div>
 
-        <!-- RIGHT: PREVIEW / ADMIN -->
-        <div class="col-12 col-lg-3 order-3">
+        <!-- RIGHT: COMMENTS / ADMIN -->
+        <div class="col-12 col-lg-3 order-3 d-flex flex-column gap-3">
             @auth
-                @if ($this->jar && ($this->jar->created_by === auth()->id() || auth()->user()->is_admin))
-                    <div class="card bg-block-blue rounded-5 h-100 text-center">
-
-                        <div class="card-header border-0 text-center">
-                            <h5 class="fw-bold jar-name fs-3 text-truncate mt-2">
-                                {{ $this->jar->name }}
-                            </h5>
+                @if ($this->jar && ($this->joined || $this->jar->created_by === auth()->id() || (auth()->check() && auth()->user()->is_admin)))
+                    <!-- Comments Card -->
+                    <div class="card bg-block-blue rounded-5 text-center d-flex flex-column" style="height: 60vh; min-height: 400px;">
+                        <div class="card-header border-0 d-flex justify-content-center align-items-center pt-3 pb-2 px-3">
+                            <h5 class="fw-bold jar-name fs-4 m-0">Jar Chat</h5>
                         </div>
+                        <div class="card-body overflow-auto chat-scroll d-flex flex-column gap-2 text-start p-2" wire:poll.3s>
+                            @forelse($this->comments as $comment)
+                                <div wire:key="comment-{{ $comment->id }}" class="message p-2 mb-1 text-dark shadow-sm rounded-4" style="background-color: {{ $comment->user_id === auth()->id() ? '#EAB2A0' : '#A76F6F' }}; max-width: 90%; {{ $comment->user_id === auth()->id() ? 'align-self: flex-end;' : 'align-self: flex-start; color: #fff !important;' }}">
+                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                        <img src="{{ $comment->user->profile_picture_url }}" class="rounded-circle" style="width: 20px; height: 20px; object-fit: cover;">
+                                        <small class="fw-bold d-flex align-items-center" style="font-size: 0.75rem;">
+                                            {{ $comment->user->username }}
+                                            @if(optional($comment->user)->is_admin)
+                                                <span class="ms-1 px-2 py-0 rounded-pill bg-danger text-white fw-bold" style="font-size: 0.6rem; border: 1px solid rgba(255,255,255,0.2);">ADMIN</span>
+                                            @endif
+                                            @if($comment->user_id === $this->jar->created_by)
+                                                <span class="ms-1 px-2 py-0 rounded-pill bg-warning text-dark fw-bold" style="font-size: 0.6rem; border: 1px solid rgba(0,0,0,0.1);">CREATOR</span>
+                                            @endif
+                                        </small>
+                                    </div>
+                                    <div style="font-size: 0.9rem; word-break: break-word;">
+                                        {{ $comment->content }}
+                                    </div>
+                                </div>
+                            @empty
+                                <div class="text-center text-light mt-4">
+                                    <small>No comments yet. Be the first to comment!</small>
+                                </div>
+                            @endforelse
+                        </div>
+                        <div class="card-footer border-0 p-2 pb-3">
+                            <form wire:submit.prevent="addComment" class="d-flex gap-2">
+                                <input type="text" wire:model="newComment" class="form-control rounded-pill border-0 px-3" placeholder="Message..." style="background-color: rgba(234, 178, 160, 0.2); color: #fff;" required>
+                                <button type="submit" class="btn pink-button rounded-circle p-0 d-flex align-items-center justify-content-center" style="width: 38px; height: 38px; min-width: 38px;">
+                                    <span style="font-size: 1rem;">&#10148;</span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                @endif
 
-                        <div class="card-body text-center">
-                            @if ($this->jar->picture_url)
-                                <img
-                                    src="{{ $this->jar->picture_url }}"
-                                    alt="{{ $this->jar->name }}"
-                                    class="img-fluid rounded-4"
-                                    style="aspect-ratio: 1/1; object-fit: cover; width: 100%;"
+                @if ($this->jar && ($this->jar->created_by === auth()->id() || (auth()->check() && auth()->user()->is_admin)))
+                    <!-- Admin Card -->
+                    <div class="card bg-block-blue rounded-5 text-center mt-auto">
+                        <div class="card-body text-center p-3">
+                            <div class="d-flex flex-column align-items-center gap-2">
+                                <a
+                                    href="{{ route('jars.edit', $this->jar) }}"
+                                    class="btn fw-medium pink-button rounded-pill w-100 px-3 py-2 fs-6"
                                 >
-                            @else
-                                <p>No image found.</p>
-                            @endif
+                                    Edit Jar
+                                </a>
+
+                                <button
+                                    type="button"
+                                    wire:click="confirmDeleteJar"
+                                    class="w-100 border-0 btn btn-outline-danger rounded-pill px-3 py-2 fs-6"
+                                >
+                                    Delete Jar
+                                </button>
+                            </div>
                         </div>
-
-                        <div class="card-footer border-0 d-flex flex-column align-items-center gap-2 pb-3">
-
-                            <a
-                                href="{{ route('jars.edit', $this->jar) }}"
-                                class="btn fw-medium pink-button rounded-pill w-75 px-3 py-2 fs-5 fs-md-4"
-                            >
-                                Edit Jar
-                            </a>
-
-                            <button
-                                type="button"
-                                wire:click="confirmDeleteJar"
-                                class="w-75 border-0 btn btn-outline-danger rounded-pill px-3 py-2 fs-5 fs-md-4"
-                            >
-                                Delete Jar
-                            </button>
-                        </div>
-
                     </div>
                 @endif
             @endauth

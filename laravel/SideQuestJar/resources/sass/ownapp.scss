@@ -810,6 +810,20 @@ body {
     font-weight: 700;
     font-size: 1.1rem;
     box-shadow: 0 4px 0 rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease;
+
+    /* Responsive adjustments for tight spots (like 3-card carousel) */
+    @media (max-width: 1199.98px) {
+        min-width: 160px;
+        font-size: 0.95rem;
+        padding: 0.5rem 1rem;
+    }
+
+    @media (max-width: 767.98px) {
+        min-width: 140px;
+        font-size: 0.9rem;
+        padding: 0.4rem 0.8rem;
+    }
 }
 
 .custom-upload-wrapper {
