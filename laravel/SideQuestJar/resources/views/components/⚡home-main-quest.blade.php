@@ -142,20 +142,20 @@ new class extends Component
 <div class="row justify-content-center mb-3">
     <div class="col-12 col-md-10 px-2 px-md-3">
         <div class="card rounded-5 bg-block-blue mb-3 mx-1 mx-md-3 mt-md-3 mainjar-border">
-            <div class="text-center card-header border-0">
+            <div class="text-center card-header border-0 px-4 px-md-5 pt-4 pb-0">
                 @if ($mainJar)
-                    <h1 class="fw-bold fs-1 display-md-3 welcome-text m-2 m-md-3">{{ $mainJar->name }}</h1>
+                    <h1 class="fw-bold fs-1 display-md-3 welcome-text m-0">{{ $mainJar->name }}</h1>
                 @else
-                    <h1 class="fs-2 fs-md-1 fw-bold welcome-text m-2 m-md-3">No Usable Adventure Found</h1>
+                    <h1 class="fs-2 fs-md-1 fw-bold welcome-text m-0">No Usable Adventure Found</h1>
                 @endif
             </div>
 
-            <div class="card-body text-center p-3 p-md-4">
-                <div class="row align-items-center g-3">
+            <div class="card-body p-3 p-md-4 pt-1">
+                <div class="row align-items-start g-3">
                     @if ($mainQuest)
-                        <div class="col-12 col-md-7 text-center text-md-start d-flex flex-column justify-content-center px-md-4">
-                            <h2 class="fw-bold welcome-text mb-3" style="font-size: clamp(1.6rem, 3vw, 2.4rem);">{{ $mainQuest->title }}</h2>
-                            <p class="jar-name mb-0" style="font-size: clamp(1rem, 2vw, 1.35rem); opacity: 0.9; line-height: 1.5;">{{ $mainQuest->description }}</p>
+                        <div class="col-12 col-md-7 text-center d-flex flex-column px-md-4 mt-0">
+                            <h2 class="fw-bold welcome-text mb-5" style="font-size: clamp(1.4rem, 2.5vw, 2.2rem); opacity: 0.95;">{{ $mainQuest->title }}</h2>
+                            <p class="jar-name mb-0" style="font-size: clamp(1.15rem, 2.2vw, 1.45rem); opacity: 1; line-height: 1.5; margin-top: 1rem;">{{ $mainQuest->description }}</p>
                         </div>
 
                         <div class="col-10 col-sm-8 col-md-5 mx-auto">
@@ -169,24 +169,26 @@ new class extends Component
                 </div>
 
                 @if ($mainQuest)
-                    @auth
-                        <button
-                            wire:click="openClaimModal"
-                            type="button"
-                            class="btn home-claim-button m-2 rounded-pill {{ $this->alreadyClaimedToday ? 'claim-button-disabled' : 'blue-button' }}"
-                            @if($this->alreadyClaimedToday) disabled @endif
-                        >
-                            {{ $this->alreadyClaimedToday ? __('Already Claimed Today') : __('Claim') }}
-                        </button>
-                    @else
-                        <button
-                            type="button"
-                            class="btn home-claim-button m-2 rounded-pill blue-button"
-                            wire:click="$dispatchTo('auth.login-modal', 'open-login')"
-                        >
-                            Claim
-                        </button>
-                    @endauth
+                    <div class="text-center mt-3">
+                        @auth
+                            <button
+                                wire:click="openClaimModal"
+                                type="button"
+                                class="btn home-claim-button m-2 rounded-pill {{ $this->alreadyClaimedToday ? 'claim-button-disabled' : 'blue-button' }}"
+                                @if($this->alreadyClaimedToday) disabled @endif
+                            >
+                                {{ $this->alreadyClaimedToday ? __('Already Claimed Today') : __('Claim') }}
+                            </button>
+                        @else
+                            <button
+                                type="button"
+                                class="btn home-claim-button m-2 rounded-pill blue-button"
+                                wire:click="$dispatchTo('auth.login-modal', 'open-login')"
+                            >
+                                Claim
+                            </button>
+                        @endauth
+                    </div>
                 @endif
             </div>
         </div>
