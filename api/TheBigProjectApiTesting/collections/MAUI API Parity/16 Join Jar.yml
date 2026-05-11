@@ -1,0 +1,35 @@
+info:
+  name: "16 POST jars/:jar_id/join"
+  type: http
+  seq: 16
+
+http:
+  method: POST
+  url: http://localhost:8000/api/jars/:jar_id/join
+  headers:
+    - name: Accept
+      value: application/json
+    - name: Authorization
+      value: Bearer {{auth_token}}
+  params:
+    - name: jar_id
+      value: "{{jar_id}}"
+      type: path
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("join succeeds or conflict if already member", function () {
+          expect([200, 409]).to.include(res.status);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  `JarService.JoinJarAsync` — body empty. Use a `jar_id` you are not already in for 200.

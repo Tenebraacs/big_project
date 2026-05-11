@@ -1,0 +1,212 @@
+@page "/friends"
+@using SideQuestJar.ViewModels
+@using SideQuestJar.DTOs
+@inject FriendsViewModel ViewModel
+
+<div class="container-fluid px-0 px-md-3">
+
+    @* ── Loading state ──────────────────────────────────────────────────── *@
+    @if (ViewModel.IsLoading)
+    {
+        <div class="d-flex justify-content-center align-items-center min-vh-80">
+            <div class="spinner-border text-light" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    }
+
+    @* ── Error state ────────────────────────────────────────────────────── *@
+    else if (ViewModel.HasError)
+    {
+        <div class="d-flex flex-column justify-content-center align-items-center min-vh-80 text-center">
+            <i class="bi bi-exclamation-triangle display-1 text-warning mb-3"></i>
+            <h3 class="text-white fw-bold">Oops! Could not load your friends.</h3>
+            <p class="text-white-50">Error: @ViewModel.ExceptionMessage</p>
+            <button class="btn btn-outline-light rounded-pill mt-3"
+                    @onclick="ViewModel.LoadFriendsCommand.ExecuteAsync">
+                Retry
+            </button>
+        </div>
+    }
+
+    @* ── Friends loaded ─────────────────────────────────────────────────── *@
+    else
+    {
+        <div class="row justify-content-center mb-3">
+            <div class="col-12 col-md-8">
+
+                @* ── Status toast ──────────────────────────────────────── *@
+                @if (!string.IsNullOrEmpty(ViewModel.StatusMessage))
+                {
+                    <div class="alert @(ViewModel.IsStatusSuccess ? "alert-success" : "alert-danger") rounded-pill py-2 shadow-sm mx-3 mt-3">
+                        <i class="bi @(ViewModel.IsStatusSuccess ? "bi-check-circle-fill" : "bi-exclamation-circle-fill") me-2"></i>@ViewModel.StatusMessage
+                    </div>
+                }
+
+                @* ── Add Friend card ──────────────────────────────────── *@
+                <div class="card bg-block-blue rounded-4 p-4 border-0 m-3 shadow-lg">
+                    <h2 class="jar-name text-center text-white mb-4">Add Friend</h2>
+
+                    <div class="position-relative">
+                        <div class="d-flex gap-2">
+                            <input type="text"
+                                   class="form-control bg-dark text-light border-0 rounded-pill px-3"
+                                   placeholder="Enter username..."
+                                   autocomplete="off"
+                                   value="@ViewModel.SearchQuery"
+                                   @oninput="HandleSearchInput"
+                                   @onfocusout="HandleSearchBlur" />
+                            <button class="btn btn-primary rounded-pill px-4"
+                                    @onclick="ViewModel.SendFriendRequestCommand.ExecuteAsync">
+                                Add
+                            </button>
+                        </div>
+
+                        @* Autocomplete dropdown *@
+                        @if (ViewModel.ShowDropdown && ViewModel.SearchResults.Count > 0)
+                        {
+                            <div class="list-group position-absolute w-100 mt-1 shadow-lg"
+                                 style="z-index: 1000; max-height: 200px; overflow-y: auto;">
+                                @foreach (var user in ViewModel.SearchResults)
+                                {
+                                    <button type="button"
+                                            class="list-group-item list-group-item-action d-flex align-items-center gap-2 border-0"
+                                            style="background-color: #1a1a2e; color: white; cursor: pointer;"
+                                            @onmousedown="() => ViewModel.SelectSearchResultCommand.Execute(user)"
+                                            @onmousedown:preventDefault>
+                                        <img src="@FriendsViewModel.ResolveAvatar(user.ProfilePictureUrl ?? user.ProfilePicture)"
+                                             class="rounded-circle"
+                                             style="width: 30px; height: 30px; object-fit: cover;" />
+                                        <span>@user.Username</span>
+                                    </button>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                @* ── Pending Requests card ─────────────────────────────── *@
+                <div class="card bg-block-blue rounded-4 p-4 border-0 m-3 shadow-lg">
+                    <h2 class="jar-name text-center text-white mb-4">Pending Requests</h2>
+
+                    @if (ViewModel.PendingReceived.Count == 0)
+                    {
+                        <p class="text-center text-white-50">No pending friend requests.</p>
+                    }
+                    else
+                    {
+                        <ul class="list-group list-group-flush bg-transparent">
+                            @foreach (var req in ViewModel.PendingReceived)
+                            {
+                                <li class="list-group-item bg-transparent text-light d-flex flex-wrap justify-content-between align-items-center border-0 py-3">
+                                    <div class="d-flex align-items-center mb-2 mb-sm-0">
+                                        <img src="@FriendsViewModel.ResolveAvatar(req.ProfilePictureUrl ?? req.ProfilePicture)"
+                                             class="rounded-circle me-2"
+                                             style="width: 40px; height: 40px; object-fit: cover;" />
+                                        <span class="fs-5">@req.Username</span>
+                                    </div>
+                                    <div class="d-flex gap-2">
+                                        <button class="btn btn-sm btn-success rounded-pill px-3"
+                                                @onclick="() => ViewModel.AcceptFriendRequestCommand.ExecuteAsync(req.Id)">
+                                            Accept
+                                        </button>
+                                        <button class="btn btn-sm btn-danger rounded-pill px-3"
+                                                @onclick="() => ViewModel.DeclineFriendRequestCommand.ExecuteAsync(req.Id)">
+                                            Decline
+                                        </button>
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                    }
+                </div>
+
+                @* ── Sent Requests card ────────────────────────────────── *@
+                <div class="card bg-block-blue rounded-4 p-4 border-0 m-3 shadow-lg">
+                    <h2 class="jar-name text-center text-white mb-4">Sent Requests</h2>
+
+                    @if (ViewModel.PendingSent.Count == 0)
+                    {
+                        <p class="text-center text-white-50">No sent requests.</p>
+                    }
+                    else
+                    {
+                        <ul class="list-group list-group-flush bg-transparent">
+                            @foreach (var req in ViewModel.PendingSent)
+                            {
+                                <li class="list-group-item bg-transparent text-light d-flex flex-wrap justify-content-between align-items-center border-0 py-3">
+                                    <div class="d-flex align-items-center">
+                                        <img src="@FriendsViewModel.ResolveAvatar(req.ProfilePictureUrl ?? req.ProfilePicture)"
+                                             class="rounded-circle me-2"
+                                             style="width: 40px; height: 40px; object-fit: cover;" />
+                                        <span class="fs-5">@req.Username</span>
+                                    </div>
+                                    <span class="badge bg-secondary rounded-pill">Pending</span>
+                                </li>
+                            }
+                        </ul>
+                    }
+                </div>
+
+                @* ── My Friends card ───────────────────────────────────── *@
+                <div class="card bg-block-blue rounded-4 p-4 border-0 m-3 shadow-lg">
+                    <h2 class="jar-name text-center text-white mb-4">My Friends</h2>
+
+                    @if (ViewModel.Friends.Count == 0)
+                    {
+                        <p class="text-center text-white-50">You have no friends yet.</p>
+                    }
+                    else
+                    {
+                        <ul class="list-group list-group-flush bg-transparent">
+                            @foreach (var friend in ViewModel.Friends)
+                            {
+                                <li class="list-group-item bg-transparent text-light d-flex flex-wrap justify-content-between align-items-center border-0 py-3">
+                                    <div class="d-flex align-items-center mb-2 mb-sm-0">
+                                        <img src="@FriendsViewModel.ResolveAvatar(friend.ProfilePictureUrl ?? friend.ProfilePicture)"
+                                             class="rounded-circle me-2"
+                                             style="width: 40px; height: 40px; object-fit: cover;" />
+                                        <span class="fs-5">@friend.Username</span>
+                                    </div>
+                                    <button class="btn btn-sm btn-outline-danger rounded-pill px-3"
+                                            @onclick="() => ViewModel.RemoveFriendCommand.ExecuteAsync(friend.Id)">
+                                        <i class="bi bi-person-dash me-1"></i>Remove
+                                    </button>
+                                </li>
+                            }
+                        </ul>
+                    }
+                </div>
+
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    // MVVM: all business logic lives in FriendsViewModel; @code only handles
+    // Razor-specific lifecycle and input events that need the component context.
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Wire VM property changes to trigger Blazor re-renders
+        ViewModel.PropertyChanged += (_, _) => InvokeAsync(StateHasChanged);
+        await ViewModel.LoadFriendsAsync();
+    }
+
+    // Wired to @oninput on the search field — fires the debounced search
+    private async Task HandleSearchInput(ChangeEventArgs e)
+    {
+        var value = e.Value?.ToString() ?? string.Empty;
+        ViewModel.SearchQuery = value;
+        await ViewModel.SearchUsersCommand.ExecuteAsync(value);
+    }
+
+    // Hide the autocomplete dropdown when the input loses focus
+    private async Task HandleSearchBlur()
+    {
+        // Small delay so @onmousedown on a suggestion can fire first
+        await Task.Delay(200);
+        ViewModel.CloseDropdown();
+    }
+}

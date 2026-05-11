@@ -1,0 +1,38 @@
+info:
+  name: "06 POST user/profile/update (multipart)"
+  type: http
+  seq: 6
+
+http:
+  method: POST
+  url: http://localhost:8000/api/user/profile/update
+  headers:
+    - name: Accept
+      value: application/json
+    - name: Authorization
+      value: Bearer {{auth_token}}
+  body:
+    type: multipartForm
+    data:
+      - name: username
+        value: ZoliProliApi
+      - name: email
+        value: ZoliProliApi@gmail.com
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("returns 200", function () {
+          expect(res.status).to.equal(200);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  Matches `AuthService.UpdateProfileAsync` (optional `profile_picture` file field omitted here).

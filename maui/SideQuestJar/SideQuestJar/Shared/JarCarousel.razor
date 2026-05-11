@@ -1,0 +1,169 @@
+@using SideQuestJar.Models
+@using Microsoft.JSInterop
+@inject IJSRuntime JS
+@inject NavigationManager NavigationManager
+@implements IAsyncDisposable
+
+<div class="container-fluid jar-carousel-root mb-5">
+    <div class="row mb-3">
+        <div class="col-12 text-center">
+            <h2 class="fw-bold welcome-text">@Title</h2>
+        </div>
+    </div>
+
+    <div class="row align-items-stretch">
+        <div class="col-1 d-flex justify-content-center align-items-center">
+            <button class="btn blue-button rounded-circle fw-bold shadow" 
+                    style="color:#EAB2A0; background-color:#2D4356; opacity: @(StartIndex > 0 ? 1 : 0.5);" 
+                    @onclick="ScrollPrev" 
+                    disabled="@(StartIndex <= 0)">
+                ❮
+            </button>
+        </div>
+
+        <div class="col-10 overflow-hidden">
+            <!-- Discrete Grid/Flex Container -->
+            <div @key="animationKey" class="d-flex justify-content-center gap-2 gap-md-4 py-2 @animationClass">
+                @foreach (var jar in VisibleJars)
+                {
+                    <div class="card bg-block-blue rounded-5 h-100 d-flex flex-column jar-card-border shadow" 
+                         style="flex: 1; min-width: 0; max-width: 300px;">
+                        
+                        <div class="card-header border-0 text-center" style="background: transparent;">
+                            <h5 class="fw-bold jar-name fs-3 text-truncate mt-2">@jar.Name</h5>
+                            <p class="mb-0 mt-1 small text-light opacity-75">by</p>
+                            <p class="mb-0 fw-bold" style="font-size: 1rem; color:#EAB2A0; cursor: pointer;">
+                                &#64;@((jar.User?.Username) ?? jar.CreatorUsername)
+                            </p>
+                        </div>
+
+                        <div class="card-body text-center flex-grow-1 p-2">
+                            <img src="@(string.IsNullOrEmpty(jar.PictureUrl) ? "https://i.ibb.co/2YvZypwJ/Jar-Quest-Placeholder.png" : jar.PictureUrl)" 
+                                 class="img-fluid rounded-4 w-100" 
+                                 alt="Jar image" 
+                                 style="aspect-ratio: 1/1; object-fit: cover;">
+                        </div>
+
+                        <div class="px-1 pb-3 pt-2 mt-auto d-flex justify-content-center">
+                            <button class="btn home-claim-button m-2 rounded-pill blue-button shadow-sm w-75"
+                                    @onclick="@(() => NavigateToJar(jar.Id))">
+                                Show Jar
+                            </button>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="col-1 d-flex justify-content-center align-items-center">
+            <button class="btn blue-button rounded-circle fw-bold shadow" 
+                    style="color:#EAB2A0; background-color:#2D4356; opacity: @(StartIndex + VisibleCount < Jars.Count ? 1 : 0.5);" 
+                    @onclick="ScrollNext"
+                    disabled="@(StartIndex + VisibleCount >= Jars.Count)">
+                ❯
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+    @@keyframes jarSlideInRight {
+        0% { opacity: 0; transform: translateX(40px); }
+        100% { opacity: 1; transform: translateX(0); }
+    }
+    @@keyframes jarSlideInLeft {
+        0% { opacity: 0; transform: translateX(-40px); }
+        100% { opacity: 1; transform: translateX(0); }
+    }
+    .jar-slide-in-right {
+        animation: jarSlideInRight 0.35s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+    }
+    .jar-slide-in-left {
+        animation: jarSlideInLeft 0.35s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+    }
+</style>
+
+@code {
+    [Parameter] public string Title { get; set; } = "";
+    [Parameter] public List<Jar> Jars { get; set; } = new();
+    [Parameter] public EventCallback OnLoadMore { get; set; }
+
+    private DotNetObjectReference<JarCarousel>? dotNetHelper;
+    private int StartIndex = 0;
+    private int VisibleCount = 1;
+    private bool isLoadingMore = false;
+    private string animationClass = "jar-slide-in-right";
+
+    private string animationKey => $"{StartIndex}_{VisibleCount}_{Jars.Count}";
+
+    private IEnumerable<Jar> VisibleJars => Jars.Skip(StartIndex).Take(VisibleCount);
+
+    private void NavigateToJar(int jarId) => NavigationManager.NavigateTo($"/jars/{jarId}");
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            dotNetHelper = DotNetObjectReference.Create(this);
+            await JS.InvokeVoidAsync("registerCarouselResize", dotNetHelper);
+        }
+    }
+
+    [JSInvokable]
+    public void SetVisibleCount(int count)
+    {
+        if (VisibleCount != count)
+        {
+            VisibleCount = count;
+            
+            // Adjust StartIndex if expanding the window pushed us out of bounds
+            if (StartIndex + VisibleCount > Jars.Count && Jars.Count > 0)
+            {
+                StartIndex = Math.Max(0, Jars.Count - VisibleCount);
+            }
+            
+            StateHasChanged();
+        }
+    }
+
+    private async Task ScrollPrev()
+    {
+        if (StartIndex > 0)
+        {
+            animationClass = "jar-slide-in-left";
+            StartIndex--;
+            StateHasChanged();
+        }
+    }
+
+    private async Task ScrollNext()
+    {
+        if (StartIndex + VisibleCount < Jars.Count)
+        {
+            animationClass = "jar-slide-in-right";
+            StartIndex++;
+            StateHasChanged();
+
+            // Load more if we are nearing the end
+            if (StartIndex + VisibleCount >= Jars.Count - 3 && !isLoadingMore)
+            {
+                await TriggerLoadMore();
+            }
+        }
+    }
+
+    private async Task TriggerLoadMore()
+    {
+        isLoadingMore = true;
+        if (OnLoadMore.HasDelegate)
+        {
+            await OnLoadMore.InvokeAsync();
+        }
+        isLoadingMore = false;
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        dotNetHelper?.Dispose();
+    }
+}

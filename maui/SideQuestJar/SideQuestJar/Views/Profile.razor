@@ -1,0 +1,393 @@
+@page "/profile"
+@using SideQuestJar.ViewModels
+@using SideQuestJar.Models
+@inject ProfileViewModel ViewModel
+@inject IJSRuntime JSRuntime
+
+<div class="container-fluid px-0 px-md-3">
+
+    @* ── Loading state ──────────────────────────────────────────────────── *@
+    @if (ViewModel.IsLoading)
+    {
+        <div class="d-flex justify-content-center align-items-center min-vh-80">
+            <div class="spinner-border text-light" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    }
+
+    @* ── Error state ────────────────────────────────────────────────────── *@
+    else if (ViewModel.HasError)
+    {
+        <div class="d-flex flex-column justify-content-center align-items-center min-vh-80 text-center">
+            <i class="bi bi-exclamation-triangle display-1 text-warning mb-3"></i>
+            <h3 class="text-white fw-bold">Oops! Could not load your profile.</h3>
+            <p class="text-white-50">Error: @ViewModel.ExceptionMessage</p>
+            <button class="btn btn-outline-light rounded-pill mt-3"
+                    @onclick="ViewModel.LoadProfileCommand.ExecuteAsync">
+                Retry
+            </button>
+        </div>
+    }
+
+    @* ── Profile loaded ─────────────────────────────────────────────────── *@
+    else if (ViewModel.ProfileData?.User != null)
+    {
+        <div class="row justify-content-center mb-3">
+            <div class="col-10">
+                <div class="card rounded-5 bg-block-blue m-3 shadow-lg">
+                    <div class="card-body border-0 text-center p-3 p-md-4">
+
+                        @* ── Header: avatar + username + level + XP bar ─── *@
+                        <div class="row">
+                            <div class="col-5 col-md-3">
+                                <div class="ratio ratio-1x1 m-2 mx-auto" style="max-width: 150px;">
+                                    <img src="@ViewModel.CurrentProfilePictureUrl"
+                                         class="img-fluid rounded-circle shadow"
+                                         alt="Profile picture"
+                                         style="object-fit: cover;" />
+                                </div>
+                            </div>
+
+                            <div class="col-7 col-md-9 text-start">
+                                <h1 class="fw-bold jar-name display-5 m-2"
+                                    style="font-size: clamp(1.5rem, 5vw, 3rem);">
+                                    @(ViewModel.ProfileData?.User?.Username ?? "Unknown User")
+                                </h1>
+                            </div>
+                        </div>
+
+                        @* ── Editor + Nav buttons row ─────────────────────── *@
+                        <div class="row m-2 mt-4 text-start">
+
+                            @* ── Left: profile editor ──────────────────────── *@
+                            <div class="col-12 col-lg-3 col-xl-5">
+                                @if (!string.IsNullOrEmpty(ViewModel.SuccessMessage))
+                                {
+                                    <div class="alert alert-success rounded-pill py-2 shadow-sm mb-3">
+                                        <i class="bi bi-check-circle-fill me-2"></i>@ViewModel.SuccessMessage
+                                    </div>
+                                }
+                                @if (!string.IsNullOrEmpty(ViewModel.ErrorMessage))
+                                {
+                                    <div class="alert alert-danger rounded-pill py-2 shadow-sm mb-3">
+                                        <i class="bi bi-exclamation-circle-fill me-2"></i>@ViewModel.ErrorMessage
+                                    </div>
+                                }
+
+                                @* ── Profile picture ─────────────────────── *@
+                                <div class="mb-4">
+                                    <label class="profile-label fs-4 d-flex align-self-start m-1 mb-0 text-white">
+                                        Profile picture
+                                    </label>
+                                    @if (ViewModel.EditPicture)
+                                    {
+                                        <div class="d-flex flex-column gap-2 align-items-start mt-2">
+                                            @if (!ViewModel.ShowCropper)
+                                            {
+                                                <div class="d-flex gap-2">
+                                                    <InputFile OnChange="HandleFileSelected"
+                                                               class="d-none"
+                                                               id="pictureInput"
+                                                               accept="image/*" />
+                                                    <label for="pictureInput"
+                                                           class="btn edit-button rounded-pill px-4 shadow-sm">
+                                                        <i class="bi bi-camera-fill me-2"></i>Choose Image
+                                                    </label>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="crop-section bg-dark p-3 rounded-4 border border-secondary shadow-lg mt-2 w-100">
+                                                    <div class="crop-container mb-3">
+                                                        <img id="cropImage" class="img-fluid" alt="Crop preview" />
+                                                    </div>
+                                                </div>
+                                            }
+
+                                            <div class="d-flex gap-2 mt-2">
+                                                <button class="btn edit-button fw-medium rounded-pill"
+                                                        @onclick="ViewModel.SavePictureCommand.ExecuteAsync"
+                                                        disabled="@ViewModel.IsUploading">
+                                                    @if (ViewModel.IsUploading)
+                                                    {
+                                                        <span class="spinner-border spinner-border-sm me-1"
+                                                              role="status" aria-hidden="true"></span>
+                                                    }
+                                                    Save
+                                                </button>
+                                                <button class="btn btn-secondary fw-medium rounded-pill"
+                                                        @onclick="ViewModel.CancelEditCommand.ExecuteAsync">
+                                                    Cancel
+                                                </button>
+                                            </div>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="d-flex gap-2 align-items-center mt-2">
+                                            <button class="btn edit-button fw-medium rounded-pill"
+                                                    @onclick='() => ViewModel.StartEditCommand.ExecuteAsync("picture")'>
+                                                Edit
+                                            </button>
+                                        </div>
+                                    }
+                                </div>
+
+                                @* ── Username ─────────────────────────────── *@
+                                <div class="mb-3">
+                                    <label class="profile-label fs-4 d-flex align-self-start m-1 mb-0 text-white">
+                                        Username
+                                    </label>
+                                    <div class="row align-items-center g-2 mt-1">
+                                        <div class="col-12 col-md-8">
+                                            @if (ViewModel.EditUsername)
+                                            {
+                                                <input type="text"
+                                                       class="form-control rounded-pill bg-dark text-white border-secondary"
+                                                       @bind="ViewModel.TempUsername" />
+                                            }
+                                            else
+                                            {
+                                                <div class="d-flex align-items-center px-3" style="min-height: 38px;">
+                                                    <p class="profile-label fs-5 fw-light text-white m-0 text-truncate">
+                                                        @(ViewModel.ProfileData?.User?.Username ?? "N/A")
+                                                    </p>
+                                                </div>
+                                            }
+                                        </div>
+                                        <div class="col-12 col-md-4 d-flex flex-nowrap gap-2">
+                                            @if (ViewModel.EditUsername)
+                                            {
+                                                <button class="btn edit-button fw-medium rounded-pill flex-fill"
+                                                        @onclick="ViewModel.SaveUsernameCommand.ExecuteAsync"
+                                                        disabled="@ViewModel.IsUploading">
+                                                    Save
+                                                </button>
+                                                <button class="btn btn-secondary fw-medium rounded-pill flex-fill"
+                                                        @onclick="ViewModel.CancelEditCommand.ExecuteAsync">
+                                                    Cancel
+                                                </button>
+                                            }
+                                            else
+                                            {
+                                                <button class="btn edit-button fw-medium rounded-pill px-4"
+                                                        @onclick='() => ViewModel.StartEditCommand.ExecuteAsync("username")'>
+                                                    Edit
+                                                </button>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @* ── Email ────────────────────────────────── *@
+                                <div class="mb-3">
+                                    <label class="profile-label fs-4 d-flex align-self-start m-1 mb-0 text-white">
+                                        E-mail
+                                    </label>
+                                    <div class="row align-items-center g-2 mt-1">
+                                        <div class="col-12 col-md-8">
+                                            @if (ViewModel.EditEmail)
+                                            {
+                                                <input type="email"
+                                                       class="form-control rounded-pill bg-dark text-white border-secondary"
+                                                       @bind="ViewModel.TempEmail" />
+                                            }
+                                            else
+                                            {
+                                                <div class="d-flex align-items-center px-3" style="min-height: 38px;">
+                                                    <p class="profile-label fs-5 fw-light text-white m-0 text-truncate">
+                                                        @(ViewModel.ProfileData?.User?.Email ?? "N/A")
+                                                    </p>
+                                                </div>
+                                            }
+                                        </div>
+                                        <div class="col-12 col-md-4 d-flex flex-nowrap gap-2">
+                                            @if (ViewModel.EditEmail)
+                                            {
+                                                <button class="btn edit-button fw-medium rounded-pill flex-fill"
+                                                        @onclick="ViewModel.SaveEmailCommand.ExecuteAsync"
+                                                        disabled="@ViewModel.IsUploading">
+                                                    Save
+                                                </button>
+                                                <button class="btn btn-secondary fw-medium rounded-pill flex-fill"
+                                                        @onclick="ViewModel.CancelEditCommand.ExecuteAsync">
+                                                    Cancel
+                                                </button>
+                                            }
+                                            else
+                                            {
+                                                <button class="btn edit-button fw-medium rounded-pill px-4"
+                                                        @onclick='() => ViewModel.StartEditCommand.ExecuteAsync("email")'>
+                                                    Edit
+                                                </button>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @* ── Password ─────────────────────────────── *@
+                                <div class="mb-3">
+                                    <label class="profile-label fs-4 d-flex align-self-start m-1 mb-0 text-white">
+                                        Password
+                                    </label>
+                                    <div class="row align-items-start g-2 mt-1">
+                                        <div class="col-12 col-md-8">
+                                            @if (ViewModel.EditPassword)
+                                            {
+                                                <input type="password"
+                                                       class="form-control rounded-pill bg-dark text-white border-secondary mb-2"
+                                                       @bind="ViewModel.CurrentPassword"
+                                                       placeholder="Current password" />
+                                                <input type="password"
+                                                       class="form-control rounded-pill bg-dark text-white border-secondary mb-2"
+                                                       @bind="ViewModel.NewPassword"
+                                                       placeholder="New password" />
+                                                <input type="password"
+                                                       class="form-control rounded-pill bg-dark text-white border-secondary"
+                                                       @bind="ViewModel.ConfirmPassword"
+                                                       placeholder="Confirm new password" />
+                                            }
+                                            else
+                                            {
+                                                <div class="d-flex align-items-center px-3" style="min-height: 38px;">
+                                                    <p class="profile-label fs-5 fw-light text-white m-0 text-truncate">
+                                                        ***********
+                                                    </p>
+                                                </div>
+                                            }
+                                        </div>
+                                        <div class="col-12 col-md-4 d-flex flex-nowrap align-items-start gap-2">
+                                            @if (ViewModel.EditPassword)
+                                            {
+                                                <button class="btn edit-button fw-medium rounded-pill flex-fill"
+                                                        @onclick="ViewModel.SavePasswordCommand.ExecuteAsync"
+                                                        disabled="@ViewModel.IsUploading">
+                                                    Save
+                                                </button>
+                                                <button class="btn btn-secondary fw-medium rounded-pill flex-fill"
+                                                        @onclick="ViewModel.CancelEditCommand.ExecuteAsync">
+                                                    Cancel
+                                                </button>
+                                            }
+                                            else
+                                            {
+                                                <button class="btn edit-button fw-medium rounded-pill px-4"
+                                                        @onclick='() => ViewModel.StartEditCommand.ExecuteAsync("password")'>
+                                                    Edit
+                                                </button>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            @* ── Right: Jars / Library nav buttons ─────────── *@
+                            <div class="col-12 col-lg-9 col-xl-7">
+                                <div class="d-flex align-items-start flex-column flex-md-row justify-content-center">
+
+                                    @* JARS button *@
+                                    <button class="parallelogram rounded-5 m-2 w-75 border-0 text-decoration-none d-block mx-auto"
+                                            @onclick="ScrollToMyJars">
+                                        <div class="row h-100 align-items-center">
+                                            <div class="col-0 col-md-5">
+                                                <img src="https://i.ibb.co/2YvZypwJ/Jar-Quest-Placeholder.png"
+                                                     class="img-fluid rounded-4 m-1 d-none d-md-block"
+                                                     style="aspect-ratio: 1/1; object-fit: cover; max-height: 120px;" />
+                                            </div>
+                                            <div class="col-12 col-md-7">
+                                                <p class="jar-name display-5 text-center text-white m-2"
+                                                   style="transform: skew(20deg); font-size: clamp(1.5rem, 5vw, 3rem);">
+                                                    JARS
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </button>
+
+                                    @* LIBRARY button *@
+                                    <button class="parallelogram rounded-5 m-2 w-75 border-0 text-decoration-none d-block mx-auto"
+                                            @onclick="ScrollToJoinedJars">
+                                        <div class="row h-100 align-items-center">
+                                            <div class="col-0 col-md-5">
+                                                <img src="https://i.ibb.co/2YvZypwJ/Jar-Quest-Placeholder.png"
+                                                     class="img-fluid rounded-4 m-1 d-none d-md-block"
+                                                     style="aspect-ratio: 1/1; object-fit: cover; max-height: 120px;" />
+                                            </div>
+                                            <div class="col-12 col-md-7">
+                                                <p class="jar-name display-5 text-center text-white m-2"
+                                                   style="transform: skew(20deg); font-size: clamp(1.5rem, 5vw, 3rem);">
+                                                    LIBRARY
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </button>
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @* ── My Jars section ────────────────────────────────────────────── *@
+        <div id="my-jars" class="container-fluid mt-5 px-3">
+            @if (ViewModel.ProfileData?.MyJars != null && ViewModel.ProfileData.MyJars.Any())
+            {
+                <div class="mb-5">
+                    <JarCarousel Title="My Jars" Jars="@ViewModel.ProfileData.MyJars" />
+                </div>
+            }
+            else
+            {
+                <p class="text-center text-light">You don't have any jars yet.</p>
+            }
+        </div>
+
+        @* ── Joined Jars section ─────────────────────────────────────────── *@
+        <div id="joined-jars" class="container-fluid mt-5 px-3 mb-5">
+            @if (ViewModel.ProfileData?.JoinedJars != null && ViewModel.ProfileData.JoinedJars.Any())
+            {
+                <div class="mb-5">
+                    <JarCarousel Title="Joined Jars" Jars="@ViewModel.ProfileData.JoinedJars" />
+                </div>
+            }
+            else
+            {
+                <p class="text-center text-light">You haven't joined any jars yet.</p>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    // MVVM: all business logic lives in ProfileViewModel; @code only handles
+    // Razor-specific lifecycle and JSInterop events that need the component context.
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Wire VM property changes to trigger Blazor re-renders
+        ViewModel.PropertyChanged += (_, _) => InvokeAsync(StateHasChanged);
+        await ViewModel.LoadProfileAsync();
+    }
+
+    // InputFile handler stays in @code because it needs the Blazor InputFileChangeEventArgs
+    private async Task HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        if (file == null) return;
+
+        var buffer = new byte[file.Size];
+        await file.OpenReadStream(4_096_000).ReadAsync(buffer);
+        await ViewModel.HandleFileSelectedAsync(buffer, file.ContentType, file.Name);
+    }
+
+    // JSInterop: scrollIntoView via named function (avoids eval in Blazor Hybrid)
+    private async Task ScrollToMyJars()
+        => await JSRuntime.InvokeVoidAsync("scrollToId", "my-jars");
+
+    private async Task ScrollToJoinedJars()
+        => await JSRuntime.InvokeVoidAsync("scrollToId", "joined-jars");
+}

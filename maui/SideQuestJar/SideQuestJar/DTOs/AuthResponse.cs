@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.Json.Serialization;
+using SideQuestJar.Serialization;
 
 namespace SideQuestJar.DTOs
 {
@@ -32,18 +33,13 @@ namespace SideQuestJar.DTOs
         public required string Email { get; set; }
 
         [JsonPropertyName("profile_picture")]
-        public required string ProfilePicture { get; set; }
+        public string? ProfilePicture { get; set; }
 
         [JsonPropertyName("birth_date")]
         public DateTime BirthDate { get; set; }
 
-        [JsonPropertyName("user_xp")]
-        public int UserXp { get; set; }
-
-        [JsonPropertyName("is_customized")]
-        public int IsCustomized { get; set; }
-
         [JsonPropertyName("is_admin")]
+        [JsonConverter(typeof(BoolOrIntJsonConverter))]
         public int IsAdmin { get; set; }
     }
 }

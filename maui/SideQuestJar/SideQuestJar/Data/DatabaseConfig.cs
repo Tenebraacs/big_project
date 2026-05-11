@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,7 +6,7 @@ namespace SideQuestJar.Data
 {
     public class DatabaseConfig
     {
-        public const string DatabaseFilename = "SideQuestJarLocal.db3";
+        public const string DatabaseFilename = "SideQuestJarLocal_v2.db3";
 
         public static string DatabasePath
         {

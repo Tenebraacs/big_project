@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using SideQuestJar.Services;
 using SideQuestJar.ViewModels;
 
@@ -23,24 +23,7 @@ namespace SideQuestJar
 
             var window = new Window(appShell);
 
-            PerformAutoLoginCheck(appShell);
-
             return window;
-        }
-
-        private async void PerformAutoLoginCheck(AppShell shell)
-        {
-            bool isLoggedIn = await _authService.HasValidSessionAsync();
-
-            if (isLoggedIn)
-            {
-                _appstate.IsLoggedIn = true;
-                
-                shell.Dispatcher.Dispatch(async () =>
-                {
-                    await shell.GoToAsync("//HomePage");
-                });
-            }
         }
     }
 }

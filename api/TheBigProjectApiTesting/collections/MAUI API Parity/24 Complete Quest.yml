@@ -1,0 +1,40 @@
+info:
+  name: "24 POST quests/:quest_id/complete (empty JSON body)"
+  type: http
+  seq: 24
+
+http:
+  method: POST
+  url: http://localhost:8000/api/quests/:quest_id/complete
+  headers:
+    - name: Accept
+      value: application/json
+    - name: Content-Type
+      value: application/json
+    - name: Authorization
+      value: Bearer {{auth_token}}
+  params:
+    - name: quest_id
+      value: "{{quest_id}}"
+      type: path
+  body:
+    type: json
+    data: "{}"
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("complete or already done today", function () {
+          expect([201, 409]).to.include(res.status);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  Same mode as `JarService.CompleteQuestAsync` when there is no image/description (empty JSON). Expect **409** if already completed today.

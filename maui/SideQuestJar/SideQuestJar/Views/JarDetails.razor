@@ -1,0 +1,799 @@
+@page "/jars/{JarId:int}"
+@using SideQuestJar.Services
+@using SideQuestJar.DTOs
+@using SideQuestJar.Models
+@using SideQuestJar.ViewModels
+@inject JarService JarService
+@inject NavigationManager NavigationManager
+@inject NavbarViewModel NavbarViewModel
+@inject FriendService FriendService
+
+@if (isLoading)
+{
+    <div class="d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+        <div class="spinner-border text-light" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+}
+else if (hasError || details?.Jar == null)
+{
+    <div class="d-flex flex-column justify-content-center align-items-center text-center" style="min-height: 80vh;">
+        <i class="bi bi-exclamation-triangle display-1 text-warning mb-3"></i>
+        <h3 class="text-white fw-bold">Could not load this Jar.</h3>
+        <p class="text-white-50">Try again when you're back online.</p>
+        <button class="btn blue-button rounded-pill px-4 mt-2" @onclick='() => NavigationManager.NavigateTo("/")'>
+            <i class="bi bi-arrow-left me-2"></i>Back to Home
+        </button>
+    </div>
+}
+else
+{
+    var jar = details.Jar;
+
+    <!-- Back Button -->
+    <div class="px-3 pt-2 pb-1">
+        <button class="btn btn-link text-light text-decoration-none p-0 small" @onclick='() => NavigationManager.NavigateTo("/")'>
+            <i class="bi bi-arrow-left me-1"></i>Back
+        </button>
+    </div>
+
+    <!-- ===== 3-COLUMN LAYOUT (Desktop) / STACKED (Mobile) ===== -->
+    <div class="jar-detail-grid px-2 px-md-3 pb-5">
+
+        <!-- ========== LEFT: Members ========== -->
+        <div class="jar-detail-col jar-detail-col--members">
+            <div class="card bg-block-blue rounded-4 jar-card-border">
+                <div class="card-header border-0 text-center pt-3 pb-2" style="background:transparent;">
+                    <h5 class="fw-bold jar-name mb-0">Members</h5>
+                    <small class="text-white-50">@details.Members.Count joined</small>
+                </div>
+                <div class="card-body jar-detail-side-body p-2">
+                    @if (details.Members.Any())
+                    {
+                        @foreach (var member in details.Members)
+                        {
+                            <div class="d-flex align-items-center gap-2 px-2 py-2 rounded-3 mb-1 @(member.IsYou ? "border border-1" : "")"
+                                 style="background: rgba(255,255,255,0.05); @(member.IsYou ? "border-color: #EAB2A0 !important;" : "")">
+                                <img src="@(member.ProfilePicture ?? "https://i.ibb.co/689N9hY/default.jpg")"
+                                     class="rounded-circle flex-shrink-0"
+                                     style="width:32px; height:32px; object-fit:cover;" />
+                                <div class="flex-grow-1 overflow-hidden">
+                                    <div class="fw-bold text-white text-truncate small">
+                                        @member.Username
+                                        @if (member.IsYou)
+                                        {
+                                            <span class="badge ms-1 rounded-pill" style="background:#EAB2A0; color:#1a1a2e; font-size:0.6rem;">You</span>
+                                        }
+                                    </div>
+                                    <div class="text-white-50" style="font-size:0.72rem;">Streak: @member.Streak</div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="text-center text-white-50 py-4 small">No members yet.</div>
+                    }
+                    
+
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== CENTER: Quest carousel ========== -->
+        <div class="jar-detail-col jar-detail-col--center">
+
+            <div class="text-center mb-3">
+                <div class="d-flex align-items-center justify-content-center gap-2 mb-1">
+                    <h1 class="fw-bold welcome-text mb-0" style="font-size: clamp(1.6rem, 4vw, 2.4rem);">@jar.Name</h1>
+                    @if (NavbarViewModel.IsLoggedIn && jar.CreatedBy == NavbarViewModel.NavbarData?.User?.Id)
+                    {
+                        <div class="d-flex gap-1">
+                            <button class="btn btn-sm btn-outline-light rounded-pill border-0 p-1" 
+                                    @onclick='() => NavigationManager.NavigateTo($"/jars/edit/{jar.Id}")'>
+                                <i class="bi bi-pencil-square"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger rounded-pill border-0 p-1" 
+                                    @onclick="() => OpenDeleteConfirm(jar.Id, true)">
+                                <i class="bi bi-trash-fill"></i>
+                            </button>
+                        </div>
+                    }
+                </div>
+                @if (!string.IsNullOrEmpty(jar.Description))
+                {
+                    <p class="jar-name mt-1 mb-0 opacity-90" style="font-size: clamp(0.85rem, 2vw, 1rem);">@jar.Description</p>
+                }
+            </div>
+
+            <!-- Like (toggle when signed in; tap to sign in otherwise) -->
+            <div class="d-flex justify-content-center mb-3">
+                <button type="button"
+                        class="badge rounded-pill px-3 py-2 border-0"
+                        style="background:rgba(234,178,160,0.15); color:#EAB2A0; font-size:0.95rem; cursor:pointer;"
+                        disabled="@(NavbarViewModel.IsLoggedIn && isTogglingLike)"
+                        @onclick="HandleLikeClick">
+                    @if (isTogglingLike && NavbarViewModel.IsLoggedIn)
+                    {
+                        <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+                    }
+                    else
+                    {
+                        <i class="bi @(jar.IsLiked ? "bi-heart-fill" : "bi-heart") me-1"></i>
+                    }
+                    @jar.Likes
+                </button>
+            </div>
+
+            @if (details.Quests.Any())
+            {
+                <div class="mx-auto" style="max-width: 550px;">
+                <!-- Quest Carousel -->
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <button class="btn blue-button rounded-circle fw-bold flex-shrink-0"
+                            style="width:44px; height:44px; color:#EAB2A0; background:#2D4356; opacity: @(questIndex > 0 ? 1.0 : 0.4);"
+                            @onclick="QuestPrev" disabled="@(questIndex <= 0)">❮</button>
+
+                    <div class="flex-grow-1 overflow-hidden">
+                        <div @key="questAnimKey" class="@questAnimClass">
+                            @{ var quest = details.Quests[questIndex]; }
+                            <div class="card bg-block-blue rounded-4 jar-card-border shadow w-100">
+                                @if (!string.IsNullOrEmpty(quest.PictureUrl))
+                                {
+                                    <img src="@quest.PictureUrl" alt="@quest.Title"
+                                         class="card-img-top rounded-top-4 w-100"
+                                         style="aspect-ratio: 1/1; object-fit: cover;" />
+                                }
+                                else
+                                {
+                                    <div class="rounded-top-4 d-flex align-items-center justify-content-center"
+                                         style="height: clamp(180px, 35vw, 340px); background: #1a1f2e;">
+                                        <i class="bi bi-image text-white-50" style="font-size: 3rem;"></i>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="btn blue-button rounded-circle fw-bold flex-shrink-0"
+                            style="width:44px; height:44px; color:#EAB2A0; background:#2D4356; opacity: @(questIndex < details.Quests.Count - 1 ? 1.0 : 0.4);"
+                            @onclick="QuestNext" disabled="@(questIndex >= details.Quests.Count - 1)">❯</button>
+                </div>
+
+                <!-- Quest Info Card -->
+                <div @key="@($"qi_{questIndex}")" class="card rounded-4 mb-3 @questAnimClass"
+                     style="background: rgba(234,178,160,0.12); border: 1px solid rgba(234,178,160,0.2);">
+                    <div class="card-body px-4 py-3">
+                        <div class="d-flex align-items-center gap-2 mb-1 justify-content-center">
+                            <h5 class="fw-bold jar-name mb-0 text-center" style="color:#EAB2A0;">@quest.Title</h5>
+                            @if (details.CurrentDailyQuestId == quest.Id)
+                            {
+                                <span class="badge rounded-pill" style="background:#EAB2A0;color:#1a1f2e;font-size:0.65rem;">
+                                    <i class="bi bi-sun-fill me-1"></i>Today
+                                </span>
+                            }
+                            @if (NavbarViewModel.IsLoggedIn && jar.CreatedBy == NavbarViewModel.NavbarData?.User?.Id)
+                            {
+                                <div class="d-flex gap-1">
+                                    <button class="btn btn-sm btn-outline-light rounded-pill border-0 p-1"
+                                            @onclick='() => NavigationManager.NavigateTo($"/jars/{JarId}/quests/edit/{quest.Id}")'
+                                            style="color: #EAB2A0;">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger rounded-pill border-0 p-1"
+                                            @onclick="() => OpenDeleteConfirm(quest.Id, false)">
+                                        <i class="bi bi-trash-fill"></i>
+                                    </button>
+                                </div>
+                            }
+                        </div>
+                        <p class="text-white-50 mb-0 text-center small">@quest.Description</p>
+                    </div>
+                    @if (details.IsJoined)
+                    {
+                        <div class="card-footer border-0 text-center pb-3" style="background:transparent;">
+                            @if (quest.CompletedToday || completedQuestIds.Contains(quest.Id))
+                            {
+                                <button class="btn rounded-pill w-75 fw-bold" disabled
+                                        style="background:#1e2d1e;color:#7ecf7e;border:1.5px solid #7ecf7e;">
+                                    <i class="bi bi-check2-circle me-1"></i>Completed!
+                                </button>
+                            }
+                            else if (claimingQuestId == quest.Id)
+                            {
+                                <button class="btn blue-button rounded-pill w-75" disabled>
+                                    <span class="spinner-border spinner-border-sm me-1"></span>Claiming...
+                                </button>
+                            }
+                            else
+                            {
+                                <button class="btn home-claim-button blue-button rounded-pill w-75 shadow-sm"
+                                        @onclick="@(() => OpenClaimModal(quest.Id))">
+                                    @(details.CurrentDailyQuestId == quest.Id ? "Claim Today's Quest" : "Claim Quest")
+                                </button>
+                            }
+                            @if (!string.IsNullOrEmpty(questMessage) && lastClaimedQuestId == quest.Id)
+                            {
+                                <div class="mt-2 small fw-bold" style="color:#EAB2A0;">@questMessage</div>
+                            }
+                        </div>
+                    }
+                </div>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5 opacity-50">
+                    <i class="bi bi-inbox display-3 text-white"></i>
+                    <p class="text-white-50 mt-2">No quests in this Jar yet.</p>
+                </div>
+            }
+
+            @if (NavbarViewModel.IsLoggedIn && jar.CreatedBy == NavbarViewModel.NavbarData?.User?.Id)
+            {
+                <div class="text-center mb-4">
+                    <button class="btn btn-outline-light rounded-pill px-4 py-2" 
+                            style="border-color: rgba(234,178,160,0.5); color: #EAB2A0;"
+                            @onclick='() => NavigationManager.NavigateTo($"/jars/{jar.Id}/quests/create")'>
+                        <i class="bi bi-plus-lg me-2"></i>Add Quest
+                    </button>
+                </div>
+            }
+
+            <!-- Join / Leave Button -->
+            <div class="text-center mx-auto" style="max-width: 550px;">
+                @if (details.IsJoined)
+                {
+                    <button class="btn rounded-pill px-5 py-2 fw-bold fs-5 w-100"
+                            style="background: rgba(234,178,160,0.85); color: #1a1f2e;"
+                            @onclick="HandleLeave" disabled="@isJoining">
+                        @if (isJoining)
+                        { <span class="spinner-border spinner-border-sm me-2"></span> }
+                        Leave Jar
+                    </button>
+                }
+                else
+                {
+                    <button class="btn blue-button rounded-pill px-5 py-2 fw-bold fs-5 w-100 shadow"
+                            @onclick="HandleJoin" disabled="@isJoining">
+                        @if (isJoining)
+                        {
+                            <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                        }
+                        <i class="bi bi-plus-circle me-2"></i>Join Jar
+                    </button>
+                }
+
+                @if (!string.IsNullOrEmpty(joinMessage))
+                {
+                    <div class="mt-2 small fw-bold" style="color:#EAB2A0;">@joinMessage</div>
+                }
+            </div>
+
+        </div>
+
+        <!-- ========== RIGHT: Chat ========== -->
+        <div class="jar-detail-col jar-detail-col--chat">
+            <div class="card bg-block-blue rounded-4 jar-card-border d-flex flex-column">
+                <div class="card-header border-0 text-center pt-3 pb-2" style="background:transparent;">
+                    <h5 class="fw-bold jar-name mb-0">Jar Chat</h5>
+                </div>
+                <div class="card-body jar-detail-side-body flex-grow-1 p-2" id="chat-messages">
+                    @if (comments.Any())
+                    {
+                        @foreach (var c in comments)
+                        {
+                            <div class="d-flex gap-2 mb-3 align-items-start">
+                                <img src="@(c.ProfilePicture ?? "https://i.ibb.co/689N9hY/default.jpg")"
+                                     class="rounded-circle flex-shrink-0 mt-1"
+                                     style="width:28px;height:28px;object-fit:cover;" />
+                                <div>
+                                    <div class="fw-bold text-truncate" style="color:#EAB2A0;font-size:0.78rem;">@c.Username</div>
+                                    <div class="text-white" style="font-size:0.88rem;word-break:break-word;">@c.Content</div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p class="text-white-50 text-center small mt-4">No comments yet. Be the first!</p>
+                    }
+                </div>
+                <div class="card-footer border-0 p-2" style="background:transparent;">
+                    @if (!string.IsNullOrEmpty(commentError))
+                    {
+                        <div class="text-danger small mb-1 px-1">@commentError</div>
+                    }
+                    <div class="d-flex gap-2">
+                        <input @bind="newComment" @bind:event="oninput"
+                               @onkeydown="HandleCommentKeyDown"
+                               type="text" class="form-control claim-input rounded-pill"
+                               placeholder="Message..."
+                               style="background:rgba(255,255,255,0.07);border-color:rgba(255,255,255,0.15);font-size:0.88rem;" />
+                        <button class="btn blue-button rounded-circle flex-shrink-0"
+                                style="width:40px;height:40px;color:#EAB2A0;"
+                                @onclick="SendComment" disabled="@isSendingComment">
+                            @if (isSendingComment)
+                            { <span class="spinner-border spinner-border-sm"></span> }
+                            else
+                            { <i class="bi bi-send-fill"></i> }
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- /jar-detail-grid -->
+
+    <!-- ===== COMPLETIONS FEED ===== -->
+    @if (completions.Any())
+    {
+        <CompletionCarousel Title="Recent Completions" Completions="completions" />
+    }
+
+    <!-- ===== CLAIM QUEST MODAL ===== -->
+    @if (showClaimModal)
+    {
+        <div style="position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:1060;" @onclick="CancelClaim"></div>
+
+        <div style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:1061;width:min(92vw,500px);max-height:90vh;overflow-y:auto;">
+            <div class="card bg-block-blue rounded-4 jar-card-border shadow-lg">
+                <div class="card-header border-0 d-flex align-items-center justify-content-between px-4 pt-4 pb-2"
+                     style="background:transparent;">
+                    <h4 class="fw-bold welcome-text mb-0">Claim Quest</h4>
+                    <button class="btn btn-link text-white-50 p-0" @onclick="CancelClaim">
+                        <i class="bi bi-x-lg fs-5"></i>
+                    </button>
+                </div>
+                <div class="card-body px-4 pb-4" @onclick:stopPropagation>
+
+                    <!-- Image picker + cropper -->
+                    <label class="fw-bold small mb-2 d-block" style="color:#EAB2A0;">Upload an image</label>
+                    <div class="rounded-4 mb-3 d-flex align-items-center gap-3 px-3 py-2"
+                         style="background:rgba(255,255,255,0.07);border:1.5px solid rgba(234,178,160,0.35);">
+                        <InputFile OnChange="HandleImageSelected" accept="image/*" class="d-none" id="claimImageInput" />
+                        <label for="claimImageInput" class="btn blue-button rounded-pill px-3 py-1 small mb-0"
+                               style="cursor:pointer;white-space:nowrap;">
+                            <i class="bi bi-upload me-1"></i>Choose Image
+                        </label>
+                        <span class="text-white-50 small text-truncate">
+                            @(selectedImageName ?? "No file selected")
+                        </span>
+                    </div>
+
+                    <!-- Cropper preview (shown after image selected) -->
+                    @if (!string.IsNullOrEmpty(selectedImageDataUrl))
+                    {
+                        <div class="crop-container mb-3">
+                            <img id="cropperImg" alt="crop preview" style="max-width:100%;display:block;" />
+                        </div>
+                        <p class="text-white-50 small text-center mb-3">
+                            <i class="bi bi-arrows-move me-1"></i>Drag to reposition · Resize the box to crop
+                        </p>
+                    }
+
+                    <!-- Description -->
+                    <label class="fw-bold small mb-2 d-block" style="color:#EAB2A0;">
+                        Description <span class="text-white-50 fw-normal">(optional)</span>
+                    </label>
+                    <textarea @bind="claimDescription"
+                              class="form-control claim-input rounded-4 mb-4"
+                              rows="3"
+                              placeholder="Add a short description about this claim"
+                              style="background:rgba(255,255,255,0.07);border-color:rgba(255,255,255,0.15);resize:none;"></textarea>
+
+                    <div class="d-flex gap-3">
+                        <button class="btn rounded-pill px-4 py-2 fw-bold flex-grow-1"
+                                style="background:rgba(234,178,160,0.85);color:#1a1f2e;"
+                                @onclick="CancelClaim">
+                            Cancel
+                        </button>
+                        <button class="btn blue-button rounded-pill px-4 py-2 fw-bold flex-grow-1 shadow"
+                                @onclick="SubmitClaim" disabled="@isSubmittingClaim">
+                            @if (isSubmittingClaim)
+                            {
+                                <span class="spinner-border spinner-border-sm me-1"></span>
+                            }
+                            Submit
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- ===== DELETE CONFIRMATION MODAL ===== -->
+    @if (showDeleteModal)
+    {
+        <div style="position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:1070;" @onclick="() => showDeleteModal = false"></div>
+        <div style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:1071;width:min(92vw,400px);">
+            <div class="card bg-block-blue rounded-4 jar-card-border shadow-lg">
+                <div class="card-body p-4 text-center">
+                    <i class="bi bi-exclamation-octagon display-4 text-danger mb-3"></i>
+                    <h4 class="fw-bold text-white mb-2">Are you sure?</h4>
+                    <p class="text-white-50 mb-4">
+                        Do you really want to delete this @(isDeletingJar ? "Jar" : "Quest")? This action cannot be undone.
+                    </p>
+                    <div class="d-flex gap-3">
+                        <button class="btn btn-secondary rounded-pill px-4 py-2 flex-grow-1" @onclick="() => showDeleteModal = false">Cancel</button>
+                        <button class="btn btn-danger rounded-pill px-4 py-2 flex-grow-1" @onclick="ConfirmDelete" disabled="@isPerformingDelete">
+                            @if (isPerformingDelete)
+                            { <span class="spinner-border spinner-border-sm me-1"></span> }
+                            Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+
+
+}
+
+<style>
+    /* ---- 3-column grid ---- */
+    .jar-detail-grid {
+        display: grid;
+        gap: 1rem;
+        grid-template-columns: 1fr;               /* mobile: full width stack */
+        grid-template-rows: auto;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    @@media (min-width: 992px) {
+        .jar-detail-grid {
+            grid-template-columns: 200px 1fr 250px;  /* desktop: sidebar | center | chat */
+            grid-template-rows: auto;
+            align-items: start;
+        }
+    }
+
+    /* Column order on mobile: center first, then members, then chat */
+    .jar-detail-col--members { order: 2; }
+    .jar-detail-col--center  { order: 1; }
+    .jar-detail-col--chat    { order: 3; }
+
+    @@media (min-width: 992px) {
+        .jar-detail-col--members { order: 1; }
+        .jar-detail-col--center  { order: 2; }
+        .jar-detail-col--chat    { order: 3; }
+    }
+
+    /* Members + chat lists: limited height; scroll without visible scrollbar */
+    .jar-detail-side-body {
+        max-height: min(40vh, 320px);
+        overflow-y: auto;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+    .jar-detail-side-body::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* ---- Animations ---- */
+    @@keyframes jarSlideInRight {
+        0%   { opacity: 0; transform: translateX(40px); }
+        100% { opacity: 1; transform: translateX(0); }
+    }
+    @@keyframes jarSlideInLeft {
+        0%   { opacity: 0; transform: translateX(-40px); }
+        100% { opacity: 1; transform: translateX(0); }
+    }
+    .jar-slide-in-right { animation: jarSlideInRight 0.3s cubic-bezier(0.25,0.8,0.25,1) forwards; }
+    .jar-slide-in-left  { animation: jarSlideInLeft  0.3s cubic-bezier(0.25,0.8,0.25,1) forwards; }
+</style>
+
+@code {
+    [Parameter] public int JarId { get; set; }
+
+    [Inject] private IJSRuntime JS { get; set; } = default!;
+
+    private JarDetailsResponse? details;
+    private bool isLoading = true;
+    private bool hasError  = false;
+    private bool isJoining = false;
+    private string joinMessage = "";
+
+    private bool isTogglingLike = false;
+
+    // Quest carousel
+    private int questIndex = 0;
+    private string questAnimClass = "jar-slide-in-right";
+    private string questAnimKey  => $"q_{questIndex}";
+
+    // Quest completion
+    private HashSet<int> completedQuestIds = new();
+    private int claimingQuestId = -1;
+    private int lastClaimedQuestId = -1;
+    private string questMessage = "";
+
+    // Claim Modal
+    private bool showClaimModal = false;
+    private int modalQuestId = -1;
+    private string? claimDescription;
+    private string? selectedImageName;
+    private string? selectedImageDataUrl;   // for cropper preview
+    private bool isSubmittingClaim = false;
+
+    // Comments
+    private List<JarComment> comments = new();
+    private string newComment = "";
+    private string commentError = "";
+    private bool isSendingComment = false;
+
+    // Completions feed
+    private List<QuestCompletionDto> completions = new();
+    
+
+
+    // Deletion
+    private bool showDeleteModal = false;
+    private bool isDeletingJar = false;
+    private int deleteTargetId = -1;
+    private bool isPerformingDelete = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (JarId == AppConstants.MainQuestJarId)
+        {
+            NavigationManager.NavigateTo("/");
+            isLoading = false;
+            return;
+        }
+
+        try
+        {
+            details  = await JarService.GetJarDetailsAsync(JarId);
+            hasError = details == null;
+        }
+        catch { hasError = true; }
+        finally { isLoading = false; }
+
+        if (!hasError)
+        {
+            // Load in parallel
+            var commentsTask    = JarService.GetCommentsAsync(JarId);
+            var completionsTask = JarService.GetCompletionsAsync(JarId);
+            await Task.WhenAll(commentsTask, completionsTask);
+            comments    = commentsTask.Result;
+            completions = completionsTask.Result;
+        }
+    }
+
+    private async Task HandleJoin()
+    {
+        if (details == null || isJoining) return;
+        isJoining = true;
+        joinMessage = "";
+        var (success, message) = await JarService.JoinJarAsync(JarId);
+        if (success) details.IsJoined = true;
+        joinMessage = message;
+        isJoining = false;
+    }
+    
+    private async Task HandleLeave()
+    {
+        if (details == null || isJoining) return; // reusing isJoining for Leave too
+        isJoining = true;
+        var (success, message) = await JarService.LeaveJarAsync(JarId);
+        if (success) details.IsJoined = false;
+        joinMessage = message;
+        isJoining = false;
+    }
+
+
+
+    private async Task HandleLikeClick()
+    {
+        if (!NavbarViewModel.IsLoggedIn)
+        {
+            NavigationManager.NavigateTo("/login");
+            return;
+        }
+        if (details?.Jar == null || isTogglingLike) return;
+
+        isTogglingLike = true;
+        try
+        {
+            var (success, liked, count, message) = await JarService.ToggleJarLikeAsync(JarId);
+            if (success)
+            {
+                details.Jar.Likes = count;
+                details.Jar.IsLiked = liked;
+            }
+            else if (!string.IsNullOrWhiteSpace(message))
+            {
+                await JS.InvokeVoidAsync("alert", message);
+            }
+        }
+        finally
+        {
+            isTogglingLike = false;
+            StateHasChanged();
+        }
+    }
+
+
+
+    // ─── Claim Modal ──────────────────────────────────────────────────────────
+
+    private void OpenClaimModal(int questId)
+    {
+        modalQuestId         = questId;
+        claimDescription     = null;
+        selectedImageName     = null;
+        selectedImageDataUrl  = null;
+        showClaimModal       = true;
+    }
+
+    private async Task CancelClaim()
+    {
+        showClaimModal = false;
+        await JS.InvokeVoidAsync("destroyCropper");
+    }
+
+    private async Task HandleImageSelected(InputFileChangeEventArgs e)
+    {
+        try
+        {
+            var file = e.File;
+            if (file == null) return;
+            selectedImageName = file.Name;
+
+            // Read to base64 for cropper preview
+            using var ms = new MemoryStream();
+            await file.OpenReadStream(maxAllowedSize: 15 * 1024 * 1024).CopyToAsync(ms);
+            var base64 = Convert.ToBase64String(ms.ToArray());
+            selectedImageDataUrl = $"data:image/jpeg;base64,{base64}";
+
+            // Tell Blazor to render the <img> before initialising cropper
+            StateHasChanged();
+            await Task.Yield();
+            await JS.InvokeVoidAsync("initCropper", "cropperImg", selectedImageDataUrl);
+        }
+        catch (Exception ex)
+        {
+            await JS.InvokeVoidAsync("alert", "Error selecting image: " + ex.Message);
+        }
+    }
+
+    private async Task SubmitClaim()
+    {
+        if (isSubmittingClaim) return;
+        
+        try
+        {
+            isSubmittingClaim = true;
+            showClaimModal    = false;
+
+            claimingQuestId    = modalQuestId;
+            lastClaimedQuestId = modalQuestId;
+            questMessage       = "";
+
+            // Get cropped image from JS if an image was selected
+            byte[]? imageBytes = null;
+            string? imageName  = null;
+            if (!string.IsNullOrEmpty(selectedImageDataUrl))
+            {
+                var b64 = await JS.InvokeAsync<string?>("getCroppedImageBase64", 0.85);
+                if (!string.IsNullOrEmpty(b64))
+                {
+                    imageBytes = Convert.FromBase64String(b64);
+                    imageName  = "completion.jpg";
+                }
+                await JS.InvokeVoidAsync("destroyCropper");
+            }
+
+            var (success, message, completion) = await JarService.CompleteQuestAsync(
+                modalQuestId, claimDescription, imageBytes, imageName);
+
+            questMessage = message;
+            if (success)
+            {
+                completedQuestIds.Add(modalQuestId);
+                if (completion != null)
+                {
+                    if (completions == null) completions = new();
+                    completions.Insert(0, completion);
+                }
+            }
+            else
+            {
+                await JS.InvokeVoidAsync("alert", message);
+            }
+        }
+        catch (Exception ex)
+        {
+            await JS.InvokeVoidAsync("alert", "Error submitting claim: " + ex.Message);
+        }
+        finally
+        {
+            claimingQuestId   = -1;
+            isSubmittingClaim = false;
+            StateHasChanged();
+        }
+    }
+
+    // ─── Comments ─────────────────────────────────────────────────────────────
+
+    private async Task SendComment()
+    {
+        if (string.IsNullOrWhiteSpace(newComment) || isSendingComment) return;
+        isSendingComment = true;
+        commentError = "";
+        var content = newComment.Trim();
+        newComment = "";
+        var (ok, comment, err) = await JarService.PostCommentAsync(JarId, content);
+        if (ok && comment != null) comments.Insert(0, comment);
+        else commentError = err;
+        isSendingComment = false;
+    }
+
+    private async Task HandleCommentKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter") await SendComment();
+    }
+
+    // ─── Quest Carousel ───────────────────────────────────────────────────────
+
+    private void QuestPrev()
+    {
+        if (questIndex > 0) { questAnimClass = "jar-slide-in-left"; questIndex--; }
+    }
+
+    private void QuestNext()
+    {
+        if (details != null && questIndex < details.Quests.Count - 1)
+        { questAnimClass = "jar-slide-in-right"; questIndex++; }
+    }
+
+    // ─── Management ──────────────────────────────────────────────────────────
+
+    private void OpenDeleteConfirm(int id, bool isJar)
+    {
+        deleteTargetId = id;
+        isDeletingJar = isJar;
+        showDeleteModal = true;
+    }
+
+    private async Task ConfirmDelete()
+    {
+        if (isPerformingDelete) return;
+        isPerformingDelete = true;
+
+        if (isDeletingJar)
+        {
+            var (success, msg) = await JarService.DeleteJarAsync(deleteTargetId);
+            if (success || msg.Contains("404") || msg.Contains("not found")) 
+            {
+                NavigationManager.NavigateTo("/", true);
+                return;
+            }
+            else
+            {
+                await JS.InvokeVoidAsync("alert", "Failed to delete Jar: " + msg);
+            }
+        }
+        else
+        {
+            var (success, msg) = await JarService.DeleteQuestAsync(JarId, deleteTargetId);
+            if (success)
+            {
+                showDeleteModal = false;
+                // Reload data
+                await OnInitializedAsync();
+                if (questIndex >= (details?.Quests?.Count ?? 0)) 
+                    questIndex = Math.Max(0, (details?.Quests?.Count ?? 1) - 1);
+            }
+            else
+            {
+                await JS.InvokeVoidAsync("alert", "Failed to delete Quest: " + msg);
+            }
+        }
+        isPerformingDelete = false;
+        showDeleteModal = false;
+    }
+}

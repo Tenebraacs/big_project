@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using SideQuestJar.Models;
 using System;
 using System.Collections.Generic;
@@ -15,8 +15,8 @@ namespace SideQuestJar.Data
         public DbSet<QuestCompletion> QuestCompletions { get; set; }
         public DbSet<Like> Likes { get; set; }
         public DbSet<Library> Libraries { get; set; }
-        public DbSet<Achievements> Achievements { get; set; }
-        public DbSet<AchievementCompletion> AchievementCompletions { get; set; }
+        public DbSet<FriendEntry> Friends { get; set; }
+        public DbSet<MessageEntry> Messages { get; set; }
 
         public AppDbContext()
         {

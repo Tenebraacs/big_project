@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SideQuestJar.Services;
 using System;
@@ -55,13 +55,14 @@ namespace SideQuestJar.ViewModels
 
             if (isSuccess)
             {
-                AppState.IsLoggedIn = true;
+                await AppState.RefreshUserAsync();
                 await Shell.Current.GoToAsync("//HomePage");
-
             }
             else
             {
-                GenericErrorMessage = "Invalid email or password.";
+                GenericErrorMessage = string.IsNullOrEmpty(_authService.LastLoginError)
+                    ? "Invalid email or password."
+                    : _authService.LastLoginError;
             }
         }
         

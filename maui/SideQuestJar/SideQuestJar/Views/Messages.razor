@@ -1,0 +1,364 @@
+@page "/messages"
+@using SideQuestJar.ViewModels
+@using SideQuestJar.DTOs
+@using SideQuestJar.Models
+@using Blazorise
+@inject MessagesViewModel ViewModel
+@inject NavigationManager Nav
+@inject IJSRuntime JSRuntime
+
+<div class="messaging-page-container p-2">
+    <div class="row g-2 h-100 m-0">
+        
+        @* ── Sidebar: Friend List Block ────────────────────────────────── *@
+        <div class="col-12 col-md-4 col-lg-3 h-100 @(ViewModel.SelectedFriend != null ? "d-none d-md-block" : "")">
+            <div class="content-block h-100 d-flex flex-column shadow-lg">
+                <div class="block-header text-center py-4">
+                    <h3 class="jar-name m-0">Friends</h3>
+                </div>
+                <div class="flex-grow-1 overflow-auto theme-scrollbar px-3 pb-3">
+                    @if (ViewModel.IsLoading)
+                    {
+                        <div class="d-flex justify-content-center py-4">
+                            <div class="spinner-border spinner-border-sm text-light" role="status"></div>
+                        </div>
+                    }
+                    else
+                    {
+                        @foreach (var conv in ViewModel.Conversations)
+                        {
+                            <div class="friend-item d-flex align-items-center p-3 mb-2 @(ViewModel.SelectedFriend?.Id == conv.Id ? "active" : "")"
+                                 @onclick="() => ViewModel.SelectFriendAsync(conv)">
+                                <img src="@FriendsViewModel.ResolveAvatar(conv.ProfilePicture ?? conv.ProfilePictureUrl)"
+                                     class="rounded-circle me-3" style="width: 48px; height: 48px; object-fit: cover;" />
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-0 fw-bold text-white jar-name-small">@conv.Username</h6>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+
+        @* ── Chat Area Block ───────────────────────────────────────────── *@
+        <div class="col-12 col-md-8 col-lg-9 h-100 @(ViewModel.SelectedFriend == null ? "d-none d-md-block" : "")">
+            <div class="content-block h-100 d-flex flex-column shadow-lg">
+                @if (ViewModel.SelectedFriend != null)
+                {
+                    <div class="block-header d-flex align-items-center justify-content-between p-3 px-4">
+                        <div class="d-flex align-items-center">
+                            <button class="btn btn-link text-white d-md-none me-3 p-0" @onclick="() => ViewModel.SelectedFriend = null">
+                                <i class="bi bi-chevron-left fs-4"></i>
+                            </button>
+                            <img src="@FriendsViewModel.ResolveAvatar(ViewModel.SelectedFriend.ProfilePicture ?? ViewModel.SelectedFriend.ProfilePictureUrl)"
+                                 class="rounded-circle me-3 border border-2 border-light border-opacity-25"
+                                 style="width: 50px; height: 50px; object-fit: cover;" />
+                            <h4 class="mb-0 jar-name fs-3">@ViewModel.SelectedFriend.Username</h4>
+                        </div>
+                        <button class="btn invite-btn rounded-pill px-4 py-2 shadow-sm d-flex align-items-center gap-2"
+                                @onclick="OpenInviteModal">
+                            <span style="font-size: 1.1rem;">🏺</span> Invite to Jar
+                        </button>
+                    </div>
+
+                    <div id="chat-timeline" class="flex-grow-1 p-4 overflow-auto theme-scrollbar">
+                        @if (ViewModel.IsLoadingChat)
+                        {
+                            <div class="d-flex justify-content-center py-5">
+                                <div class="spinner-border text-light" role="status"></div>
+                            </div>
+                        }
+                        else
+                        {
+                            @foreach (var item in ViewModel.TimelineItems)
+                            {
+                                var isMe = ViewModel.IsMe(item.SenderId);
+                                
+                                @if (item.Type == "chat")
+                                {
+                                    <div class="d-flex mb-3 @(isMe ? "justify-content-end" : "justify-content-start")">
+                                        <div class="message-bubble @(isMe ? "bubble-me" : "bubble-them") shadow-sm">
+                                            <div class="content">@item.Content</div>
+                                        </div>
+                                    </div>
+                                }
+                                else if (item.Type == "invite")
+                                {
+                                    <div class="d-flex justify-content-center mb-4">
+                                        <div class="invite-card card p-3 text-center shadow-lg">
+                                            <div class="badge bg-light text-dark rounded-pill mb-2 small fw-bold">JAR INVITATION</div>
+                                            <h6 class="text-white mb-2">@item.Content</h6>
+                                            @if (!string.IsNullOrEmpty(item.JarName))
+                                            {
+                                                <div class="jar-preview d-flex align-items-center gap-3 p-2 px-3 rounded-3 bg-white bg-opacity-10 mb-2">
+                                                    <img src="@FriendsViewModel.ResolveAvatar(item.JarThumb)" class="rounded-circle" style="width: 35px; height: 35px; object-fit: cover;" />
+                                                    <span class="text-white small fw-bold">@item.JarName</span>
+                                                </div>
+                                            }
+                                            <div class="small opacity-75">Status: <span class="text-white fw-bold">@item.Status</span></div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        }
+                    </div>
+
+                    <div class="chat-input-container p-4">
+                        <div class="input-wrapper d-flex align-items-center gap-3">
+                            <input type="text" 
+                                   class="form-control rounded-pill chat-input px-4" 
+                                   placeholder="Type a message..." 
+                                   @bind="ViewModel.MessageContent" 
+                                   @bind:event="oninput"
+                                   @onkeyup="HandleKeyUp" />
+                            <button class="send-btn-circle d-flex align-items-center justify-content-center shadow-lg" 
+                                    @onclick="() => ViewModel.SendMessageAsync()"
+                                    disabled="@(string.IsNullOrWhiteSpace(ViewModel.MessageContent) || ViewModel.IsSending)">
+                                @if (ViewModel.IsSending)
+                                {
+                                    <span class="spinner-border spinner-border-sm" role="status"></span>
+                                }
+                                else
+                                {
+                                    <i class="bi bi-send-fill fs-4" style="margin-left: 3px;"></i>
+                                }
+                            </button>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="flex-grow-1 d-flex flex-column align-items-center justify-content-center opacity-25">
+                        <i class="bi bi-chat-dots display-1 text-white mb-3"></i>
+                        <h3 class="text-white jar-name">Select a friend</h3>
+                    </div>
+                }
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@* ── Custom Invite to Jar Modal ──────────────────────────────────────── *@
+@if (showInviteModal)
+{
+    <div class="custom-modal-backdrop" @onclick="CloseInviteModal">
+        <div class="custom-modal-content shadow-lg" @onclick:stopPropagation>
+            <div class="custom-modal-header d-flex align-items-center justify-content-between p-4 pb-0">
+                <h2 class="jar-name m-0">Invite to Jar</h2>
+                <button class="btn-close btn-close-white" @onclick="CloseInviteModal"></button>
+            </div>
+            <div class="custom-modal-body p-4 overflow-auto theme-scrollbar">
+                @if (ViewModel.MyJars.Count == 0)
+                {
+                    <div class="text-center py-5">
+                        <p class="text-white-50 fs-5 mb-0">You don't own any jars yet.</p>
+                    </div>
+                }
+                else
+                {
+                    <p class="text-white-50 mb-4">Choose a jar to invite <strong>@ViewModel.SelectedFriend?.Username</strong> to:</p>
+                    <div class="list-group list-group-flush bg-transparent">
+                        @foreach (var jar in ViewModel.MyJars)
+                        {
+                            <button class="list-group-item jar-select-item d-flex align-items-center p-3 mb-3 border-0 shadow-sm"
+                                    @onclick="() => SendInvitation(jar.Id)">
+                                <img src="@FriendsViewModel.ResolveAvatar(jar.Picture)" class="rounded-circle me-3" style="width: 54px; height: 54px; object-fit: cover; border: 2.5px solid #EAB2A0;" />
+                                <div class="text-start">
+                                    <h6 class="fw-bold text-white mb-0 fs-5">@jar.Name</h6>
+                                    <small class="text-white-50">@jar.Type</small>
+                                </div>
+                                <i class="bi bi-chevron-right ms-auto text-white-50"></i>
+                            </button>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+<style>
+    .messaging-page-container {
+        height: calc(100vh - 72px);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        box-sizing: border-box;
+    }
+
+    .content-block {
+        background-color: #2D4356;
+        border-radius: 2rem;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        overflow: hidden;
+    }
+
+    .block-header {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .jar-name { font-family: 'Fredoka', sans-serif; color: #EAB2A0; text-shadow: 0px 2px black; }
+    .jar-name-small { font-family: 'Fredoka', sans-serif; color: #EAB2A0; }
+
+    .friend-item {
+        background-color: rgba(255, 255, 255, 0.03);
+        border-radius: 1.5rem;
+        cursor: pointer;
+        transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 2px solid transparent;
+    }
+    .friend-item:hover { background-color: rgba(234, 178, 160, 0.08); }
+    .friend-item.active { 
+        background-color: rgba(234, 178, 160, 0.2) !important;
+        border-color: #EAB2A0;
+    }
+
+    .invite-btn { 
+        background-color: #EAB2A0; 
+        color: #2D4356 !important; 
+        font-weight: 800; 
+        font-family: 'Fredoka', sans-serif;
+        font-size: 0.9rem;
+        transition: 0.2s;
+    }
+    .invite-btn:hover { background-color: #f3c3b3; transform: translateY(-1px); }
+
+    .message-bubble {
+        max-width: 80%;
+        padding: 0.8rem 1.2rem;
+        border-radius: 1.2rem;
+        font-weight: 500;
+        font-size: 1.05rem;
+    }
+    .bubble-them { background-color: #506575; color: white; border-bottom-left-radius: 4px; }
+    .bubble-me { background-color: #A76F6F; color: white; border-bottom-right-radius: 4px; }
+
+    .chat-input-container {
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .chat-input {
+        background-color: #EAB2A0 !important;
+        border: none !important;
+        height: 52px;
+        color: #2D4356 !important;
+        font-weight: 700;
+        font-family: 'Fredoka', sans-serif;
+        font-size: 1.1rem;
+    }
+    .chat-input::placeholder { color: rgba(45, 67, 86, 0.6); }
+
+    .send-btn-circle {
+        background-color: #EAB2A0;
+        border: none;
+        width: 52px;
+        height: 52px;
+        min-width: 52px;
+        border-radius: 50%;
+        color: #2D4356;
+        transition: 0.2s;
+    }
+    .send-btn-circle:hover { background-color: #f3c3b3; transform: scale(1.05); }
+    .send-btn-circle:disabled { opacity: 0.5; transform: none; }
+
+    .invite-card {
+        background: rgba(167, 111, 111, 0.4) !important;
+        border: 2px solid #EAB2A0 !important;
+        border-radius: 1.5rem !important;
+        width: 100%;
+        max-width: 300px;
+    }
+
+    .jar-select-item {
+        background-color: rgba(255, 255, 255, 0.05) !important;
+        border-radius: 1.2rem !important;
+        transition: 0.2s;
+    }
+    .jar-select-item:hover { background-color: #EAB2A0 !important; transform: translateY(-2px); }
+    .jar-select-item:hover * { color: #2D4356 !important; }
+
+    /* Scrollbar */
+    .theme-scrollbar::-webkit-scrollbar { width: 8px; }
+    .theme-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .theme-scrollbar::-webkit-scrollbar-thumb { background: rgba(234, 178, 160, 0.3); border-radius: 10px; }
+    .theme-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(234, 178, 160, 0.5); }
+
+    /* Custom Modal Styles */
+    .custom-modal-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(8px);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+    }
+    .custom-modal-content {
+        background: #2D4356;
+        border: 2.5px solid #EAB2A0;
+        border-radius: 2rem;
+        color: white;
+        width: 100%;
+        max-width: 500px;
+        max-height: 85vh;
+        display: flex;
+        flex-direction: column;
+        animation: modalSlideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    @@keyframes modalSlideUp {
+        from { transform: translateY(30px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+    .custom-modal-body {
+        max-height: 500px;
+    }
+</style>
+
+@code {
+    private bool showInviteModal = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        ViewModel.PropertyChanged += (_, _) => InvokeAsync(StateHasChanged);
+        await ViewModel.LoadConversationsAsync();
+    }
+
+    private async Task HandleKeyUp(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter") await ViewModel.SendMessageAsync();
+    }
+
+    private async Task OpenInviteModal()
+    {
+        await ViewModel.LoadMyJarsCommand.ExecuteAsync(null);
+        showInviteModal = true;
+    }
+
+    private void CloseInviteModal() => showInviteModal = false;
+
+    private async Task SendInvitation(int jarId)
+    {
+        await ViewModel.InviteToJarAsync(jarId);
+        CloseInviteModal();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (ViewModel.SelectedFriend != null && ViewModel.TimelineItems.Any())
+        {
+            await JSRuntime.InvokeVoidAsync("scrollToBottom", "chat-timeline");
+        }
+    }
+
+    public void Dispose()
+    {
+        ViewModel.PropertyChanged -= (_, _) => InvokeAsync(StateHasChanged);
+        ViewModel.StopPolling();
+    }
+}

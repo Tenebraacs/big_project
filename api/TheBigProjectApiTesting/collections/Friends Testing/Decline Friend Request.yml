@@ -1,0 +1,20 @@
+info:
+  name: Decline Friend Request
+  type: http
+  seq: 5
+
+http:
+  method: POST
+  url: http://localhost:8000/api/friends/1/decline
+  headers:
+    - name: Accept
+      value: application/json
+    - name: Authorization
+      value: Bearer {{auth_token}}
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

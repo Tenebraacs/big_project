@@ -1,0 +1,47 @@
+info:
+  name: "02 Register (MAUI — snake_case fields)"
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: http://localhost:8000/api/register
+  headers:
+    - name: Accept
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "username": "bruno_maui_{{reg_suffix}}",
+        "birth_date": "1990-01-15",
+        "first_name": "Bruno",
+        "last_name": "Tester",
+        "email": "bruno_maui_{{reg_suffix}}@example.com",
+        "password": "Str0ng!PassWord12",
+        "password_confirmation": "Str0ng!PassWord12"
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: before-request
+      code: |-
+        bru.setVar("reg_suffix", String(Date.now()));
+    - type: tests
+      code: |-
+        test("register returns 201", function () {
+          expect(res.status).to.equal(201);
+        });
+        test("has token", function () {
+          expect(res.body).to.have.property("token");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  Matches `AuthService.RegisterAsync`. `reg_suffix` is set in a pre-request script so reruns do not collide on username/email.

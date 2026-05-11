@@ -1,8 +1,12 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using SideQuestJar.Data;
 using SideQuestJar.Services;
 using SideQuestJar.ViewModels;
 using SideQuestJar.Views;
+using Blazorise;
+using Blazorise.Bootstrap5;
+using Blazorise.Icons.Bootstrap;
+using Microsoft.AspNetCore.Components.Authorization;
 
 namespace SideQuestJar
 {
@@ -19,24 +23,43 @@ namespace SideQuestJar
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
 
-            builder.Services.AddDbContext<AppDbContext>();
-
-            builder.Services.AddSingleton<AuthService>();
-            builder.Services.AddSingleton<GlobalAppState>();
-            builder.Services.AddSingleton<JarService>();
-
-            // Nyitva marad a memóriában de ez később problémás lehet (logout, aggresszív refresh az újratöltésnél)
-            builder.Services.AddSingleton<HomePage>();
-            builder.Services.AddSingleton<HomeViewModel>();
-
-            builder.Services.AddTransient<AuthViewModel>();
-            builder.Services.AddTransient<AuthPage>();
-            builder.Services.AddTransient<JarDetailsPage>();
-            builder.Services.AddTransient<JarDetailsViewModel>();
+            // 1. Add Blazor WebView support
+            builder.Services.AddMauiBlazorWebView();
 
 #if DEBUG
+            // This enables hitting F12 to inspect the HTML/CSS while debugging!
+            builder.Services.AddBlazorWebViewDeveloperTools();
             builder.Logging.AddDebug();
 #endif
+
+            // 2. Add Blazorise Services
+            // 1. Add Blazorise with Bootstrap Icons
+            builder.Services
+                .AddBlazorise(options => {
+                    options.Immediate = true;
+                })
+                .AddBootstrap5Providers()
+                .AddBootstrapIcons(); // Swapped!
+
+            // 2. Add Authorization UI capabilities
+            builder.Services.AddAuthorizationCore();
+
+            builder.Services.AddDbContext<AppDbContext>();
+            builder.Services.AddSingleton<AuthService>();
+            builder.Services.AddSingleton<JarService>();
+            builder.Services.AddSingleton<FriendService>();
+            builder.Services.AddSingleton<MessageService>();
+            builder.Services.AddSingleton<AdminService>();
+            builder.Services.AddSingleton<GlobalAppState>();
+
+            // Note: We register ViewModels so we can inject them into .razor files
+            builder.Services.AddTransient<AuthViewModel>();
+            builder.Services.AddTransient<HomeViewModel>();
+            builder.Services.AddTransient<ProfileViewModel>(); // MVVM
+            builder.Services.AddTransient<FriendsViewModel>(); // MVVM
+            builder.Services.AddTransient<MessagesViewModel>(); // MVVM
+            builder.Services.AddTransient<AdminViewModel>(); // MVVM
+            builder.Services.AddSingleton<NavbarViewModel>();
 
             return builder.Build();
         }

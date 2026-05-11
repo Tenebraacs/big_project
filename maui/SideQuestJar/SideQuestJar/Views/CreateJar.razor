@@ -1,0 +1,267 @@
+@page "/jars/create"
+@page "/jars/edit/{JarId:int}"
+@using SideQuestJar.Services
+@using SideQuestJar.Models
+@using SideQuestJar.DTOs
+@inject JarService JarService
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JS
+
+<div class="container py-4" style="max-width: 540px; margin-bottom: 50px;">
+    <div class="card bg-block-blue rounded-5 border-0 overflow-hidden shadow-lg">
+        @* Header *@
+        <div class="card-header border-0 text-center pt-4 pb-3 px-4" style="background: transparent;">
+            <h1 class="jar-name display-5 fw-bold mb-1">@(IsEditMode ? "Edit Jar" : "Create Jar")</h1>
+            <p class="text-light opacity-50 small mb-0">@(IsEditMode ? "Update your jar details" : "Fill in the details for your new jar")</p>
+        </div>
+
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="px-4 pt-2">
+                <div class="alert alert-danger rounded-4 py-2 small mb-0">
+                    <i class="bi bi-exclamation-circle me-2"></i>@errorMessage
+                </div>
+            </div>
+        }
+
+        @* Body *@
+        <div class="card-body px-4 py-3 d-flex flex-column gap-3">
+            @* Name *@
+            <div class="d-flex flex-column gap-1">
+                <label for="name" class="text-light opacity-75 small fw-semibold text-uppercase" style="letter-spacing:.06em;">Jar Name</label>
+                <input @bind="jar.Name" @bind:event="oninput"
+                       type="text" id="name" required maxlength="50"
+                       class="form-control rounded-pill border-0 px-3 py-2"
+                       style="background-color: rgba(234,178,160,0.18); color: #fff;"
+                       placeholder="Give your jar a name…" />
+                <div class="d-flex justify-content-end">
+                    <span class="text-light opacity-40" style="font-size:0.72rem;">@(jar.Name?.Length ?? 0)/50</span>
+                </div>
+            </div>
+
+            @* Visibility *@
+            <div class="d-flex flex-column gap-1">
+                <label for="type" class="text-light opacity-75 small fw-semibold text-uppercase" style="letter-spacing:.06em;">Visibility</label>
+                <select @bind="jar.Type" id="type"
+                        class="form-select rounded-pill border-0 px-3 py-2"
+                        style="background-color: rgba(234,178,160,0.18); color: #fff;">
+                    <option value="@JarType.PublicJar">🌍 Public</option>
+                    <option value="@JarType.PrivateJar">🔒 Private</option>
+                    <option value="@JarType.FriendsOnlyJar">👥 Friends Only</option>
+                    <option value="@JarType.InviteOnlyJar">📩 Invite Only</option>
+                </select>
+            </div>
+
+            @* Description *@
+            <div class="d-flex flex-column gap-1">
+                <label for="description" class="text-light opacity-75 small fw-semibold text-uppercase" style="letter-spacing:.06em;">
+                    Description <span class="opacity-50 fw-normal text-lowercase">(optional)</span>
+                </label>
+                <textarea @bind="jar.Description" @bind:event="oninput"
+                          id="jar-description" rows="3"
+                          class="form-control rounded-4 border-0 px-3 py-2"
+                          style="background-color: rgba(234,178,160,0.18); color: #fff; resize: none;"
+                          placeholder="Describe what this jar is about…"
+                          maxlength="1500"></textarea>
+                <div class="d-flex justify-content-end">
+                    <span class="text-light opacity-40" style="font-size:0.72rem;">@(jar.Description?.Length ?? 0)/1500</span>
+                </div>
+            </div>
+
+            @* Picture *@
+            <div class="d-flex flex-column gap-2">
+                <label class="text-light opacity-75 small fw-semibold text-uppercase" style="letter-spacing:.06em;">
+                    Jar Picture <span class="opacity-50 fw-normal text-lowercase">(optional)</span>
+                </label>
+                <div class="rounded-4 overflow-hidden" style="aspect-ratio:1/1; max-height:260px; background: rgba(0,0,0,0.2);">
+                    @if (!string.IsNullOrEmpty(selectedImageDataUrl))
+                    {
+                        <div class="crop-container" style="height: 100%;">
+                            <img id="jarCropperImg" src="@selectedImageDataUrl" alt="Preview" style="max-width:100%; display:block;" />
+                        </div>
+                    }
+                    else if (!string.IsNullOrEmpty(jar.PictureUrl))
+                    {
+                        <img src="@jar.PictureUrl" alt="Jar picture" class="w-100 h-100" style="object-fit:cover;" />
+                    }
+                    else
+                    {
+                        <img src="https://i.ibb.co/2YvZypwJ/Jar-Quest-Placeholder.png" alt="Placeholder" class="w-100 h-100" style="object-fit:cover; opacity:0.55;" />
+                    }
+                </div>
+
+                <div class="d-flex gap-2">
+                    <InputFile OnChange="HandleImageSelected" accept="image/*" class="d-none" id="jarImageInput" />
+                    <label for="jarImageInput" class="btn blue-button rounded-pill px-4 py-2 small flex-grow-1" style="cursor:pointer;">
+                        <i class="bi bi-camera-fill me-2"></i>@(string.IsNullOrEmpty(jar.Picture) ? "Choose Image" : "Change Image")
+                    </label>
+                    @if (!string.IsNullOrEmpty(selectedImageDataUrl))
+                    {
+                        <button class="btn btn-secondary rounded-pill px-3 py-2 small" @onclick="CancelImage">
+                            <i class="bi bi-x-lg"></i>
+                        </button>
+                    }
+                </div>
+                
+                @if (isUploading)
+                {
+                    <div class="text-center text-light small opacity-75 mt-1">
+                        <span class="spinner-border spinner-border-sm me-2"></span>Processing image...
+                    </div>
+                }
+            </div>
+        </div>
+
+        @* Footer *@
+        <div class="card-footer border-0 px-4 pb-4 pt-2 text-center" style="background: transparent;">
+            <button type="button" @onclick="HandleSave"
+                    class="btn blue-button rounded-pill px-5 py-2 fs-5 w-100 shadow"
+                    disabled="@isSaving">
+                @if (isSaving)
+                {
+                    <span class="spinner-border spinner-border-sm me-2"></span>
+                    <span>@(IsEditMode ? "Updating..." : "Creating...")</span>
+                }
+                else
+                {
+                    <span>@(IsEditMode ? "Update Jar" : "Create Jar")</span>
+                }
+            </button>
+            <button class="btn btn-link text-white-50 small mt-2 text-decoration-none" @onclick="HandleCancel">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-control::placeholder, .form-select::placeholder { color: rgba(255,255,255,0.4); }
+    .form-control:focus, .form-select:focus { 
+        box-shadow: 0 0 0 3px rgba(234,178,160,0.3); 
+        background-color: rgba(234,178,160,0.25) !important; 
+        color: #fff; 
+        border-color: transparent; 
+    }
+    .form-select option { background: #1a1f2e; color: #fff; }
+</style>
+
+@code {
+    [Parameter] public int? JarId { get; set; }
+    private bool IsEditMode => JarId.HasValue;
+
+    private Jar jar = new Jar { Name = "", Type = JarType.PublicJar };
+    private string errorMessage = "";
+    private bool isSaving = false;
+    private bool isUploading = false;
+
+    private string? selectedImageDataUrl;
+    private string? selectedImageName;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (IsEditMode && JarId == AppConstants.MainQuestJarId)
+        {
+            NavigationManager.NavigateTo("/");
+            return;
+        }
+
+        if (IsEditMode)
+        {
+            var details = await JarService.GetJarDetailsAsync(JarId!.Value);
+            if (details?.Jar != null)
+            {
+                jar = details.Jar;
+            }
+            else
+            {
+                errorMessage = "Could not load jar details.";
+            }
+        }
+    }
+
+    private async Task HandleImageSelected(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        if (file == null) return;
+        selectedImageName = file.Name;
+        isUploading = true;
+
+        try
+        {
+            using var ms = new MemoryStream();
+            await file.OpenReadStream(maxAllowedSize: 15 * 1024 * 1024).CopyToAsync(ms);
+            var base64 = Convert.ToBase64String(ms.ToArray());
+            selectedImageDataUrl = $"data:image/jpeg;base64,{base64}";
+
+            StateHasChanged();
+            await Task.Yield();
+            await JS.InvokeVoidAsync("initCropper", "jarCropperImg", selectedImageDataUrl);
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error processing image: {ex.Message}";
+        }
+        finally
+        {
+            isUploading = false;
+        }
+    }
+
+    private async Task CancelImage()
+    {
+        selectedImageDataUrl = null;
+        selectedImageName = null;
+        await JS.InvokeVoidAsync("destroyCropper");
+    }
+
+    private async Task HandleSave()
+    {
+        if (string.IsNullOrWhiteSpace(jar.Name))
+        {
+            errorMessage = "Jar name is required.";
+            return;
+        }
+
+        isSaving = true;
+        errorMessage = "";
+
+        try
+        {
+            byte[]? imageBytes = null;
+            if (!string.IsNullOrEmpty(selectedImageDataUrl))
+            {
+                var b64 = await JS.InvokeAsync<string?>("getCroppedImageBase64", 0.85);
+                if (!string.IsNullOrEmpty(b64))
+                {
+                    imageBytes = Convert.FromBase64String(b64);
+                }
+                await JS.InvokeVoidAsync("destroyCropper");
+            }
+
+            if (IsEditMode)
+            {
+                var (success, msg) = await JarService.UpdateJarAsync(JarId!.Value, jar, imageBytes);
+                if (success) NavigationManager.NavigateTo($"/jars/{JarId}");
+                else errorMessage = msg;
+            }
+            else
+            {
+                var (success, msg, createdJar) = await JarService.CreateJarAsync(jar, imageBytes);
+                if (success && createdJar != null) NavigationManager.NavigateTo($"/jars/{createdJar.Id}");
+                else errorMessage = msg;
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error saving jar: {ex.Message}";
+        }
+        finally
+        {
+            isSaving = false;
+        }
+    }
+
+    private void HandleCancel()
+    {
+        if (IsEditMode) NavigationManager.NavigateTo($"/jars/{JarId}");
+        else NavigationManager.NavigateTo("/");
+    }
+}

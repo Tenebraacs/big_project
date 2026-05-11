@@ -1,0 +1,35 @@
+info:
+  name: "17 POST jars/:jar_id/leave"
+  type: http
+  seq: 17
+
+http:
+  method: POST
+  url: http://localhost:8000/api/jars/:jar_id/leave
+  headers:
+    - name: Accept
+      value: application/json
+    - name: Authorization
+      value: Bearer {{auth_token}}
+  params:
+    - name: jar_id
+      value: "{{jar_id}}"
+      type: path
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("leave ok or not a member", function () {
+          expect([200, 404]).to.include(res.status);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  `JarService.LeaveJarAsync`. API route mirrors MAUI `POST jars/{id}/leave`.

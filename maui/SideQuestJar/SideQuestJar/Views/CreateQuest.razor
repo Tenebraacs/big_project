@@ -1,0 +1,255 @@
+@page "/jars/{JarId:int}/quests/create"
+@page "/jars/{JarId:int}/quests/edit/{QuestId:int}"
+@using SideQuestJar.Services
+@using SideQuestJar.Models
+@inject JarService JarService
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JS
+
+<div class="container py-4" style="max-width: 540px; margin-bottom: 50px;">
+    <div class="card bg-block-blue rounded-5 border-0 overflow-hidden shadow-lg">
+        @* Header *@
+        <div class="card-header border-0 text-center pt-4 pb-3 px-4" style="background: transparent;">
+            <h1 class="jar-name display-5 fw-bold mb-1">@(IsEditMode ? "Edit Quest" : "Add Quest")</h1>
+            <p class="text-light opacity-50 small mb-0">@(IsEditMode ? "Update the quest details" : "Add a new challenge to this jar")</p>
+        </div>
+
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="px-4 pt-2">
+                <div class="alert alert-danger rounded-4 py-2 small mb-0">
+                    <i class="bi bi-exclamation-circle me-2"></i>@errorMessage
+                </div>
+            </div>
+        }
+
+        @* Body *@
+        <div class="card-body px-4 py-3 d-flex flex-column gap-3">
+            @* Title *@
+            <div class="d-flex flex-column gap-1">
+                <label for="title" class="text-light opacity-75 small fw-semibold text-uppercase" style="letter-spacing:.06em;">Quest Title</label>
+                <input @bind="quest.Title" @bind:event="oninput"
+                       type="text" id="title" required maxlength="60"
+                       class="form-control rounded-pill border-0 px-3 py-2"
+                       style="background-color: rgba(234,178,160,0.18); color: #fff;"
+                       placeholder="Name the quest…" />
+                <div class="d-flex justify-content-end">
+                    <span class="text-light opacity-40" style="font-size:0.72rem;">@(quest.Title?.Length ?? 0)/60</span>
+                </div>
+            </div>
+
+            @* Description *@
+            <div class="d-flex flex-column gap-1">
+                <label for="description" class="text-light opacity-75 small fw-semibold text-uppercase" style="letter-spacing:.06em;">
+                    Description <span class="opacity-50 fw-normal text-lowercase">(optional)</span>
+                </label>
+                <textarea @bind="quest.Description" @bind:event="oninput"
+                          id="quest-description" rows="3"
+                          class="form-control rounded-4 border-0 px-3 py-2"
+                          style="background-color: rgba(234,178,160,0.18); color: #fff; resize: none;"
+                          placeholder="Describe what needs to be done…"
+                          maxlength="1500"></textarea>
+                <div class="d-flex justify-content-end">
+                    <span class="text-light opacity-40" style="font-size:0.72rem;">@(quest.Description?.Length ?? 0)/1500</span>
+                </div>
+            </div>
+
+            @* Picture *@
+            <div class="d-flex flex-column gap-2">
+                <label class="text-light opacity-75 small fw-semibold text-uppercase" style="letter-spacing:.06em;">
+                    Quest Picture <span class="opacity-50 fw-normal text-lowercase">(optional)</span>
+                </label>
+                <div class="rounded-4 overflow-hidden" style="aspect-ratio:1/1; max-height:260px; background: rgba(0,0,0,0.2);">
+                    @if (!string.IsNullOrEmpty(selectedImageDataUrl))
+                    {
+                        <div class="crop-container" style="height: 100%;">
+                            <img id="questCropperImg" src="@selectedImageDataUrl" alt="Preview" style="max-width:100%; display:block;" />
+                        </div>
+                    }
+                    else if (!string.IsNullOrEmpty(quest.PictureUrl))
+                    {
+                        <img src="@quest.PictureUrl" alt="Quest picture" class="w-100 h-100" style="object-fit:cover;" />
+                    }
+                    else
+                    {
+                        <img src="https://i.ibb.co/2YvZypwJ/Jar-Quest-Placeholder.png" alt="Placeholder" class="w-100 h-100" style="object-fit:cover; opacity:0.55;" />
+                    }
+                </div>
+
+                <div class="d-flex gap-2">
+                    <InputFile OnChange="HandleImageSelected" accept="image/*" class="d-none" id="questImageInput" />
+                    <label for="questImageInput" class="btn blue-button rounded-pill px-4 py-2 small flex-grow-1" style="cursor:pointer;">
+                        <i class="bi bi-camera-fill me-2"></i>@(string.IsNullOrEmpty(quest.Picture) ? "Choose Image" : "Change Image")
+                    </label>
+                    @if (!string.IsNullOrEmpty(selectedImageDataUrl))
+                    {
+                        <button class="btn btn-secondary rounded-pill px-3 py-2 small" @onclick="CancelImage">
+                            <i class="bi bi-x-lg"></i>
+                        </button>
+                    }
+                </div>
+
+                @if (isUploading)
+                {
+                    <div class="text-center text-light small opacity-75 mt-1">
+                        <span class="spinner-border spinner-border-sm me-2"></span>Processing image...
+                    </div>
+                }
+            </div>
+        </div>
+
+        @* Footer *@
+        <div class="card-footer border-0 px-4 pb-4 pt-2 text-center" style="background: transparent;">
+            <button type="button" @onclick="HandleSave"
+                    class="btn blue-button rounded-pill px-5 py-2 fs-5 w-100 shadow"
+                    disabled="@isSaving">
+                @if (isSaving)
+                {
+                    <span class="spinner-border spinner-border-sm me-2"></span>
+                    <span>@(IsEditMode ? "Updating..." : "Adding...")</span>
+                }
+                else
+                {
+                    <span>@(IsEditMode ? "Update Quest" : "Add Quest")</span>
+                }
+            </button>
+            <button class="btn btn-link text-white-50 small mt-2 text-decoration-none" @onclick="HandleCancel">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-control::placeholder { color: rgba(255,255,255,0.4); }
+    .form-control:focus { 
+        box-shadow: 0 0 0 3px rgba(234,178,160,0.3); 
+        background-color: rgba(234,178,160,0.25) !important; 
+        color: #fff; 
+        border-color: transparent; 
+    }
+</style>
+
+@code {
+    [Parameter] public int JarId { get; set; }
+    [Parameter] public int? QuestId { get; set; }
+    private bool IsEditMode => QuestId.HasValue;
+
+    private JarQuest quest = new JarQuest { Title = "", Description = "", JarId = 0 };
+    private string errorMessage = "";
+    private bool isSaving = false;
+    private bool isUploading = false;
+
+    private string? selectedImageDataUrl;
+    private string? selectedImageName;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (JarId == AppConstants.MainQuestJarId)
+        {
+            NavigationManager.NavigateTo("/");
+            return;
+        }
+
+        quest.JarId = JarId;
+        if (IsEditMode)
+        {
+            var details = await JarService.GetJarDetailsAsync(JarId);
+            if (details?.Quests != null)
+            {
+                var q = details.Quests.FirstOrDefault(x => x.Id == QuestId);
+                if (q != null) quest = q;
+                else errorMessage = "Quest not found.";
+            }
+            else
+            {
+                errorMessage = "Could not load jar details.";
+            }
+        }
+    }
+
+    private async Task HandleImageSelected(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        if (file == null) return;
+        selectedImageName = file.Name;
+        isUploading = true;
+
+        try
+        {
+            using var ms = new MemoryStream();
+            await file.OpenReadStream(maxAllowedSize: 15 * 1024 * 1024).CopyToAsync(ms);
+            var base64 = Convert.ToBase64String(ms.ToArray());
+            selectedImageDataUrl = $"data:image/jpeg;base64,{base64}";
+
+            StateHasChanged();
+            await Task.Yield();
+            await JS.InvokeVoidAsync("initCropper", "questCropperImg", selectedImageDataUrl);
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error processing image: {ex.Message}";
+        }
+        finally
+        {
+            isUploading = false;
+        }
+    }
+
+    private async Task CancelImage()
+    {
+        selectedImageDataUrl = null;
+        selectedImageName = null;
+        await JS.InvokeVoidAsync("destroyCropper");
+    }
+
+    private async Task HandleSave()
+    {
+        if (string.IsNullOrWhiteSpace(quest.Title))
+        {
+            errorMessage = "Quest title is required.";
+            return;
+        }
+
+        isSaving = true;
+        errorMessage = "";
+
+        try
+        {
+            byte[]? imageBytes = null;
+            if (!string.IsNullOrEmpty(selectedImageDataUrl))
+            {
+                var b64 = await JS.InvokeAsync<string?>("getCroppedImageBase64", 0.85);
+                if (!string.IsNullOrEmpty(b64))
+                {
+                    imageBytes = Convert.FromBase64String(b64);
+                }
+                await JS.InvokeVoidAsync("destroyCropper");
+            }
+
+            if (IsEditMode)
+            {
+                var (success, msg) = await JarService.UpdateQuestAsync(JarId, QuestId!.Value, quest, imageBytes);
+                if (success) NavigationManager.NavigateTo($"/jars/{JarId}");
+                else errorMessage = msg;
+            }
+            else
+            {
+                var (success, msg, created) = await JarService.CreateQuestAsync(JarId, quest, imageBytes);
+                if (success) NavigationManager.NavigateTo($"/jars/{JarId}");
+                else errorMessage = msg;
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error saving quest: {ex.Message}";
+        }
+        finally
+        {
+            isSaving = false;
+        }
+    }
+
+    private void HandleCancel()
+    {
+        NavigationManager.NavigateTo($"/jars/{JarId}");
+    }
+}

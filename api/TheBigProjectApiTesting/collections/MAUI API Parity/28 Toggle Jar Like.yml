@@ -1,0 +1,39 @@
+info:
+  name: "28 POST jars/:jar_id/like"
+  type: http
+  seq: 28
+
+http:
+  method: POST
+  url: http://localhost:8000/api/jars/:jar_id/like
+  headers:
+    - name: Accept
+      value: application/json
+    - name: Authorization
+      value: Bearer {{auth_token}}
+  params:
+    - name: jar_id
+      value: "{{jar_id}}"
+      type: path
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("returns 200", function () {
+          expect(res.status).to.equal(200);
+        });
+        test("has liked and likes_count", function () {
+          expect(res.body).to.have.property("liked");
+          expect(res.body).to.have.property("likes_count");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  `JarService.ToggleJarLikeAsync` — empty body.

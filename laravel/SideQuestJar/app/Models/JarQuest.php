@@ -16,7 +16,7 @@ class JarQuest extends Model
         'picture',
         'description',
         'jar_id',
-        'created_by',
+        'created_by'
     ];
 
     protected $appends = ['picture_url'];

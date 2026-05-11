@@ -13,7 +13,9 @@ class JarQuestObserver
      */
     public function creating(JarQuest $jarQuest): void
     {
-        $jarQuest->created_by = Auth::id();
+        if (!$jarQuest->created_by && auth()->check()) {
+            $jarQuest->created_by = auth()->id();
+        }
     }
 
     /**

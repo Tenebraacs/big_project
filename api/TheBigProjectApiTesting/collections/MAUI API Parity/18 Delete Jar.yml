@@ -1,0 +1,35 @@
+info:
+  name: "18 DELETE jars/:jar_id"
+  type: http
+  seq: 18
+
+http:
+  method: DELETE
+  url: http://localhost:8000/api/jars/:jar_id
+  headers:
+    - name: Accept
+      value: application/json
+    - name: Authorization
+      value: Bearer {{auth_token}}
+  params:
+    - name: jar_id
+      value: "{{jar_id}}"
+      type: path
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("returns 200 when authorized", function () {
+          expect(res.status).to.equal(200);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  **Destructive** — `JarService.DeleteJarAsync`. Only for jars you own; use `jar_id` from **14** or a disposable test jar.

@@ -1,5 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace SideQuestJar.Models
@@ -23,8 +25,28 @@ namespace SideQuestJar.Models
         public required string Name { get; set; }
         public string? Description { get; set; }
         public string? Picture { get; set; }
+        
+        [JsonPropertyName("picture_url")]
+        public string? PictureUrl { get; set; }
+
         public int Likes { get; set; }
+
+        [JsonPropertyName("is_liked")]
+        [NotMapped]
+        public bool IsLiked { get; set; }
+
         public JarType Type { get; set; }
         public int? CreatedBy { get; set; }
+        
+        public string CreatorUsername { get; set; } = "unknown";
+
+        [NotMapped]
+        public JarUserCreator? User { get; set; }
+    }
+
+    public class JarUserCreator
+    {
+        public int Id { get; set; }
+        public string Username { get; set; } = "unknown";
     }
 }
