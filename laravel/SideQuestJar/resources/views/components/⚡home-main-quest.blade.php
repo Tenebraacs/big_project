@@ -141,7 +141,7 @@ new class extends Component
         // Refresh UI
         $this->dispatch('streak-updated');
         $this->dispatch('proof-created');
-        $this->dispatch('profile-updated'); // ✅ updates navbar + profile header XP/level
+        $this->dispatch('profile-updated'); // Updates navbar + profile header XP/level
 
         unset($this->alreadyClaimedToday);
 

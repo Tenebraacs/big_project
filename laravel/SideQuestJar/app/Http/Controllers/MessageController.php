@@ -16,8 +16,8 @@ class MessageController extends Controller
 
     public function show(User $user)
     {
-        $isFriend = auth()->user()->friends()->where('users.id', $user->id)->exists();
-        if (!$isFriend) {
+        // Authorize that the user can message the target user
+        if ($user->id !== auth()->id() && !auth()->user()->friends()->where('users.id', $user->id)->exists()) {
             return redirect()->route('chat.index')->with('error', 'You can only message friends.');
         }
 
@@ -40,6 +40,9 @@ class MessageController extends Controller
 
     public function fetchMessages(User $user)
     {
+        // Authorize the action
+        abort_unless($user->id === auth()->id() || auth()->user()->friends()->where('users.id', $user->id)->exists(), 403, 'You can only view messages of friends.');
+
         $messages = Message::where(function ($q) use ($user) {
             $q->where('sender_id', auth()->id())->where('receiver_id', $user->id);
         })->orWhere(function ($q) use ($user) {
@@ -84,6 +87,9 @@ class MessageController extends Controller
 
     public function store(Request $request, User $user)
     {
+        // Authorize the action
+        abort_unless($user->id === auth()->id() || auth()->user()->friends()->where('users.id', $user->id)->exists(), 403, 'You can only message friends.');
+
         $request->validate(['content' => 'required|string|max:1000']);
 
         $message = Message::create([

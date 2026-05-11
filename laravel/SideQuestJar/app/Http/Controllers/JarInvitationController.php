@@ -24,9 +24,7 @@ class JarInvitationController extends Controller
         $auth    = auth()->user();
 
         // Must be a member or creator of the jar
-        $isMember  = $jar->users()->where('users.id', $auth->id)->exists();
-        $isCreator = $jar->created_by === $auth->id;
-        if (!$isMember && !$isCreator) {
+        if ($request->user()->cannot('invite', $jar)) {
             return response()->json(['error' => 'You are not a member of this jar.'], 403);
         }
 

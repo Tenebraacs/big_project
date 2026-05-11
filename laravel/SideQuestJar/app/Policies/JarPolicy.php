@@ -74,6 +74,17 @@ class JarPolicy
         return false;
     }
 
+    /**
+     * Determine whether the user can invite others to the model.
+     */
+    public function invite(User $user, Jar $jar): bool
+    {
+        $isMember = $jar->users()->where('users.id', $user->id)->exists();
+        $isCreator = $jar->created_by === $user->id;
+
+        return $isMember || $isCreator;
+    }
+
 
     //Minen elott megnezi hogy a user admin e ha igen -> enged mindent || ha nem akkor tovabb megy a tobbi ellenorzessel
     public function before(User $user): bool|null {
