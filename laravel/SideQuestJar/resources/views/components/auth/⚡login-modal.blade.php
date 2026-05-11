@@ -80,10 +80,11 @@ new class extends Component
 
                     <div class="modal-body claim-modal-body">
                         <div class="mb-3">
-                            <label class="claim-label">Email</label>
+                            <label for="login-email" class="claim-label">Email</label>
                             <input
+                                id="login-email"
                                 type="email"
-                                wire:model.defer="email"
+                                wire:model="email"
                                 class="form-control claim-input"
                                 placeholder="you@example.com"
                                 autocomplete="email"
@@ -96,10 +97,11 @@ new class extends Component
                         </div>
 
                         <div class="mb-3">
-                            <label class="claim-label">Password</label>
+                            <label for="login-password" class="claim-label">Password</label>
                             <input
+                                id="login-password"
                                 type="password"
-                                wire:model.defer="password"
+                                wire:model="password"
                                 class="form-control claim-input"
                                 placeholder="••••••••"
                                 autocomplete="current-password"

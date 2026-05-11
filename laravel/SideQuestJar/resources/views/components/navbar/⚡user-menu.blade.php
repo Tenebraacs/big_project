@@ -62,7 +62,7 @@ new class extends Component
 
             {{-- Keep your streak component inside the menu (mobile style) --}}
             <div class="mobile-dropdown-streak">
-                <livewire:navbar.navbar-streak-mobile />
+                <livewire:navbar.navbar-streak-mobile wire:key="streak-mobile-{{ $this->getId() }}" />
             </div>
 
             <div class="dropdown-divider"></div>

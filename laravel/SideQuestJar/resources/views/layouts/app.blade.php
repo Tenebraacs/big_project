@@ -46,7 +46,7 @@
                 <div class="d-flex d-md-none align-items-center">
                     @auth
                         <div class="me-3 d-flex align-items-center">
-                            <livewire:navbar.navbar-streak />
+                            <livewire:navbar.navbar-streak wire:key="navbar-streak-mobile" />
                         </div>
                         <ul class="navbar-nav m-0 p-0">
                             
@@ -86,7 +86,7 @@
 
                     <div class="nav-center">
                         @auth
-                            <livewire:navbar.navbar-streak />
+                            <livewire:navbar.navbar-streak wire:key="navbar-streak-desktop" />
                         @endauth
                     </div>
 
