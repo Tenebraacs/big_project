@@ -133,14 +133,14 @@ new class extends Component
         <div class="col-12 col-md-10">
             <div class="row g-3 m-1 p-0 justify-content-center">
                 @foreach ($this->visibleJars as $loopIndex => $jar)
-                    <div class="col-12 col-md-6 col-lg-4 mb-5
+                    <div class="col-12 col-md-6 col-lg-4 mb-3
                         @if($loopIndex >= 1) d-none d-md-block @endif
                         @if($loopIndex >= 2) d-none d-lg-block @endif
                     ">
-                        <div class="card bg-block-blue rounded-5 h-100 d-flex flex-column jar-card-border">
+                        <div class="card bg-block-blue rounded-4 h-100 d-flex flex-column jar-card-border">
 
                             <div class="card-header border-0 text-center">
-                                <h5 class="fw-bold jar-name fs-3 text-truncate mt-2">{{ $jar->name }}</h5>
+                                <h5 class="fw-bold jar-name fs-4 text-truncate mt-1">{{ $jar->name }}</h5>
 
                                 @if ($jar->user)
                                     <p class="mb-0 mt-1 small text-light opacity-75">by</p>
@@ -168,7 +168,7 @@ new class extends Component
                                 @endif
                             </div>
 
-                            <div class="px-1 pb-3 pt-2 mt-auto d-flex justify-content-center">
+                            <div class="px-1 pb-2 pt-1 mt-auto d-flex justify-content-center">
                                 @auth
                                     <button
                                         class="btn home-claim-button m-2 rounded-pill blue-button"

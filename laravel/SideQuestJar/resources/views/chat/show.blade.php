@@ -188,7 +188,7 @@
                     <button id="open-invite-modal" class="btn btn-sm pink-button rounded-pill px-3"
                             title="Invite {{ $user->username }} to a Jar"
                             {{ $invitableJars->isEmpty() ? 'data-all-joined=true' : '' }}>
-                        🏺 Invite to Jar
+                        <i class="bi bi-envelope-plus me-1"></i> Invite to Jar
                     </button>
                     @endif
                 </div>
@@ -219,7 +219,7 @@
 <div class="invite-modal-backdrop" id="invite-modal-backdrop">
     <div class="invite-modal text-light">
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="jar-name m-0">🏺 Invite {{ $user->username }} to a Jar</h5>
+            <h5 class="jar-name m-0"><i class="bi bi-envelope-plus me-2"></i>Invite {{ $user->username }} to a Jar</h5>
             <button class="btn btn-sm text-light" id="close-invite-modal" style="font-size:1.4rem;line-height:1;">&times;</button>
         </div>
 
@@ -233,9 +233,9 @@
                     <span class="jar-name" style="font-size:0.9rem;">{{ $jar->name }}</span>
                 </div>
             @empty
-                <div class="text-center py-3" style="color: rgba(234,178,160,0.6);">
-                    <div style="font-size:2rem;">🏺</div>
-                    <p class="small mt-1 mb-0">{{ $user->username }} is already in all your jars!</p>
+                <div class="text-center py-4" style="color: rgba(234,178,160,0.6);">
+                    <i class="bi bi-check2-circle mb-2" style="font-size:2.5rem; display: block; color: #EAB2A0;"></i>
+                    <p class="small mt-2 mb-0">{{ $user->username }} is already in all your jars!</p>
                 </div>
             @endforelse
         </div>
@@ -304,7 +304,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                         newHtml += `
                             <div class="chat-invite-bubble mb-1 ${isMine ? 'align-self-end' : 'align-self-start'}" style="${bgStyle} animation: none;">
-                                <div class="invite-label">🏺 Jar Invite ${isMine ? 'Sent' : 'Received'}</div>
+                                <div class="invite-label"><i class="bi bi-envelope-fill me-1"></i> Jar Invite ${isMine ? 'Sent' : 'Received'}</div>
                                 <div class="d-flex align-items-center gap-2 mt-1">
                                     ${msg.jar_thumb ? `<img src="${msg.jar_thumb}" class="invite-jar-thumb" alt="">` : ''}
                                     <div class="invite-jar-title">${msg.jar_name}</div>
@@ -318,7 +318,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         newHtml += `
                             <div class="message ${isMine ? 'align-self-end' : 'align-self-start'} py-2 px-3 mb-1 text-light shadow-sm"
                                  style="max-width:75%;background-color:${isMine ? '#A76F6F' : '#6c757d'};border-radius:15px;">
-                                ${msg.content}
+                                 ${msg.content}
                             </div>`;
                     }
                 });
@@ -448,7 +448,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 const bubble = document.createElement('div');
                 bubble.className = 'chat-invite-bubble mb-1';
                 bubble.innerHTML = `
-                    <div class="invite-label">🏺 Jar Invite Sent</div>
+                    <div class="invite-label"><i class="bi bi-envelope-fill me-1"></i> Jar Invite Sent</div>
                     <div class="d-flex align-items-center gap-2 mt-1">
                         ${jarThumb ? `<img src="${jarThumb}" class="invite-jar-thumb" alt="">` : ''}
                         <div class="invite-jar-title">${jarName}</div>
@@ -467,9 +467,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 const remaining = document.querySelectorAll('.invite-jar-option:not([style*="display: none"])');
                 if (remaining.length === 0) {
                     document.getElementById('jar-list').innerHTML = `
-                        <div class="text-center py-3" style="color: rgba(234,178,160,0.6);">
-                            <div style="font-size:2rem;">🏺</div>
-                            <p class="small mt-1 mb-0">{{ $user->username }} is now in all your jars!</p>
+                        <div class="text-center py-4" style="color: rgba(234,178,160,0.6);">
+                            <i class="bi bi-check2-circle mb-2" style="font-size:2.5rem; display: block; color: #EAB2A0;"></i>
+                            <p class="small mt-2 mb-0">{{ $user->username }} is now in all your jars!</p>
                         </div>`;
                     sendBtn.disabled = true;
                 }

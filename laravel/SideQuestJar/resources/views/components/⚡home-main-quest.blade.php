@@ -151,11 +151,11 @@ new class extends Component
 ?>
 
 <div class="row justify-content-center mb-3">
-    <div class="col-12 col-md-10 px-2 px-md-3">
-        <div class="card rounded-5 bg-block-blue mb-3 mx-1 mx-md-3 mt-md-3 mainjar-border">
+    <div class="col-12 col-md-8 col-lg-7 px-2 px-md-3">
+        <div class="card rounded-4 bg-block-blue mb-3 mx-1 mx-md-3 mt-md-3 mainjar-border">
             <div class="text-center card-header border-0 px-4 px-md-5 pt-4 pb-0">
                 @if ($mainJar)
-                    <h1 class="fw-bold fs-1 display-md-3 welcome-text m-0">{{ $mainJar->name }}</h1>
+                    <h1 class="fw-bold welcome-text mb-3" style="font-size: clamp(2.2rem, 6vw, 4rem); line-height: 1.1;">{{ $mainJar->name }}</h1>
                 @else
                     <h1 class="fs-2 fs-md-1 fw-bold welcome-text m-0">No Usable Adventure Found</h1>
                 @endif
@@ -164,16 +164,16 @@ new class extends Component
             <div class="card-body p-3 p-md-4 pt-1">
                 <div class="row align-items-start g-3">
                     @if ($mainQuest)
-                        <div class="col-12 col-md-7 text-center d-flex flex-column px-md-4 mt-0">
-                            <h2 class="fw-bold welcome-text mb-5" style="font-size: clamp(1.4rem, 2.5vw, 2.2rem); opacity: 0.95;">{{ $mainQuest->title }}</h2>
-                            <p class="jar-name mb-0" style="font-size: clamp(1.15rem, 2.2vw, 1.45rem); opacity: 1; line-height: 1.5; margin-top: 1rem;">{{ $mainQuest->description }}</p>
+                        <div class="col-12 col-md-6 text-center d-flex flex-column px-md-4 mt-0 justify-content-center">
+                            <h2 class="fw-bold welcome-text mb-3" style="font-size: clamp(1.4rem, 2.5vw, 2.2rem); opacity: 0.95;">{{ $mainQuest->title }}</h2>
+                            <p class="jar-name mb-0" style="font-size: clamp(1.1rem, 2vw, 1.4rem); opacity: 1; line-height: 1.5;">{{ $mainQuest->description }}</p>
                         </div>
 
-                        <div class="col-10 col-sm-8 col-md-5 mx-auto">
-                            <div style="aspect-ratio: 1/1;">
+                        <div class="col-10 col-sm-8 col-md-6 mx-auto">
+                            <div class="rounded-4 overflow-hidden" style="aspect-ratio: 1/1; max-height: 280px; max-width: 280px; margin: 0 auto;">
                                 <img src="{{ $mainQuest->picture_url }}" alt="Quest picture"
-                                     class="img-fluid w-100 h-100 rounded-5"
-                                     style="object-fit: cover; box-shadow: 0 0 28px rgba(234,178,160,0.25), 0 8px 24px rgba(0,0,0,0.35);">
+                                     class="w-100 h-100 rounded-4"
+                                     style="object-fit: cover; box-shadow: 0 0 35px rgba(234,178,160,0.3), 0 12px 30px rgba(0,0,0,0.45);">
                             </div>
                         </div>
                     @endif

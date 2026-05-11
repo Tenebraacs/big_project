@@ -36,8 +36,8 @@ class User extends Authenticatable
     {
         $value = $this->profile_picture;
 
-        if (!$value) {
-            return 'https://i.ibb.co/Ngk3xx10/Godly-Pfp.png';
+        if (!$value || $value === 'https://i.ibb.co/Ngk3xx10/Godly-Pfp.png' || $value === 'images/default-avatar.png') {
+            return asset('images/default-avatar.png');
         }
 
         if (str_starts_with($value, 'http://') || str_starts_with($value, 'https://')) {
@@ -70,25 +70,27 @@ class User extends Authenticatable
         ];
     }
 
-    public function quest_completions(){
+    public function questCompletions()
+    {
         return $this->hasMany(QuestCompletion::class);
     }
 
 
-    public function achievements(){
+    public function achievements()
+    {
         return $this->belongsTo(Achievement::class);
     }
 
-    public function customizations(){
+    public function customizations()
+    {
         return $this->belongsToMany(Customization::class, 'user_customs');
-        //Many to many connection to the users table via the user_customizations pivot table
     }
 
-    public function likes(){
+    public function likes()
+    {
         return $this->hasMany(Like::class);
     }
 
-    //Todo JarUsers Connection type (plusz nem helyes a tabla meg)
 
 
    public function createdJars()

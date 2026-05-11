@@ -487,7 +487,7 @@ new class extends Component
 
         <!-- LEFT: MEMBERS -->
         <div class="col-12 col-lg-2 order-2 order-lg-1">
-            <div class="card bg-block-blue rounded-5 h-100">
+            <div class="card bg-block-blue rounded-4 h-100">
                 <div class="card-header border-0 text-center">
                     <h3 class="jar-name fs-3 fw-bold mb-1">Members</h3>
                     <p class="mb-0">{{ $this->jar->users->count() }} joined</p>
@@ -540,7 +540,7 @@ new class extends Component
 
         <!-- CENTER: MAIN JAR / QUEST -->
         <div class="col-12 col-lg-7 order-1 order-lg-2">
-            <div class="card text-center bg-block-blue rounded-5 h-100 d-flex flex-column show-jar-card">
+            <div class="card text-center bg-block-blue rounded-4 h-100 d-flex flex-column show-jar-card">
 
                 <div class="card-header border-0 position-relative pb-0">
                     @if ($this->jar)
@@ -611,7 +611,7 @@ new class extends Component
                                 >
 
                                 <!-- LIKE BUTTON OVERLAY -->
-                                <div class="position-absolute top-0 end-0 m-2 text-end">
+                                <div class="position-absolute top-0 end-0 m-2 d-flex flex-column align-items-center">
                                     @auth
                                         <button
                                             wire:click="toggleQuestLike"
@@ -633,7 +633,7 @@ new class extends Component
                                         </button>
                                     @endauth
 
-                                    <span class="likes-badge-count">
+                                    <span class="likes-badge-count mt-1">
                                         {{ $this->questLikesCount }}
                                     </span>
                                 </div>
@@ -699,7 +699,7 @@ new class extends Component
 
                             <a
                                 href="{{ route('jars.quests.create', ['jar' => $this->jar->id]) }}"
-                                class="btn fw-medium pink-button rounded-pill w-75 w-lg-50 fs-5 fs-md-4 px-3 py-2 m-1"
+                                class="btn fw-medium pink-button rounded-pill w-75 w-lg-50 fs-6 fs-md-5 px-3 py-1 m-1"
                             >
                                 Add New Quest
                             </a>
@@ -707,7 +707,7 @@ new class extends Component
                             @if($this->currentQuest && $this->jar->quests->isNotEmpty())
                                 <a
                                     href="{{ route('jars.quests.edit', ['jar' => $this->jar->id, 'jarQuest' => $this->currentQuest->id]) }}"
-                                    class="btn fw-medium pink-button rounded-pill w-75 w-lg-50 fs-5 fs-md-4 px-3 py-2 m-1"
+                                    class="btn fw-medium pink-button rounded-pill w-75 w-lg-50 fs-6 fs-md-5 px-3 py-1 m-1"
                                 >
                                     Edit Current Quest
                                 </a>
@@ -717,7 +717,7 @@ new class extends Component
                                 <button
                                     type="button"
                                     wire:click="confirmDeleteQuest"
-                                    class="border-0 btn btn-outline-danger rounded-pill w-75 w-lg-50 fs-5 fs-md-4 px-3 py-2 m-1"
+                                    class="border-0 btn btn-outline-danger rounded-pill w-75 w-lg-50 fs-6 fs-md-5 px-3 py-1 m-1"
                                 >
                                     Delete Quest
                                 </button>
@@ -727,7 +727,7 @@ new class extends Component
                                 <button
                                     type="button"
                                     wire:click="leaveJar"
-                                    class="btn fw-medium pink-button rounded-pill w-75 w-lg-50 fs-5 fs-md-4 px-3 py-2 m-1"
+                                    class="btn fw-medium pink-button rounded-pill w-75 w-lg-50 fs-6 fs-md-5 px-3 py-1 m-1"
                                 >
                                     Leave Jar
                                 </button>
@@ -735,7 +735,7 @@ new class extends Component
                                 <button
                                     type="button"
                                     wire:click="joinJar"
-                                    class="btn fw-medium pink-button rounded-pill w-75 w-lg-50 fs-5 fs-md-4 px-3 py-2 m-1"
+                                    class="btn fw-medium pink-button rounded-pill w-75 w-lg-50 fs-6 fs-md-5 px-3 py-1 m-1"
                                 >
                                     Join Jar
                                 </button>
@@ -751,7 +751,7 @@ new class extends Component
             @auth
                 @if ($this->jar && ($this->joined || $this->jar->created_by === auth()->id() || (auth()->check() && auth()->user()->is_admin)))
                     <!-- Comments Card -->
-                    <div class="card bg-block-blue rounded-5 text-center d-flex flex-column" style="height: 60vh; min-height: 400px;">
+                    <div class="card bg-block-blue rounded-4 text-center d-flex flex-column" style="height: 60vh; min-height: 400px;">
                         <div class="card-header border-0 d-flex justify-content-center align-items-center pt-3 pb-2 px-3">
                             <h5 class="fw-bold jar-name fs-4 m-0">Jar Chat</h5>
                         </div>
@@ -793,7 +793,7 @@ new class extends Component
 
                 @if ($this->jar && ($this->jar->created_by === auth()->id() || (auth()->check() && auth()->user()->is_admin)))
                     <!-- Admin Card -->
-                    <div class="card bg-block-blue rounded-5 text-center mt-auto">
+                    <div class="card bg-block-blue rounded-4 text-center mt-auto">
                         <div class="card-body text-center p-3">
                             <div class="d-flex flex-column align-items-center gap-2">
                                 <a

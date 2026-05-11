@@ -33,8 +33,8 @@ class JarInvitationController extends Controller
             return response()->json(['error' => 'User is already in this jar.'], 422);
         }
 
-        // Create or update the invitation (allow re-invite if previously declined)
-        // We update created_at so that a re-invite appears at the bottom of the chat timeline.
+        // Create or update the invitation (allow re-invite if previously declined).
+        // Reset created_at so a re-invite appears at the bottom of the chat timeline.
         $invitation = JarInvitation::updateOrCreate(
             ['jar_id' => $jar->id, 'invitee_id' => $invitee->id],
             ['inviter_id' => $auth->id, 'status' => 'pending']
@@ -63,8 +63,10 @@ class JarInvitationController extends Controller
 
         $jarInvitation->update(['status' => 'accepted']);
 
-        // Add the user to the jar
-        $jarInvitation->jar->users()->syncWithoutDetaching([auth()->id()]);
+        // Add the invitee to the jar
+        $jarInvitation->jar->users()->syncWithoutDetaching([
+            $jarInvitation->invitee_id => ['streak' => 0]
+        ]);
 
         if ($request->expectsJson()) {
             return response()->json(['message' => 'Jar joined successfully!']);

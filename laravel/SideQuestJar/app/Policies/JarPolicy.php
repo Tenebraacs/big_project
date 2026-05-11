@@ -13,30 +13,40 @@ class JarPolicy
     /**
      * Determine whether the user can view any models.
      */
+    /**
+     * Any authenticated user can browse the jars listing.
+     */
     public function viewAny(User $user): bool
     {
-        return false;
+        return true;
     }
 
     /**
      * Determine whether the user can view the model.
      */
+    /**
+     * A jar is viewable if it is public, the user created it,
+     * or the user is a member of it.
+     */
     public function view(User $user, Jar $jar): bool
     {
-        return false;
+        if ($jar->type === 'public_jar') {
+            return true;
+        }
+
+        return $user->id === $jar->created_by
+            || $jar->users()->where('users.id', $user->id)->exists();
     }
 
     /**
      * Determine whether the user can create models.
      */
+    /**
+     * Any authenticated user may create a jar.
+     */
     public function create(User $user): bool
     {
-
-        
-        
         return true;
-        
-        
     }
 
     /**
@@ -44,10 +54,7 @@ class JarPolicy
      */
     public function update(User $user, Jar $jar): bool
     {
-        
-
-
-        return $user->id === $jar->created_by;
+        return $user->id == $jar->created_by;
     }
 
     /**
@@ -55,7 +62,7 @@ class JarPolicy
      */
     public function delete(User $user, Jar $jar): bool
     {
-        return $user->id === $jar->created_by;
+        return $user->id == $jar->created_by;
     }
 
     /**
@@ -86,11 +93,16 @@ class JarPolicy
     }
 
 
-    //Minen elott megnezi hogy a user admin e ha igen -> enged mindent || ha nem akkor tovabb megy a tobbi ellenorzessel
-    public function before(User $user): bool|null {
-        if ($user->is_admin){
+    /**
+     * Admins bypass all policy checks and are granted full access.
+     * Returning null falls through to the individual policy methods.
+     */
+    public function before(User $user): bool|null
+    {
+        if ($user->is_admin) {
             return true;
         }
+
         return null;
     }
 

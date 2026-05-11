@@ -32,13 +32,11 @@ class JarQuestFactory extends Factory
         ];
 
         $quest = fake()->randomElement($quests);
-        $pictures = ["https://i.ibb.co/JjJczBgX/Hug-ATree.png", "https://i.ibb.co/wN9GKctB/Rope-AJump.png"];
         
         return [
             "jar_id" => Jar::whereNotIn('name', ["Today's Avdenture"])->inRandomOrder()->value('id') ?? Jar::factory(),
             "title" => $quest['title'],
             "description" => $quest['description'],
-            "picture" => fake()->randomElement($pictures),
             "created_by" => User::inRandomOrder()->value('id') ?? User::factory()
         ];
     }

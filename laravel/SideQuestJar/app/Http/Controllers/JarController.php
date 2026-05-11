@@ -12,14 +12,12 @@ use Illuminate\Support\Facades\Auth;
 class JarController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Index is excluded from the resource route (see web.php).
+     * Jars are displayed via the home() method instead.
      */
-    public function index()
+    public function index(): never
     {
-        /*
-        $jars = Jar::all();
-        return view("jars.index", ["jars" => $jars]);
-        */
+        abort(404);
     }
     protected function getOrCreateDailyQuest(Jar $jar)
     {
@@ -156,7 +154,6 @@ class JarController extends Controller
         ]);
 
         return redirect()->route('jars.show', $jar)->with('success', 'New jar was added successfully.');
-        //Todo a return redirect mehetne a User/show page re ami Profil page kent funkcioanalhatna
     }
 
     /**
@@ -177,14 +174,17 @@ class JarController extends Controller
 
     
 
-    public function join(Jar $jar){
+    public function join(Jar $jar)
+    {
+        if ($jar->type === 'invite_only_jar') {
+            return redirect()->route('jars.show', $jar->id)->with('error', 'This jar is invite-only. You need an invitation to join.');
+        }
 
         $jar->users()->syncWithoutDetaching([
-            auth()->id() => ['streak' => '0']
+            auth()->id() => ['streak' => 0]
         ]);
 
         return redirect()->route('jars.show', $jar->id)->with('success', 'You joined the jar');
-
     }
 
     public function leave(Jar $jar)
@@ -225,7 +225,6 @@ class JarController extends Controller
         $jar->delete();
 
         return redirect()->route('home')->with('success', 'Jar deleted successfully.');
-        //TODO Ha Profil Page kesz lesz vagy mar letezik ott kene a user altal letrehozott Jarokat tarolni igy amikor torol egyet lehet jobb oda vinni nem a Home
     }
 
     

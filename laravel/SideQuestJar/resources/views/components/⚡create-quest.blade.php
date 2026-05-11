@@ -43,7 +43,7 @@ new class extends Component
 
             $validated['picture'] = $filename;
         } else {
-            $validated['picture'] = 'https://i.ibb.co/2YvZypwJ/Jar-Quest-Placeholder.png';
+            unset($validated['picture']);
         }
 
         $quest = $this->jar->quests()->create($validated);
@@ -127,11 +127,11 @@ new class extends Component
                     <label class="text-light opacity-75 small fw-semibold text-uppercase" style="letter-spacing:.06em;">
                         Quest Picture <span class="opacity-50 fw-normal text-lowercase">(optional)</span>
                     </label>
-                    <div class="rounded-4 overflow-hidden" style="aspect-ratio:1/1; max-height:260px;">
+                    <div class="rounded-4 overflow-hidden mx-auto" style="aspect-ratio:1/1; max-height:260px; max-width:260px;">
                         @if ($picture)
                             <img src="{{ $picture->temporaryUrl() }}" alt="Preview" class="w-100 h-100" style="object-fit:cover;">
                         @else
-                            <img src="https://i.ibb.co/2YvZypwJ/Jar-Quest-Placeholder.png" alt="Placeholder" class="w-100 h-100" style="object-fit:cover; opacity:0.55;">
+                            <img src="{{ asset('images/default-quest.png') }}" alt="Placeholder" class="w-100 h-100" style="object-fit:cover; opacity:0.55;">
                         @endif
                     </div>
                     <x-image-cropper property="picture" label="Choose Image" />

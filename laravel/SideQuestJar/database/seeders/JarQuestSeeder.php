@@ -21,14 +21,12 @@ class JarQuestSeeder extends Seeder
         JarQuest::create([
             "jar_id" => $mainjar->id,
             "title" => "Hug a tree",
-            "picture" => "https://i.ibb.co/JjJczBgX/Hug-ATree.png",
             "description" => "Go outside and hug a tree",
         ]);
 
         JarQuest::create([
             "jar_id" => $mainjar->id,
             "title" => "RopeAJump",
-            "picture" => "https://i.ibb.co/wN9GKctB/Rope-AJump.png",
             "description" => "Go outside and rope a jump",
         ]);
 

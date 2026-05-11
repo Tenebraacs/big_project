@@ -48,7 +48,8 @@ class JarController extends Controller
         return response()->json($jars);
     }
 
-    public function store(StoreJarRequest $request) {
+    public function store(StoreJarRequest $request)
+    {
         $validated = $request->validated();
         $validated['created_by'] = $request->user()->id;
 
@@ -60,26 +61,32 @@ class JarController extends Controller
 
         // Auto-join the creator
         $jar->users()->syncWithoutDetaching([
-            $request->user()->id => ['streak' => 0]
+            $request->user()->id => ['streak' => 0],
         ]);
 
         return response()->json($jar, 201);
     }
 
-    public function update(UpdateJarRequest $request, Jar $jar){
+    public function update(UpdateJarRequest $request, Jar $jar)
+    {
         $validated = $request->validated();
-        
+
         if ($request->hasFile('picture')) {
             $validated['picture'] = $request->file('picture')->store('jars', 'public');
         }
 
         $jar->update($validated);
-        return response()->json(["msg" => "Jar updated successfully", "jar" => $jar]);
+
+        return response()->json(['msg' => 'Jar updated successfully', 'jar' => $jar]);
     }
 
-    public function destroy(Jar $jar){
+    public function destroy(Jar $jar)
+    {
+        $this->authorize('delete', $jar);
+
         $jar->delete();
-        return response()->json(["msg" => "Jar was deleted"]);
+
+        return response()->json(['msg' => 'Jar deleted']);
     }
 
     public function discover() 
@@ -90,7 +97,7 @@ class JarController extends Controller
         $popularJars = Jar::where('type', '!=', 'official_jar')
                             ->withCount('likes')
                             ->with('user:id,username')
-                            ->orderBy('likes_count', 'desc')
+                            ->orderByDesc('likes_count')
                             ->take(10)
                             ->get()
                             ->map(function ($jar) {

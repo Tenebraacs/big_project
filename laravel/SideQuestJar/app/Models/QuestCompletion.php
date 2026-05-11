@@ -29,7 +29,7 @@ class QuestCompletion extends Model
     public function getPictureUrlAttribute()
     {
         if (!$this->picture) {
-            return 'https://i.ibb.co/2YvZypwJ/Jar-Quest-Placeholder.png';
+            return asset('images/default-quest.png');
         }
 
         if (Str::startsWith($this->picture, ['http://', 'https://'])) {

@@ -26,13 +26,13 @@
                                         >
                                         <div class="row">
                                             <div class="col-0 col-md-5">
-                                                <img src="https://i.ibb.co/2YvZypwJ/Jar-Quest-Placeholder.png"
+                                                <img src="{{ asset('images/profile-buttons-jar.png') }}"
                                                      class="img-fluid rounded-4 m-1 d-none d-md-block"
-                                                     style="height: 14vh; width: 17vw;">
+                                                     style="height: 14vh; width: 17vw; object-fit: cover;">
                                             </div>
                                             <div class="col-12 col-md-7">
                                                 <p class="jar-name display-5 text-center m-2"
-                                                   style="transform: skew(20deg); font-size: clamp(1.5rem, 5vw, 3rem);">
+                                                   style="transform: skew(20deg); font-size: clamp(1.2rem, 4vw, 2.5rem); white-space: nowrap;">
                                                     JARS
                                                 </p>
                                             </div>
@@ -46,13 +46,13 @@
                                         >
                                         <div class="row">
                                             <div class="col-0 col-md-5">
-                                                <img src="https://i.ibb.co/2YvZypwJ/Jar-Quest-Placeholder.png"
+                                                <img src="{{ asset('images/profile-buttons-jar.png') }}"
                                                      class="img-fluid rounded-4 m-1 d-none d-md-block"
-                                                     style="height: 14vh; width: 17vw;">
+                                                     style="height: 14vh; width: 17vw; object-fit: cover;">
                                             </div>
                                             <div class="col-12 col-md-7">
                                                 <p class="jar-name display-5 text-center m-2"
-                                                   style="transform: skew(20deg); font-size: clamp(1.5rem, 5vw, 3rem);">
+                                                   style="transform: skew(20deg); font-size: clamp(1.2rem, 4vw, 2.5rem); white-space: nowrap;">
                                                     LIBRARY
                                                 </p>
                                             </div>

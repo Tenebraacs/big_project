@@ -9,8 +9,8 @@
                 <form action="{{ route('friends.add') }}" method="POST" class="position-relative" id="addFriendForm">
                     @csrf
                     <div class="d-flex gap-2">
-                        <input type="text" name="username" id="usernameInput" autocomplete="off" class="form-control bg-dark text-light border-0 rounded-pill px-3" placeholder="Enter username..." required>
-                        <button type="submit" class="btn btn-primary rounded-pill px-4">Add</button>
+                        <input type="text" name="username" id="usernameInput" autocomplete="off" class="form-control border-0 rounded-pill px-3" placeholder="Enter username..." style="background-color: rgba(234, 178, 160, 0.2); color: #fff;" required>
+                        <button type="submit" class="btn pink-button rounded-pill px-4">Add</button>
                     </div>
                     <div id="suggestions" class="list-group position-absolute w-100 mt-1 shadow-lg d-none" style="z-index: 1000; max-height: 200px; overflow-y: auto;"></div>
                 </form>
@@ -24,14 +24,14 @@
 
             <style>
                 #suggestions .list-group-item {
-                    background-color: #1a1a2e;
-                    border: 1px solid #2d2d44;
+                    background-color: #1e2a3a;
+                    border: 1px solid rgba(234,178,160,0.2);
                     color: white;
                     cursor: pointer;
                     transition: background-color 0.2s;
                 }
                 #suggestions .list-group-item:hover {
-                    background-color: #2d2d44;
+                    background-color: rgba(234,178,160,0.15);
                 }
                 #suggestions img {
                     width: 30px;
@@ -105,11 +105,11 @@
                                 <div class="d-flex gap-2">
                                     <form action="{{ route('friends.accept', $req->user) }}" method="POST">
                                         @csrf
-                                        <button class="btn btn-sm btn-success rounded-pill px-3">Accept</button>
+                                        <button class="btn btn-sm pink-button rounded-pill px-3">Accept</button>
                                     </form>
                                     <form action="{{ route('friends.decline', $req->user) }}" method="POST">
                                         @csrf
-                                        <button class="btn btn-sm btn-danger rounded-pill px-3">Decline</button>
+                                        <button class="btn btn-sm btn-outline-danger rounded-pill px-3">Decline</button>
                                     </form>
                                 </div>
                             </li>
@@ -150,7 +150,7 @@
                                     <span class="fs-5">{{ $friend->username }}</span>
                                 </a>
                                 <div>
-                                    <a href="{{ route('chat.show', $friend) }}" class="btn btn-sm btn-info rounded-pill px-3 text-white">Message</a>
+                                    <a href="{{ route('chat.show', $friend) }}" class="btn btn-sm pink-button rounded-pill px-3">Message</a>
                                 </div>
                             </li>
                         @endforeach
