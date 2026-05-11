@@ -1,0 +1,31 @@
+info:
+  name: "08 POST logout"
+  type: http
+  seq: 8
+
+http:
+  method: POST
+  url: http://localhost:8000/api/logout
+  headers:
+    - name: Accept
+      value: application/json
+    - name: Authorization
+      value: Bearer {{auth_token}}
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("returns 200", function () {
+          expect(res.status).to.equal(200);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  `AuthService.LogoutAsync` — run **01 Login** again after this request for calls that need a fresh token.

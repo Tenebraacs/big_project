@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Jar;
 use App\Models\JarQuest;
-use App\Models\Like;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 
@@ -23,7 +22,7 @@ class LikeController extends Controller
             return  response()->json([
                 'message' => 'Jar unliked',
                 'liked' => false,
-                'likes_count' => $jar->likes()->count,
+                'likes_count' => $jar->likes()->count(),
             ]);
         }
 
@@ -34,7 +33,7 @@ class LikeController extends Controller
         return  response()->json([
                 'message' => 'Jar liked',
                 'liked' => true,
-                'likes_count' => $jar->likes()->count,
+                'likes_count' => $jar->likes()->count(),
         ]);
     }
 
@@ -50,7 +49,7 @@ class LikeController extends Controller
             return  response()->json([
                 'message' => 'Quest unliked',
                 'liked' => false,
-                'likes_count' => $quest->likes()->count,
+                'likes_count' => $quest->likes()->count(),
             ]);
         }
 
@@ -61,7 +60,7 @@ class LikeController extends Controller
         return  response()->json([
                 'message' => 'Quest liked',
                 'liked' => true,
-                'likes_count' => $quest->likes()->count,
+                'likes_count' => $quest->likes()->count(),
         ]);
     }
 

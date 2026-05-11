@@ -1,0 +1,54 @@
+info:
+  name: "19 POST jars/:jar_id/quests (create)"
+  type: http
+  seq: 19
+
+http:
+  method: POST
+  url: http://localhost:8000/api/jars/:jar_id/quests
+  headers:
+    - name: Accept
+      value: application/json
+    - name: Authorization
+      value: Bearer {{auth_token}}
+  params:
+    - name: jar_id
+      value: "{{jar_id}}"
+      type: path
+  body:
+    type: multipartForm
+    data:
+      - name: title
+        value: Bruno quest {{quest_create_suffix}}
+      - name: description
+        value: From MAUI parity suite
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: before-request
+      code: |-
+        bru.setVar("quest_create_suffix", String(Date.now()));
+    - type: after-response
+      code: |-
+        if (res.status === 201 && res.body && res.body.quest && res.body.quest.id) {
+          bru.setVar("quest_id", String(res.body.quest.id));
+        }
+    - type: tests
+      code: |-
+        test("returns 201", function () {
+          expect(res.status).to.equal(201);
+        });
+        test("nested quest", function () {
+          expect(res.body).to.have.property("quest");
+          expect(res.body.quest).to.have.property("id");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  `JarService.CreateQuestAsync`. Requires a jar you can edit; sets `quest_id` on success.

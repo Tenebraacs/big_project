@@ -1,0 +1,40 @@
+info:
+  name: "35 GET chat/:friend_id/messages"
+  type: http
+  seq: 35
+
+http:
+  method: GET
+  url: http://localhost:8000/api/chat/:friend_id/messages
+  headers:
+    - name: Accept
+      value: application/json
+    - name: Authorization
+      value: Bearer {{auth_token}}
+  params:
+    - name: friend_id
+      value: "2"
+      type: path
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("timeline or forbidden", function () {
+          expect([200, 403]).to.include(res.status);
+        });
+        test("body is array when ok", function () {
+          if (res.status === 200) {
+            expect(res.body).to.be.an("array");
+          }
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  `MessageService.GetChatTimelineAsync`.

@@ -1,0 +1,30 @@
+opencollection: 1.0.0
+
+info:
+  name: MAUI API Parity
+config:
+  proxy:
+    inherit: true
+    config:
+      protocol: http
+      hostname: ""
+      port: ""
+      auth:
+        username: ""
+        password: ""
+      bypassProxy: ""
+bundled: false
+extensions:
+  bruno:
+    ignore:
+      - node_modules
+      - .git
+    presets:
+      request:
+        type: http
+        url: http://localhost:8000/api
+
+docs: |-
+  # MAUI API parity
+  Run **01 Login** first; it stores `auth_token` for Bearer requests.
+  Set path variables as needed: `jar_id`, `quest_id`, `friend_user_id`, `invitee_user_id`, `admin_target_user_id` (Bruno *Path params* or collection vars).

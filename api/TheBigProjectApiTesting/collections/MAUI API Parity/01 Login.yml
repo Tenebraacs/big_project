@@ -1,0 +1,48 @@
+info:
+  name: "01 Login (MAUI — same body as AuthService)"
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: http://localhost:8000/api/login
+  headers:
+    - name: Accept
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "email": "ZoliProliApi@gmail.com",
+        "password": "123//ZoliProli//123",
+        "device_id": "bruno-maui-parity"
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        if (res.status === 200 && res.body && res.body.token) {
+          bru.setVar("auth_token", res.body.token);
+        }
+    - type: tests
+      code: |-
+        test("login returns 200", function () {
+          expect(res.status).to.equal(200);
+        });
+        test("response includes token and user", function () {
+          expect(res.body).to.have.property("token");
+          expect(res.body.token).to.be.a("string");
+          expect(res.body).to.have.property("user");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  Matches `AuthService.LoginAsync` (`email`, `password`, `device_id`).
+  Adjust credentials to your local DB seed.

@@ -1,0 +1,38 @@
+info:
+  name: "25 GET jars/:jar_id/completions"
+  type: http
+  seq: 25
+
+http:
+  method: GET
+  url: http://localhost:8000/api/jars/:jar_id/completions
+  headers:
+    - name: Accept
+      value: application/json
+    - name: Authorization
+      value: Bearer {{auth_token}}
+  params:
+    - name: jar_id
+      value: "{{jar_id}}"
+      type: path
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("returns 200", function () {
+          expect(res.status).to.equal(200);
+        });
+        test("completions key", function () {
+          expect(res.body).to.have.property("completions");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  `JarService.GetCompletionsAsync`.

@@ -1,0 +1,35 @@
+info:
+  name: "33 POST friends/:user_id/decline"
+  type: http
+  seq: 33
+
+http:
+  method: POST
+  url: http://localhost:8000/api/friends/:user_id/decline
+  headers:
+    - name: Accept
+      value: application/json
+    - name: Authorization
+      value: Bearer {{auth_token}}
+  params:
+    - name: user_id
+      value: "2"
+      type: path
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("decline result", function () {
+          expect([200, 404, 422]).to.include(res.status);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  `FriendService.DeclineFriendRequestAsync`.

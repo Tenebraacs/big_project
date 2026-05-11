@@ -1,0 +1,168 @@
+@page "/admin"
+@using SideQuestJar.ViewModels
+@using SideQuestJar.Models
+@inject AdminViewModel ViewModel
+@inject NavigationManager NavigationManager
+
+<div class="container-fluid px-3 py-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-xl-10">
+            <div class="card bg-block-blue rounded-5 jar-card-border shadow-lg">
+                <div class="card-body p-4">
+                    
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 gap-3">
+                        <div>
+                            <h1 class="jar-name fw-bold mb-1">Manage Users</h1>
+                            <p class="text-white-50 mb-0">Total Users: @(ViewModel.UsersResponse?.Total ?? 0)</p>
+                        </div>
+                        <div class="d-flex gap-2 w-100 w-md-auto">
+                            <div class="input-group">
+                                <span class="input-group-text bg-transparent border-secondary text-white-50">
+                                    <i class="bi bi-search"></i>
+                                </span>
+                                <input type="text" 
+                                       class="form-control claim-input bg-dark text-white border-secondary" 
+                                       placeholder="Search users..."
+                                       @bind="ViewModel.SearchQuery"
+                                       @bind:event="oninput"
+                                       @onkeyup="HandleSearchKeyUp" />
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(ViewModel.SuccessMessage))
+                    {
+                        <div class="alert alert-success rounded-pill py-2 shadow-sm mb-3">
+                            <i class="bi bi-check-circle-fill me-2"></i>@ViewModel.SuccessMessage
+                        </div>
+                    }
+
+                    @if (!string.IsNullOrEmpty(ViewModel.ErrorMessage))
+                    {
+                        <div class="alert alert-danger rounded-pill py-2 shadow-sm mb-3">
+                            <i class="bi bi-exclamation-circle-fill me-2"></i>@ViewModel.ErrorMessage
+                        </div>
+                    }
+
+                    <div class="table-responsive admin-table-scroll theme-scrollbar">
+                        <table class="table align-middle admin-users-table mb-0">
+                            <thead>
+                                <tr>
+                                    <th>User</th>
+                                    <th>Email</th>
+                                    <th class="text-center">Jars</th>
+                                    <th class="text-center">Created</th>
+                                    <th class="text-center">Likes</th>
+                                    <th class="text-center">Quests</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (ViewModel.IsLoading)
+                                {
+                                    <tr>
+                                        <td colspan="7" class="text-center py-5">
+                                            <div class="spinner-border text-light" role="status">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                                else if (!ViewModel.Users.Any())
+                                {
+                                    <tr>
+                                        <td colspan="7" class="text-center py-5 text-white-50">
+                                            No users found.
+                                        </td>
+                                    </tr>
+                                }
+                                else
+                                {
+                                    @foreach (var user in ViewModel.Users)
+                                    {
+                                        <tr>
+                                            <td class="admin-user-cell">
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <div class="user-avatar">
+                                                        <img src="@(string.IsNullOrEmpty(user.ProfilePictureUrl) ? "https://i.ibb.co/689N9hY/default.jpg" : user.ProfilePictureUrl)" 
+                                                             alt="Avatar" />
+                                                    </div>
+                                                    <div class="fw-bold">@user.Username</div>
+                                                </div>
+                                            </td>
+                                            <td class="admin-email-cell text-truncate" style="max-width: 150px;">
+                                                @user.Email
+                                            </td>
+                                            <td class="text-center"><span class="badge rounded-pill bg-secondary">@user.JarsCount</span></td>
+                                            <td class="text-center"><span class="badge rounded-pill bg-info text-dark">@user.CreatedJarsCount</span></td>
+                                            <td class="text-center"><span class="badge rounded-pill bg-warning text-dark">@user.LikesCount</span></td>
+                                            <td class="text-center"><span class="badge rounded-pill bg-success">@user.QuestCompletionsCount</span></td>
+                                            <td class="text-end">
+                                                <div class="d-flex gap-2 justify-content-end">
+                                                    <button class="btn btn-sm @(user.IsAdmin ? "btn-danger" : "pink-button") rounded-pill px-3"
+                                                            @onclick="() => ViewModel.ToggleAdminCommand.ExecuteAsync(user)">
+                                                        @(user.IsAdmin ? "Revoke Admin" : "Make Admin")
+                                                    </button>
+                                                    <button class="btn btn-sm btn-outline-danger rounded-circle"
+                                                            @onclick="() => ViewModel.DeleteUserCommand.ExecuteAsync(user)">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    @if (ViewModel.UsersResponse != null && ViewModel.UsersResponse.LastPage > 1)
+                    {
+                        <div class="admin-pagination mt-4">
+                            <nav aria-label="User pagination">
+                                <ul class="pagination pagination-sm mb-0">
+                                    <li class="page-item @(ViewModel.UsersResponse.CurrentPage == 1 ? "disabled" : "")">
+                                        <button class="page-link" @onclick="() => ViewModel.LoadUsersCommand.ExecuteAsync(ViewModel.UsersResponse.CurrentPage - 1)">
+                                            <i class="bi bi-chevron-left"></i>
+                                        </button>
+                                    </li>
+                                    
+                                    @for (int i = 1; i <= ViewModel.UsersResponse.LastPage; i++)
+                                    {
+                                        var pageNum = i;
+                                        <li class="page-item @(ViewModel.UsersResponse.CurrentPage == pageNum ? "active" : "")">
+                                            <button class="page-link" @onclick="() => ViewModel.LoadUsersCommand.ExecuteAsync(pageNum)">@pageNum</button>
+                                        </li>
+                                    }
+
+                                    <li class="page-item @(ViewModel.UsersResponse.CurrentPage == ViewModel.UsersResponse.LastPage ? "disabled" : "")">
+                                        <button class="page-link" @onclick="() => ViewModel.LoadUsersCommand.ExecuteAsync(ViewModel.UsersResponse.CurrentPage + 1)">
+                                            <i class="bi bi-chevron-right"></i>
+                                        </button>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    }
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        ViewModel.PropertyChanged += (_, _) => InvokeAsync(StateHasChanged);
+        await ViewModel.LoadUsersAsync();
+    }
+
+    private async Task HandleSearchKeyUp(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await ViewModel.SearchAsync();
+        }
+    }
+}

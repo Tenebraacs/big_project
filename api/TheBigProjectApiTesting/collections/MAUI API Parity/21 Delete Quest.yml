@@ -1,0 +1,38 @@
+info:
+  name: "21 DELETE jars/:jar_id/quests/:quest_id"
+  type: http
+  seq: 21
+
+http:
+  method: DELETE
+  url: http://localhost:8000/api/jars/:jar_id/quests/:quest_id
+  headers:
+    - name: Accept
+      value: application/json
+    - name: Authorization
+      value: Bearer {{auth_token}}
+  params:
+    - name: jar_id
+      value: "{{jar_id}}"
+      type: path
+    - name: quest_id
+      value: "{{quest_id}}"
+      type: path
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("returns 200", function () {
+          expect(res.status).to.equal(200);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  `JarService.DeleteQuestAsync`.

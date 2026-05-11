@@ -1,0 +1,27 @@
+info:
+  name: Update User Profile
+  type: http
+  seq: 7
+
+http:
+  method: POST
+  url: http://localhost:8000/api/user/profile/update
+  headers:
+    - name: Accept
+      value: application/json
+    - name: Authorization
+      value: Bearer {{auth_token}}
+  body:
+    type: multipartForm
+    data:
+      - name: username
+        value: UpdatedUser22
+      - name: email
+        value: updateduser@gmail.com
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

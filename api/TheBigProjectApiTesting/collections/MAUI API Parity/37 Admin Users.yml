@@ -1,0 +1,35 @@
+info:
+  name: "37 GET admin/users"
+  type: http
+  seq: 37
+
+http:
+  method: GET
+  url: http://localhost:8000/api/admin/users
+  headers:
+    - name: Accept
+      value: application/json
+    - name: Authorization
+      value: Bearer {{auth_token}}
+  params:
+    - name: page
+      value: "1"
+      type: query
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("admin or forbidden", function () {
+          expect([200, 403]).to.include(res.status);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  `AdminService.GetUsersAsync`. Requires an **admin** token.

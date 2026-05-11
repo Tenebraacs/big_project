@@ -1,0 +1,47 @@
+info:
+  name: "20 POST jars/:jar_id/quests/:quest_id (_method PUT)"
+  type: http
+  seq: 20
+
+http:
+  method: POST
+  url: http://localhost:8000/api/jars/:jar_id/quests/:quest_id
+  headers:
+    - name: Accept
+      value: application/json
+    - name: Authorization
+      value: Bearer {{auth_token}}
+  params:
+    - name: jar_id
+      value: "{{jar_id}}"
+      type: path
+    - name: quest_id
+      value: "{{quest_id}}"
+      type: path
+  body:
+    type: multipartForm
+    data:
+      - name: title
+        value: Updated quest title
+      - name: description
+        value: Updated description
+      - name: _method
+        value: PUT
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("returns 200", function () {
+          expect(res.status).to.equal(200);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  `JarService.UpdateQuestAsync`. Run **19** first or set ids manually.

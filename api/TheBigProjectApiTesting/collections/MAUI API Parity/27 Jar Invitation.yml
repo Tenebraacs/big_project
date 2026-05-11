@@ -1,0 +1,38 @@
+info:
+  name: "27 POST jar-invitations"
+  type: http
+  seq: 27
+
+http:
+  method: POST
+  url: http://localhost:8000/api/jar-invitations
+  headers:
+    - name: Accept
+      value: application/json
+    - name: Authorization
+      value: Bearer {{auth_token}}
+  body:
+    type: json
+    data: |-
+      {
+        "jar_id": 1,
+        "invitee_id": 2
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("invite response", function () {
+          expect([200, 403, 409, 422]).to.include(res.status);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  `JarService.SendJarInvitationAsync` — endpoint **`POST /api/jar-invitations`** with `jar_id` and `invitee_id`. Edit the JSON body to real IDs from your database.

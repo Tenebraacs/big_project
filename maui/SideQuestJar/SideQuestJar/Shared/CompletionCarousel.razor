@@ -1,0 +1,148 @@
+@using SideQuestJar.DTOs
+@using Microsoft.JSInterop
+@inject IJSRuntime JS
+@implements IAsyncDisposable
+
+<div class="container-fluid jar-carousel-root mb-5">
+    <div class="row mb-3">
+        <div class="col-12 text-center">
+            <h2 class="fw-bold welcome-text">@Title</h2>
+        </div>
+    </div>
+
+    <div class="row align-items-stretch">
+        <div class="col-1 d-flex justify-content-center align-items-center">
+            <button class="btn blue-button rounded-circle fw-bold shadow" 
+                    style="color:#EAB2A0; background-color:#2D4356; opacity: @(StartIndex > 0 ? 1 : 0.5);" 
+                    @onclick="ScrollPrev" 
+                    disabled="@(StartIndex <= 0)">
+                ❮
+            </button>
+        </div>
+
+        <div class="col-10 overflow-hidden">
+            <!-- Discrete Grid/Flex Container -->
+            <div @key="animationKey" class="d-flex justify-content-center gap-2 gap-md-4 py-2 @animationClass">
+                @foreach (var comp in VisibleCompletions)
+                {
+                    <div class="card bg-block-blue rounded-5 h-100 d-flex flex-column jar-card-border shadow" 
+                         style="flex: 1; min-width: 0; max-width: 300px;">
+                        
+                        @if (!string.IsNullOrEmpty(comp.PictureUrl) && !comp.PictureUrl.Contains("Placeholder"))
+                        {
+                            <img src="@comp.PictureUrl" class="card-img-top rounded-top-5 w-100"
+                                 style="aspect-ratio: 1/1; object-fit: cover;" />
+                        }
+                        
+                        <div class="card-body d-flex flex-column p-3 p-md-4">
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <img src="@(comp.ProfilePicture ?? "https://i.ibb.co/689N9hY/default.jpg")"
+                                     class="rounded-circle shadow-sm" style="width:36px;height:36px;object-fit:cover;" />
+                                <div>
+                                    <div class="fw-bold small" style="color:#EAB2A0;">@comp.Username</div>
+                                    <div class="text-white-50" style="font-size:0.75rem;">@comp.QuestTitle</div>
+                                </div>
+                            </div>
+                            @if (!string.IsNullOrEmpty(comp.Description))
+                            {
+                                <p class="text-white-50 small mb-0 flex-grow-1" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                                    @comp.Description
+                                </p>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="col-1 d-flex justify-content-center align-items-center">
+            <button class="btn blue-button rounded-circle fw-bold shadow" 
+                    style="color:#EAB2A0; background-color:#2D4356; opacity: @(StartIndex + VisibleCount < Completions.Count ? 1 : 0.5);" 
+                    @onclick="ScrollNext"
+                    disabled="@(StartIndex + VisibleCount >= Completions.Count)">
+                ❯
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+    @@keyframes compSlideInRight {
+        0% { opacity: 0; transform: translateX(40px); }
+        100% { opacity: 1; transform: translateX(0); }
+    }
+    @@keyframes compSlideInLeft {
+        0% { opacity: 0; transform: translateX(-40px); }
+        100% { opacity: 1; transform: translateX(0); }
+    }
+    .comp-slide-in-right {
+        animation: compSlideInRight 0.35s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+    }
+    .comp-slide-in-left {
+        animation: compSlideInLeft 0.35s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+    }
+</style>
+
+@code {
+    [Parameter] public string Title { get; set; } = "Recent Completions";
+    [Parameter] public List<QuestCompletionDto> Completions { get; set; } = new();
+
+    private DotNetObjectReference<CompletionCarousel>? dotNetHelper;
+    private int StartIndex = 0;
+    private int VisibleCount = 1;
+    private string animationClass = "comp-slide-in-right";
+
+    private string animationKey => $"{StartIndex}_{VisibleCount}_{Completions.Count}";
+
+    private IEnumerable<QuestCompletionDto> VisibleCompletions => Completions.Skip(StartIndex).Take(VisibleCount);
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            dotNetHelper = DotNetObjectReference.Create(this);
+            await JS.InvokeVoidAsync("registerCarouselResize", dotNetHelper);
+        }
+    }
+
+    [JSInvokable]
+    public void SetVisibleCount(int count)
+    {
+        if (VisibleCount != count)
+        {
+            VisibleCount = count;
+            
+            if (StartIndex + VisibleCount > Completions.Count && Completions.Count > 0)
+            {
+                StartIndex = Math.Max(0, Completions.Count - VisibleCount);
+            }
+            
+            StateHasChanged();
+        }
+    }
+
+    private void ScrollPrev()
+    {
+        if (StartIndex > 0)
+        {
+            animationClass = "comp-slide-in-left";
+            StartIndex--;
+            StateHasChanged();
+        }
+    }
+
+    private void ScrollNext()
+    {
+        if (StartIndex + VisibleCount < Completions.Count)
+        {
+            animationClass = "comp-slide-in-right";
+            StartIndex++;
+            StateHasChanged();
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        dotNetHelper?.Dispose();
+    }
+}

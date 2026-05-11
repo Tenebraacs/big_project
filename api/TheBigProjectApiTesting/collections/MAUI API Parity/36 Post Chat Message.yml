@@ -1,0 +1,41 @@
+info:
+  name: "36 POST chat/:friend_id/messages"
+  type: http
+  seq: 36
+
+http:
+  method: POST
+  url: http://localhost:8000/api/chat/:friend_id/messages
+  headers:
+    - name: Accept
+      value: application/json
+    - name: Authorization
+      value: Bearer {{auth_token}}
+  params:
+    - name: friend_id
+      value: "2"
+      type: path
+  body:
+    type: json
+    data: |-
+      {
+        "content": "Hello from Bruno"
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("message saved or forbidden", function () {
+          expect([200, 403, 422]).to.include(res.status);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  `MessageService.SendMessageAsync`.

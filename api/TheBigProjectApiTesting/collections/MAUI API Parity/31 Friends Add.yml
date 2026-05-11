@@ -1,0 +1,37 @@
+info:
+  name: "31 POST friends/add"
+  type: http
+  seq: 31
+
+http:
+  method: POST
+  url: http://localhost:8000/api/friends/add
+  headers:
+    - name: Accept
+      value: application/json
+    - name: Authorization
+      value: Bearer {{auth_token}}
+  body:
+    type: json
+    data: |-
+      {
+        "username": "nonexistent_user_xyz"
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("handled response", function () {
+          expect([201, 404, 409, 422]).to.include(res.status);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  `FriendService.SendFriendRequestAsync`. Replace `username` with a real user; expect 404/422 if user missing.

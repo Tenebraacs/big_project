@@ -1,0 +1,33 @@
+info:
+  name: "10 GET discover"
+  type: http
+  seq: 10
+
+http:
+  method: GET
+  url: http://localhost:8000/api/discover
+  headers:
+    - name: Accept
+      value: application/json
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("returns 200", function () {
+          expect(res.status).to.equal(200);
+        });
+        test("shape: popular and recommended (Laravel camelCase)", function () {
+          expect(res.body).to.have.property("popularJars");
+          expect(res.body).to.have.property("recommendedJars");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  `JarService.GetDiscoverDataAsync` — no auth required on route.

@@ -10,6 +10,8 @@ collections:
     path: "collections/User Auth Testing"
   - name: "Complex Data testing"
     path: "collections/Complex Data testing"
+  - name: "Friends Testing"
+    path: "collections/Friends Testing"
 
 specs:
 

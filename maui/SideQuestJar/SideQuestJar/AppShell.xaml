@@ -9,13 +9,8 @@
     Shell.NavBarIsVisible="False">
 
     <ShellContent
-        Title="Authentication"
-        ContentTemplate="{DataTemplate views:AuthPage}"
-        Route="AuthPage" />
-
-    <ShellContent
         Title="Home"
-        ContentTemplate="{DataTemplate views:HomePage}"
-        Route="HomePage" />
+        ContentTemplate="{DataTemplate local:MainPage}"
+        Route="MainPage" />
 
 </Shell>
