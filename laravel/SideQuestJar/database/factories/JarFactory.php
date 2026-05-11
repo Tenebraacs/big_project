@@ -37,10 +37,10 @@ class JarFactory extends Factory
         ];
         
         return [
-            "name" => fake()->randomElement($jarNames),
-            "description" => fake()->randomElement($descriptions),   
-            "type" => fake()->randomElement($types),
-            "created_by" => User::inRandomOrder()->value('id') ?? User::factory()
+            'name'        => fake()->randomElement($jarNames),
+            'description' => fake()->randomElement($descriptions),
+            'type'        => fake()->randomElement($types),
+            'created_by'  => User::factory(),
         ];
     }
 }
