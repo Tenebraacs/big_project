@@ -37,8 +37,8 @@ class Jar extends Model
 
     public function getPictureUrlAttribute()
     {
-        if (!$this->picture) {
-            return 'https://i.ibb.co/2YvZypwJ/Jar-Quest-Placeholder.png';
+        if (!$this->picture || $this->picture === 'https://i.ibb.co/2YvZypwJ/Jar-Quest-Placeholder.png' || $this->picture === 'images/default-jar.png') {
+            return asset('images/default-jar.png');
         }
 
         if (Str::startsWith($this->picture, ['http://', 'https://'])) {

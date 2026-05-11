@@ -36,8 +36,8 @@ class User extends Authenticatable
     {
         $value = $this->profile_picture;
 
-        if (!$value) {
-            return 'https://i.ibb.co/Ngk3xx10/Godly-Pfp.png';
+        if (!$value || $value === 'https://i.ibb.co/Ngk3xx10/Godly-Pfp.png' || $value === 'images/default-avatar.png') {
+            return asset('images/default-avatar.png');
         }
 
         if (str_starts_with($value, 'http://') || str_starts_with($value, 'https://')) {

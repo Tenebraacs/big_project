@@ -203,6 +203,20 @@ $invitation->refresh();  // reload the model from DB
 
 ---
 
+### `JarQuestTest.php` — 5 tests
+
+Tests the Jar Quest CRUD lifecycle and authorization.
+
+| Test | What it verifies |
+|---|---|
+| `test_jar_creator_can_create_a_quest` | Owner can POST to create a quest for their jar |
+| `test_non_creator_cannot_create_a_quest` | Non-owner gets 403 Forbidden |
+| `test_quest_requires_a_title` | Empty title returns 422 |
+| `test_jar_creator_can_update_a_quest` | Owner can PUT to update quest title |
+| `test_jar_creator_can_delete_a_quest` | Owner can DELETE and the quest is soft-deleted |
+
+---
+
 ## 4. Key Assertions Reference
 
 | Assertion | When to use |
@@ -284,8 +298,8 @@ php artisan test --filter=LikeTest
 ## 6. Current Test Coverage
 
 ```
-Tests:    34 passed (63 assertions)
-Duration: ~2s
+Tests:    39 passed (72 assertions)
+Duration: ~3s
 ```
 
 | File | Tests | Area |
@@ -295,6 +309,7 @@ Duration: ~2s
 | `FriendTest` | 7 | Friend request lifecycle |
 | `MessageTest` | 8 | Chat auth + validation |
 | `JarInvitationTest` | 7 | Invite lifecycle + expiration |
+| `JarQuestTest` | 5 | Jar Quests CRUD authorization |
 
 > [!IMPORTANT]
-> Always run `php artisan test` before pushing to make sure nothing is broken. The full suite takes under 2 seconds.
+> Always run `php artisan test` before pushing to make sure nothing is broken. The full suite takes under 3 seconds.

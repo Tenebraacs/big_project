@@ -25,7 +25,7 @@ return new class extends Migration
             ])->default("public_jar");
 
             $table->foreignId("created_by")->nullable()->constrained('users', 'id');
-            $table->string("picture")->default("https://i.ibb.co/2YvZypwJ/Jar-Quest-Placeholder.png");
+            $table->string("picture")->default("images/default-jar.png");
 
             $table->timestamps();
             $table->softDeletes();
