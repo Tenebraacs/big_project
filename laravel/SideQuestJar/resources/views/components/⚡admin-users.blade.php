@@ -48,7 +48,7 @@ new class extends Component
     public function getUsersProperty()
     {
         return User::query()
-            ->withCount(['jars', 'createdJars', 'likes', 'quest_completions'])
+            ->withCount(['jars', 'createdJars', 'likes', 'questCompletions'])
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
                     $q->where('username', 'like', '%' . $this->search . '%')
