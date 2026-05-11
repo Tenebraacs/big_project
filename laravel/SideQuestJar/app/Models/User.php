@@ -70,25 +70,27 @@ class User extends Authenticatable
         ];
     }
 
-    public function quest_completions(){
+    public function questCompletions()
+    {
         return $this->hasMany(QuestCompletion::class);
     }
 
 
-    public function achievements(){
+    public function achievements()
+    {
         return $this->belongsTo(Achievement::class);
     }
 
-    public function customizations(){
+    public function customizations()
+    {
         return $this->belongsToMany(Customization::class, 'user_customs');
-        //Many to many connection to the users table via the user_customizations pivot table
     }
 
-    public function likes(){
+    public function likes()
+    {
         return $this->hasMany(Like::class);
     }
 
-    //Todo JarUsers Connection type (plusz nem helyes a tabla meg)
 
 
    public function createdJars()

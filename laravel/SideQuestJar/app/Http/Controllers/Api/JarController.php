@@ -15,19 +15,30 @@ class JarController extends Controller
         return response()->json($jars);
     }
 
-    public function store(StoreJarRequest $request) {
-        $jar = Jar::create($request->all());
-        return response()->json(["msg" => "Jar added", $jar]);
+    public function store(StoreJarRequest $request)
+    {
+        $validated = $request->validated();
+        $validated['created_by'] = auth()->id();
+
+        $jar = Jar::create($validated);
+
+        return response()->json(['msg' => 'Jar added', 'jar' => $jar], 201);
     }
 
-    public function update(UpdateJarRequest $request, Jar $jar){
-        $jar->update($request->all());
-        return response()->json(["msg" => "Jar update", $jar]);
+    public function update(UpdateJarRequest $request, Jar $jar)
+    {
+        $jar->update($request->validated());
+
+        return response()->json(['msg' => 'Jar updated', 'jar' => $jar]);
     }
 
-    public function destroy(Jar $jar){
+    public function destroy(Jar $jar)
+    {
+        $this->authorize('delete', $jar);
+
         $jar->delete();
-        return response()->json(["msg" => "Jar was deleted"]);
+
+        return response()->json(['msg' => 'Jar deleted']);
     }
 
     public function discover() 
@@ -36,7 +47,8 @@ class JarController extends Controller
         $mainQuest = $mainJar ? $mainJar->quests()->inRandomOrder()->first() : null;
 
         $popularJars = Jar::where('type', '!=', 'official_jar')
-                            ->orderBy('likes', 'desc')
+                            ->withCount('likes')
+                            ->orderByDesc('likes_count')
                             ->take(10)
                             ->get();
 

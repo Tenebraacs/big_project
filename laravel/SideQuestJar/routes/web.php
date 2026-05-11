@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [JarController::class, 'home'])->name('home');
 Route::redirect('/home', '/');
-//Route::resource('/quest', QuestController::class);
 
 Route::post('/jars/{jar}/join', [JarController::class, 'join'])->middleware('auth')->name('jars.join');
 Route::delete('/jars/{jar}/leave', [JarController::class, 'leave'])->middleware('auth')->name('jars.leave');
@@ -20,7 +19,8 @@ Route::get('/jars/{jar}/quests/{jarQuest}/edit', [JarQuestController::class, 'ed
 Route::put('/jars/{jar}/quests/{jarQuest}', [JarQuestController::class, 'update'])->name('jars.quests.update');
 Route::delete('/jars/{jar}/quests/{jarQuest}', [JarQuestController::class, 'destroy'])->name('jars.quests.destroy');
 
-Route::resource('/jars', JarController::class)->except(['show']);
+// 'index' is handled by home(); 'show' has an optional {quest?} parameter so it is registered separately.
+Route::resource('/jars', JarController::class)->except(['index', 'show'])->middleware('auth');
 Route::get('/jars/{jar}/{quest?}', [JarController::class, 'show'])->name('jars.show');
 
 Route::get('/users/profile', [UserController::class, 'user'])
@@ -70,7 +70,3 @@ Route::middleware('auth')->group(function () {
     Route::post('/jar-invitations/{jarInvitation}/accept', [JarInvitationController::class, 'accept'])->name('jar-invitations.accept');
     Route::post('/jar-invitations/{jarInvitation}/decline', [JarInvitationController::class, 'decline'])->name('jar-invitations.decline');
 });
-
-
-//Route::get('/home', [JarController::class, 'home'])->name('home');
-//Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

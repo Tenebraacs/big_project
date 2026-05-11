@@ -1,5 +1,30 @@
 @extends('layouts.app')
 
+@push('styles')
+<style>
+    #suggestions .list-group-item {
+        background-color: #1a1a2e;
+        border: 1px solid #2d2d44;
+        color: white;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+    #suggestions .list-group-item:hover {
+        background-color: #2d2d44;
+    }
+    #suggestions img {
+        width: 30px;
+        height: 30px;
+        object-fit: cover;
+    }
+    .avatar-sm {
+        width: 40px;
+        height: 40px;
+        object-fit: cover;
+    }
+</style>
+@endpush
+
 @section('content')
 <div class="container-fluid text-light mt-4">
     <div class="row justify-content-center">
@@ -22,73 +47,9 @@
                 @endif
             </div>
 
-            <style>
-                #suggestions .list-group-item {
-                    background-color: #1a1a2e;
-                    border: 1px solid #2d2d44;
-                    color: white;
-                    cursor: pointer;
-                    transition: background-color 0.2s;
-                }
-                #suggestions .list-group-item:hover {
-                    background-color: #2d2d44;
-                }
-                #suggestions img {
-                    width: 30px;
-                    height: 30px;
-                    object-fit: cover;
-                }
-            </style>
 
-            <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    const input = document.getElementById('usernameInput');
-                    const suggestions = document.getElementById('suggestions');
-                    let debounceTimer;
 
-                    input.addEventListener('input', function() {
-                        clearTimeout(debounceTimer);
-                        const query = this.value;
 
-                        if (query.length < 2) {
-                            suggestions.classList.add('d-none');
-                            return;
-                        }
-
-                        debounceTimer = setTimeout(() => {
-                            fetch(`{{ route('users.search') }}?query=${encodeURIComponent(query)}`)
-                                .then(response => response.json())
-                                .then(data => {
-                                    suggestions.innerHTML = '';
-                                    if (data.length > 0) {
-                                        data.forEach(user => {
-                                            const item = document.createElement('div');
-                                            item.className = 'list-group-item d-flex align-items-center gap-2';
-                                            item.innerHTML = `
-                                                <img src="${user.profile_picture_url}" class="rounded-circle">
-                                                <span>${user.username}</span>
-                                            `;
-                                            item.addEventListener('click', () => {
-                                                input.value = user.username;
-                                                suggestions.classList.add('d-none');
-                                            });
-                                            suggestions.appendChild(item);
-                                        });
-                                        suggestions.classList.remove('d-none');
-                                    } else {
-                                        suggestions.classList.add('d-none');
-                                    }
-                                });
-                        }, 300);
-                    });
-
-                    document.addEventListener('click', function(e) {
-                        if (!input.contains(e.target) && !suggestions.contains(e.target)) {
-                            suggestions.classList.add('d-none');
-                        }
-                    });
-                });
-            </script>
 
             <div class="card bg-block-blue rounded-4 p-4 border-0 mb-4">
                 <h2 class="jar-name text-center mb-4">Pending Requests</h2>
@@ -99,7 +60,7 @@
                         @foreach($pendingRequests as $req)
                             <li class="list-group-item bg-transparent text-light d-flex justify-content-between align-items-center border-0">
                                 <a href="{{ route('users.show', $req->user->username) }}" class="text-light text-decoration-none d-flex align-items-center">
-                                    <img src="{{ $req->user->profile_picture_url }}" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                                    <img src="{{ $req->user->profile_picture_url }}" class="rounded-circle me-2 avatar-sm">
                                     <span class="fs-5">{{ $req->user->username }}</span>
                                 </a>
                                 <div class="d-flex gap-2">
@@ -127,7 +88,7 @@
                         @foreach($sentRequests as $req)
                             <li class="list-group-item bg-transparent text-light d-flex justify-content-between align-items-center border-0">
                                 <div class="d-flex align-items-center">
-                                    <img src="{{ $req->friend->profile_picture_url }}" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                                    <img src="{{ $req->friend->profile_picture_url }}" class="rounded-circle me-2 avatar-sm">
                                     <span class="fs-5">{{ $req->friend->username }}</span>
                                 </div>
                                 <span class="badge bg-secondary rounded-pill">Pending</span>
@@ -146,7 +107,7 @@
                         @foreach($friends as $friend)
                             <li class="list-group-item bg-transparent text-light d-flex justify-content-between align-items-center border-0">
                                 <a href="{{ route('users.show', $friend->username) }}" class="text-light text-decoration-none d-flex align-items-center">
-                                    <img src="{{ $friend->profile_picture_url }}" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                                    <img src="{{ $friend->profile_picture_url }}" class="rounded-circle me-2 avatar-sm">
                                     <span class="fs-5">{{ $friend->username }}</span>
                                 </a>
                                 <div>
@@ -161,3 +122,65 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const input = document.getElementById('usernameInput');
+        const suggestions = document.getElementById('suggestions');
+        let debounceTimer;
+
+        input.addEventListener('input', function () {
+            clearTimeout(debounceTimer);
+            const query = this.value;
+
+            if (query.length < 2) {
+                suggestions.classList.add('d-none');
+                return;
+            }
+
+            debounceTimer = setTimeout(() => {
+                fetch(`{{ route('users.search') }}?query=${encodeURIComponent(query)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        suggestions.innerHTML = '';
+
+                        if (data.length > 0) {
+                            data.forEach(user => {
+                                const item = document.createElement('div');
+                                item.className = 'list-group-item d-flex align-items-center gap-2';
+
+                                // Use safe DOM construction to prevent XSS
+                                const img = document.createElement('img');
+                                img.src = user.profile_picture_url;
+                                img.className = 'rounded-circle avatar-sm';
+
+                                const span = document.createElement('span');
+                                span.textContent = user.username; // safe: no innerHTML
+
+                                item.appendChild(img);
+                                item.appendChild(span);
+
+                                item.addEventListener('click', () => {
+                                    input.value = user.username;
+                                    suggestions.classList.add('d-none');
+                                });
+
+                                suggestions.appendChild(item);
+                            });
+                            suggestions.classList.remove('d-none');
+                        } else {
+                            suggestions.classList.add('d-none');
+                        }
+                    });
+            }, 300);
+        });
+
+        document.addEventListener('click', function (e) {
+            if (!input.contains(e.target) && !suggestions.contains(e.target)) {
+                suggestions.classList.add('d-none');
+            }
+        });
+    });
+</script>
+@endpush
