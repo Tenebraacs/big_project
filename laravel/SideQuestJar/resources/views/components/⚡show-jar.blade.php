@@ -611,7 +611,7 @@ new class extends Component
                                 >
 
                                 <!-- LIKE BUTTON OVERLAY -->
-                                <div class="position-absolute top-0 end-0 m-2 text-end">
+                                <div class="position-absolute top-0 end-0 m-2 d-flex flex-column align-items-center">
                                     @auth
                                         <button
                                             wire:click="toggleQuestLike"
@@ -633,7 +633,7 @@ new class extends Component
                                         </button>
                                     @endauth
 
-                                    <span class="likes-badge-count">
+                                    <span class="likes-badge-count mt-1">
                                         {{ $this->questLikesCount }}
                                     </span>
                                 </div>

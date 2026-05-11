@@ -23,8 +23,8 @@ class JarQuest extends Model
 
     public function getPictureUrlAttribute()
     {
-        if (!$this->picture || $this->picture === 'https://i.ibb.co/2YvZypwJ/Jar-Quest-Placeholder.png' || $this->picture === 'images/default-jar.png') {
-            return $this->jar ? $this->jar->picture_url : asset('images/default-jar.png');
+        if (!$this->picture || $this->picture === 'https://i.ibb.co/2YvZypwJ/Jar-Quest-Placeholder.png' || $this->picture === 'images/default-jar.png' || $this->picture === 'images/default-quest.png') {
+            return asset('images/default-quest.png');
         }
 
         if (Str::startsWith($this->picture, ['http://', 'https://'])) {

@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('jar_id')->constrained()->onDelete('cascade');
             $table->string("title");
             $table->longText("description")->nullable();
-            $table->string("picture")->default("images/default-jar.png");
+            $table->string("picture")->default("images/default-quest.png");
             $table->integer("completions")->default(0);
             $table->integer("xp_gain")->nullable(); 
             $table->foreignId("created_by")->nullable()->constrained('users','id');
