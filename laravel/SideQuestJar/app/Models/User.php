@@ -76,16 +76,6 @@ class User extends Authenticatable
     }
 
 
-    public function achievements()
-    {
-        return $this->belongsTo(Achievement::class);
-    }
-
-    public function customizations()
-    {
-        return $this->belongsToMany(Customization::class, 'user_customs');
-    }
-
     public function likes()
     {
         return $this->hasMany(Like::class);

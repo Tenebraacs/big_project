@@ -22,14 +22,9 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             JarSeeder::class,
             JarQuestSeeder::class,
-            JarUserSeeder::class,          
-            AchievementSeeder::class,    
-            AchievementCompletionSeeder::class,                
+            JarUserSeeder::class,
             QuestCompletionSeeder::class,
             LikeSeeder::class,
-            CustomizationSeeder::class,
-            UserCustomSeeder::class,
-            
         ]);
     }
 }
