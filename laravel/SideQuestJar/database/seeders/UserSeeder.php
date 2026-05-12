@@ -17,8 +17,8 @@ class UserSeeder extends Seeder
         User::create([
             "username" => "TBZadmin",
             "fullname" => "TBZ Admin",
-            "email" => "TBZadmin@gmail.com",
-            "password" => Hash::make("//bitproject2626\\"),
+            "email" => "tbzadmin@gmail.com",
+            "password" => Hash::make("//Bitproject2626//"),
             "birth_date" => "2001-09-11",
             "is_admin" => true
         ]);
