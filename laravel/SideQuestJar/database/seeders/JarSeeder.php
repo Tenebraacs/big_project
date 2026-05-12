@@ -15,7 +15,7 @@ class JarSeeder extends Seeder
     public function run(): void
     {
 
-        $zoli = User::where('username', 'ZoliProli')->first();
+        $zoli = User::where('username', 'TBZadmin')->first();
         
         Jar::create([
             "name" => "Today's Adventure",

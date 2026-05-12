@@ -15,19 +15,19 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         User::create([
-            "username" => "ZoliProli",
-            "fullname" => "Zoli Proli",
-            "email" => "ZoliProli@gmail.com",
-            "password" => Hash::make("123//ZoliProli//123"),
+            "username" => "TBZadmin",
+            "fullname" => "TBZ Admin",
+            "email" => "TBZadmin@gmail.com",
+            "password" => Hash::make("//bitproject2626\\"),
             "birth_date" => "2001-09-11",
             "is_admin" => true
         ]);
 
         User::create([
-            "username" => "ZoliProli2",
-            "fullname" => "Zoli Proli",
-            "email" => "ZoliProli2@gmail.com",
-            "password" => Hash::make("123//ZoliProli//123"),
+            "username" => "testuser",
+            "fullname" => "Test User",
+            "email" => "testuser@gmail.com",
+            "password" => Hash::make("password"),
             "birth_date" => "2001-09-11",
         ]);
 

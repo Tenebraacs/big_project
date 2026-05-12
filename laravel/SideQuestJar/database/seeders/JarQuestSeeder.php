@@ -14,7 +14,7 @@ class JarQuestSeeder extends Seeder
      */
     public function run(): void
     {
-        //$zoli = User::where('username', 'ZoliProli')->first();
+        //$zoli = User::where('username', 'TBZadmin')->first();
         //https://i.ibb.co/Ngk3xx10/Godly-Pfp.png Zoli Kep
         $mainjar = Jar::where('name', "Today's Adventure")->where('type', 'official_jar')->first();
 

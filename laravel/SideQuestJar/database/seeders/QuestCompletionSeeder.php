@@ -13,7 +13,7 @@ class QuestCompletionSeeder extends Seeder
 {
     public function run(): void
     {
-        $user = User::where('username', 'ZoliProli2')->first();
+        $user = User::where('username', 'testuser')->first();
 
         $officialJar = Jar::where('name', "Today's Adventure")
             ->where('type', 'official_jar')
@@ -45,7 +45,7 @@ class QuestCompletionSeeder extends Seeder
             QuestCompletion::create([
                 'completion_date' => $date,
                 'picture' => 'https://via.placeholder.com/640x480.png/00ee00?text=Quest+Completion',
-                'description' => 'Seeded streak test completion for ZoliProli2 on ' . $date->toDateString(),
+                'description' => 'Seeded streak test completion for testuser on ' . $date->toDateString(),
                 'type' => 'public_post',
                 'user_id' => $user->id,
                 'jar_quest_id' => $quest->id,

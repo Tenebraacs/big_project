@@ -9,10 +9,10 @@
 ### Mi a SideQuestJar?
 A SideQuestJar egy gamifikált feladatkezelő webalkalmazás, ahol a felhasználók „Jar"-okat (üvegeket) hoznak létre, amelyek tematikus kihívásokat (quest-eket) tartalmaznak. A felhasználók csatlakozhatnak mások jar-jaihoz, napi kihívásokat teljesíthetnek, streakeket építhetnek, XP-t gyűjthetnek, és közösségi funkciókat használhatnak (barátok, chat, meghívók).
 
-### Életszerűség és hasznosság
-- **Valódi probléma:** A motiváció és a szokásépítés nehéz — az alkalmazás gamifikációval teszi szórakoztatóvá a napi kihívások teljesítését.
-- **Célcsoport:** Fiatalok és felnőttek, akik közösségben szeretnének napi rutinokat kialakítani (sport, tanulás, kreativitás).
-- **Piaci relevancia:** Hasonló alkalmazások léteznek (Habitica, Streaks), de a SideQuestJar egyedi „Jar" koncepcióval és közösségi funkciókkal különbözik.
+### Életszerűség és hasznosság (Témaválasztás)
+- **Valódi probléma (Kiégés ellen):** A motiváció fenntartása és a monoton hétköznapokból való kiszakadás nehéz. Az alkalmazás nem egy szorongást keltő "To-Do" lista, hanem véletlenszerű napi kalandokat (Side Quest-eket) kínál.
+- **Célcsoport:** Fiatalok és felnőttek, akik közösségi élményen keresztül szeretnének új rutinokat kialakítani (sport, művészet, kreativitás).
+- **Piaci relevancia:** Hasonló alkalmazások (Habitica, Streaks) többnyire a szigorú produktivitásra fókuszálnak. A SideQuestJar a spontaneitásra, a közös „Jar" koncepcióra és a pozitív megerősítésre épít.
 
 ### Komplexitás és kidolgozottság
 | Terület | Megvalósított funkciók |
@@ -134,9 +134,9 @@ jar_quests ── 1:N ──→ quest_completions
 - `JarQuestObserver` — quest-specifikus logika
 - `UserObserver` — felhasználó-specifikus események
 
-### Kulcs backend logikák
+### Kulcs backend logikák és egyedi algoritmusok
 
-**Napi quest rotáció algoritmus:**
+**1. Napi quest rotáció algoritmus (Lazy-evaluation):**
 ```php
 protected function getOrCreateDailyQuest(Jar $jar)
 {
@@ -146,7 +146,7 @@ protected function getOrCreateDailyQuest(Jar $jar)
 }
 ```
 
-**Quest teljesítés + XP + Streak:**
+**2. Quest teljesítés + XP + Streak:**
 ```php
 public function completeQuest(Request $request, JarQuest $quest)
 {
@@ -157,6 +157,17 @@ public function completeQuest(Request $request, JarQuest $quest)
     // 5. XP hozzáadás a felhasználóhoz
 }
 ```
+
+**3. Képvágás és Base64 Feldolgozás (Image Pipeline):**
+- A kliens (Cropper.js) memóriában vágja a képet, és csak egy tömörített Base64 stringet küld a szervernek.
+- A szerver (Intervention Image v3) ezt dekódolja, és helytakarékos `.webp` formátumban menti el, az előző képet pedig letörli a szemetelődés megelőzésére.
+
+**4. Idő-alapú Lejáró Meghívó (TTL Algoritmus):**
+- A chatben küldött Jar meghívók 5 perc után lejárnak. 
+- A lejáratot az elfogadás pillanatában (`accept` végpont) ellenőrzi az algoritmus, elkerülve a szervert terhelő háttérfolyamatokat (Cron jobs).
+
+**5. Egyesített Idővonal Generátor (Timeline Aggregator):**
+- A chat ablakban a szöveges üzeneteket és a meghívókat egyetlen folyammá (stream) fésüljük össze. A memóriában lévő Collection-ök rendezésével O(N log N) komplexitással érjük el a lineáris beszélgetési idővonalat.
 
 ---
 
@@ -426,6 +437,12 @@ php artisan test --filter=test_user_can_send_a_message_to_a_friend  # Egy metód
 ### "Hogyan működik a napi quest?"
 > A `getOrCreateDailyQuest()` metódus ellenőrzi, hogy a mai napra van-e már kiválasztott quest. Ha nincs, véletlenszerűen választ egyet (az előzőt kizárva a duplikáció elkerülése érdekében), és frissíti a jar `current_daily_quest_id` mezőjét.
 
+### "Milyen egyedi, komplex algoritmusokat emelnétek ki?"
+> - **Idő-alapú meghívó (TTL):** Cron job-ok helyett lazy validáció az 5 perces lejárathoz.
+> - **Képoptimalizálás:** Kliensoldali Cropper.js base64 → szerveroldali .webp konverzió.
+> - **Admin Bypass:** A Policy-k `before` metódusa minden jogosultság-ellenőrzés előtt azonnali hozzáférést ad az adminoknak.
+> - **Egyesített idővonal:** Különböző táblák (üzenetek, meghívók) összefésülése a memóriában.
+
 ### "Hogyan skálázható az alkalmazás?"
 > - Pagination az API végpontokon (10-20 elem/oldal)
 > - Eager loading (`with()`) az N+1 query probléma elkerülésére
@@ -494,3 +511,14 @@ SideQuestJar/
 | API végpontok | 30+ |
 | Web route-ok | 25+ |
 | Blade nézetek | 20+ |
+
+---
+
+## 10. Továbbfejlesztési lehetőségek (Jövőkép)
+
+Bár az alkalmazás jelen formájában egy teljes értékű MVP (Minimum Viable Product), a jövőben több irányba is továbbfejleszthető:
+
+- **Natív Mobilalkalmazás:** A meglévő REST API használatával (React Native, Flutter vagy MAUI) dedikált okostelefonos alkalmazás készítése.
+- **Valós idejű WebSocketek:** A chat és az értesítések átállítása AJAX polling-ról WebSocket (pl. Laravel Reverb) alapúra, a még gyorsabb működés érdekében.
+- **AI Tartalomgenerálás:** ChatGPT API integrálása, amivel a felhasználók automatikusan generálhatnak 30 napos kihívásokat (Questeket) egyetlen kattintással.
+- **Monetizáció:** Prémium "Pro" funkciók (pl. korlátlan privát Jar-ok) bevezetése a fenntartható működés érdekében.

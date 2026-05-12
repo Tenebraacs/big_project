@@ -102,7 +102,7 @@ Tests the full Jar CRUD lifecycle and authorization.
 
 **Pattern used — Authorization pair:**
 ```php
-// ✅ Happy path: the authorized user succeeds
+// Happy path: the authorized user succeeds
 public function test_jar_creator_can_delete_their_jar(): void
 {
     $user = User::factory()->create();
@@ -114,7 +114,7 @@ public function test_jar_creator_can_delete_their_jar(): void
     $this->assertSoftDeleted('jars', ['id' => $jar->id]);
 }
 
-// ❌ Sad path: the unauthorized user is blocked
+// Sad path: the unauthorized user is blocked
 public function test_non_creator_cannot_delete_a_jar(): void
 {
     $owner = User::factory()->create();
