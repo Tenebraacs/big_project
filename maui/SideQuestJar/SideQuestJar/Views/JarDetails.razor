@@ -167,12 +167,6 @@ else
                     <div class="card-body px-4 py-3">
                         <div class="d-flex align-items-center gap-2 mb-1 justify-content-center">
                             <h5 class="fw-bold jar-name mb-0 text-center" style="color:#EAB2A0;">@quest.Title</h5>
-                            @if (details.CurrentDailyQuestId == quest.Id)
-                            {
-                                <span class="badge rounded-pill" style="background:#EAB2A0;color:#1a1f2e;font-size:0.65rem;">
-                                    <i class="bi bi-sun-fill me-1"></i>Today
-                                </span>
-                            }
                             @if (NavbarViewModel.IsLoggedIn && jar.CreatedBy == NavbarViewModel.NavbarData?.User?.Id)
                             {
                                 <div class="d-flex gap-1">
@@ -210,7 +204,7 @@ else
                             {
                                 <button class="btn home-claim-button blue-button rounded-pill w-75 shadow-sm"
                                         @onclick="@(() => OpenClaimModal(quest.Id))">
-                                    @(details.CurrentDailyQuestId == quest.Id ? "Claim Today's Quest" : "Claim Quest")
+                                    Claim Quest
                                 </button>
                             }
                             @if (!string.IsNullOrEmpty(questMessage) && lastClaimedQuestId == quest.Id)
@@ -548,6 +542,7 @@ else
         {
             details  = await JarService.GetJarDetailsAsync(JarId);
             hasError = details == null;
+
         }
         catch { hasError = true; }
         finally { isLoading = false; }

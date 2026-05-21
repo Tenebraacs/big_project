@@ -15,7 +15,7 @@ class AdminController extends Controller
         $search = $request->input('search');
 
         $users = User::query()
-            ->withCount(['jars', 'createdJars', 'likes', 'quest_completions'])
+            ->withCount(['jars', 'createdJars', 'likes', 'questCompletions'])
             ->when($search, function ($query) use ($search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('username', 'like', '%' . $search . '%')

@@ -19,50 +19,13 @@ class JarController extends Controller
     {
         abort(404);
     }
-    protected function getOrCreateDailyQuest(Jar $jar)
-    {
-        $today = now()->toDateString();
-
-        if (
-            $jar->current_daily_quest_id &&
-            $jar->current_daily_quest_date &&
-            $jar->current_daily_quest_date->toDateString() === $today
-        ) {
-            return $jar->currentDailyQuest;
-        }
-
-        $lastQuestId = $jar->current_daily_quest_id;
-
-        $questQuery = $jar->quests();
-
-        if ($lastQuestId && $jar->quests()->count() > 1) {
-            $questQuery->where('id', '!=', $lastQuestId);
-        }
-
-        $selectedQuest = $questQuery->inRandomOrder()->first();
-
-        if (!$selectedQuest) {
-            return null;
-        }
-
-        $jar->update([
-            'previous_daily_quest_id' => $lastQuestId,
-            'current_daily_quest_id' => $selectedQuest->id,
-            'current_daily_quest_date' => $today,
-        ]);
-
-        $jar->refresh();
-
-        return $jar->currentDailyQuest;
-    }
-
     public function home()
     {
         $mainJar = Jar::where('type', 'official_jar')
             ->where('name', "Today's Adventure")
             ->first();
 
-        $mainQuest = $mainJar ? $this->getOrCreateDailyQuest($mainJar) : null;
+        $mainQuest = $mainJar ? $mainJar->getOrCreateDailyQuest() : null;
 
         $baseQuery = Jar::where('type', '!=', 'official_jar');
 

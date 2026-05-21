@@ -59,14 +59,21 @@ class JarInteractionController extends Controller
     {
         $user = $request->user();
 
-        // Prevent double-completion on the same day
-        $alreadyDone = QuestCompletion::where('jar_quest_id', $quest->id)
-            ->where('user_id', $user->id)
-            ->whereDate('completion_date', today())
-            ->exists();
+        // Prevent double-completion
+        $alreadyDone = false;
+        if ($quest->jar && $quest->jar->type === 'official_jar') {
+            $alreadyDone = QuestCompletion::where('jar_quest_id', $quest->id)
+                ->where('user_id', $user->id)
+                ->whereDate('completion_date', today())
+                ->exists();
+        } else {
+            $alreadyDone = QuestCompletion::where('jar_quest_id', $quest->id)
+                ->where('user_id', $user->id)
+                ->exists();
+        }
 
         if ($alreadyDone) {
-            return response()->json(['message' => 'Already completed today.'], 409);
+            return response()->json(['message' => 'Already completed.'], 409);
         }
 
         // Handle optional image upload

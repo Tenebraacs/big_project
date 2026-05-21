@@ -92,7 +92,21 @@ class JarController extends Controller
     public function discover() 
     {
         $mainJar = Jar::where('type', 'official_jar')->first();
-        $mainQuest = $mainJar ? $mainJar->quests()->inRandomOrder()->first() : null;
+        $mainQuest = $mainJar ? $mainJar->getOrCreateDailyQuest() : null;
+
+        if ($mainQuest) {
+            $user = auth('sanctum')->user();
+            $completedToday = false;
+            if ($user) {
+                $completedToday = $mainQuest->completions()
+                    ->where('user_id', $user->id)
+                    ->whereDate('completion_date', today())
+                    ->exists();
+            }
+            $data = $mainQuest->toArray();
+            $data['completed_today'] = $completedToday;
+            $mainQuest = $data;
+        }
 
         $popularJars = Jar::where('type', '!=', 'official_jar')
                             ->withCount('likes')
@@ -129,6 +143,10 @@ class JarController extends Controller
         $isJoined = false;
         $user = $request->user();
 
+        if ($jar->type === 'official_jar') {
+            $jar->getOrCreateDailyQuest();
+        }
+
         $jar->loadCount('likes');
         $jar->setAttribute('likes', $jar->likes_count);
         $jar->setAttribute(
@@ -141,13 +159,19 @@ class JarController extends Controller
         }
 
         // Mark quests with whether the user already completed them today
-        $quests = $jar->quests()->get()->map(function ($quest) use ($user) {
+        $quests = $jar->quests()->get()->map(function ($quest) use ($user, $jar) {
             $completedToday = false;
             if ($user) {
-                $completedToday = $quest->completions()
-                    ->where('user_id', $user->id)
-                    ->whereDate('completion_date', today())
-                    ->exists();
+                if ($jar->type === 'official_jar') {
+                    $completedToday = $quest->completions()
+                        ->where('user_id', $user->id)
+                        ->whereDate('completion_date', today())
+                        ->exists();
+                } else {
+                    $completedToday = $quest->completions()
+                        ->where('user_id', $user->id)
+                        ->exists();
+                }
             }
             $data = $quest->toArray();
             $data['completed_today'] = $completedToday;

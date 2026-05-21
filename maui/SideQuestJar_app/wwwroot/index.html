@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>SideQuestJar</title>
+    <base href="/" />
+    <!-- Laravel App CSS (Bootstrap) -->
+    <link rel="stylesheet" href="css/app.css" />
+    <!-- Custom Laravel CSS -->
+    <link rel="stylesheet" href="css/ownapp.css" />
+    <link href="SideQuestJar.styles.css" rel="stylesheet" />
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <!-- Cropper.js -->
+    <link href="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.css" rel="stylesheet" />
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+        }
+        #app {
+            width: 100%;
+            height: 100%;
+        }
+        /* Cropper container sizing */
+        .crop-container {
+            width: 100%;
+            max-height: 280px;
+            background: #111;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .crop-container img {
+            display: block;
+            max-width: 100%;
+        }
+    </style>
+</head>
+<body class="background">
+    <div class="status-bar-safe-area"></div>
+    <div id="app">
+        <!-- Loading UI could go here -->
+    </div>
+    <div id="blazor-error-ui" style="display:none;">
+        An unhandled error has occurred.
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>
+    <script>
+        // ── Carousel resize ────────────────────────────────────────────────
+        window.registerCarouselResize = (dotNetHelper) => {
+            const computeVisibleCount = () => {
+                if (window.matchMedia('(min-width: 1200px)').matches) return 4;
+                if (window.matchMedia('(min-width: 992px)').matches) return 3;
+                if (window.matchMedia('(min-width: 768px)').matches) return 2;
+                return 1;
+            };
+
+            const dispatchCount = () => {
+                dotNetHelper.invokeMethodAsync('SetVisibleCount', computeVisibleCount());
+            };
+
+            dispatchCount();
+
+            let t;
+            window.addEventListener('resize', () => {
+                clearTimeout(t);
+                t = setTimeout(dispatchCount, 100);
+            });
+        };
+
+        // ── Image cropper ──────────────────────────────────────────────────
+        let _cropper = null;
+
+        window.initCropper = (imgElementId, dataUrl) => {
+            const img = document.getElementById(imgElementId);
+            if (!img) return;
+
+            // Destroy old instance
+            if (_cropper) { _cropper.destroy(); _cropper = null; }
+
+            img.src = dataUrl;
+            img.onload = () => {
+                _cropper = new Cropper(img, {
+                    aspectRatio: 1,          // force 1:1
+                    viewMode: 2,
+                    dragMode: 'move',
+                    autoCropArea: 1,
+                    responsive: true,
+                    checkOrientation: false,
+                    guides: true,
+                    center: true,
+                    highlight: false,
+                    cropBoxMovable: true,
+                    cropBoxResizable: true,
+                    toggleDragModeOnDblclick: false,
+                });
+            };
+        };
+
+        window.getCroppedImageBase64 = (quality) => {
+            if (!_cropper) return null;
+            return _cropper.getCroppedCanvas({ width: 600, height: 600 })
+                           .toDataURL('image/jpeg', quality ?? 0.85)
+                           .split(',')[1]; // strip "data:image/jpeg;base64,"
+        };
+
+        window.destroyCropper = () => {
+            if (_cropper) { _cropper.destroy(); _cropper = null; }
+        };
+
+        window.scrollToId = (id) => {
+            const el = document.getElementById(id);
+            if (el) el.scrollIntoView({ behavior: 'smooth' });
+        };
+
+        window.scrollToBottom = (id) => {
+            const el = document.getElementById(id);
+            if (el) el.scrollTop = el.scrollHeight;
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.js"></script>
+    <script src="_framework/blazor.webview.js" autostart="false"></script>
+</body>
+</html>

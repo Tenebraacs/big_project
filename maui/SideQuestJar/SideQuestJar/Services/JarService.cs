@@ -617,9 +617,10 @@ namespace SideQuestJar.Services
                 var userId = db.Users.Select(u => u.Id).FirstOrDefault();
                 if (userId > 0)
                 {
+                    var isMainQuest = db.Quests.Any(q => q.Id == questId && q.JarId == AppConstants.MainQuestJarId);
                     var alreadyDone = db.QuestCompletions.Any(qc =>
                         qc.QuestId == questId && qc.UserId == userId &&
-                        qc.CompletionDate.Date == DateTime.Today);
+                        (!isMainQuest || qc.CompletionDate.Date == DateTime.Today));
 
                     if (!alreadyDone)
                     {
@@ -680,7 +681,8 @@ namespace SideQuestJar.Services
                 if (response.StatusCode == System.Net.HttpStatusCode.Conflict)
                     return (false, "Already completed today!", null);
 
-                return (true, "Completed locally — will sync when online.", null);
+                var errorMsg = await response.Content.ReadAsStringAsync();
+                return (false, $"Failed: {(int)response.StatusCode}. {errorMsg}", null);
             }
             catch (HttpRequestException)
             {

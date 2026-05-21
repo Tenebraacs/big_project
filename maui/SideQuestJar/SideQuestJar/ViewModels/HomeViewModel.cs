@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SideQuestJar.Data;
 using SideQuestJar.Models;
@@ -50,11 +50,10 @@ namespace SideQuestJar.ViewModels
         }
 
         [RelayCommand]
-        private async Task NavigateToJarDetailsAsync(Jar? selectedJar)
+        private Task NavigateToJarDetailsAsync(Jar? selectedJar)
         {
-            if (selectedJar == null) return;
-
-            await Shell.Current.GoToAsync($"{nameof(Views.JarDetailsPage)}?JarId={selectedJar.Id}");
+            // Navigation is handled by Blazor's router (JarDetails.razor)
+            return Task.CompletedTask;
         }
     }
 }

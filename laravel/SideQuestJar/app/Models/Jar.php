@@ -88,4 +88,41 @@ class Jar extends Model
     {
         return $this->hasMany(JarComment::class);
     }
+
+    public function getOrCreateDailyQuest()
+    {
+        $today = now()->toDateString();
+
+        if (
+            $this->current_daily_quest_id &&
+            $this->current_daily_quest_date &&
+            $this->current_daily_quest_date->toDateString() === $today
+        ) {
+            return $this->currentDailyQuest;
+        }
+
+        $lastQuestId = $this->current_daily_quest_id;
+
+        $questQuery = $this->quests();
+
+        if ($lastQuestId && $this->quests()->count() > 1) {
+            $questQuery->where('id', '!=', $lastQuestId);
+        }
+
+        $selectedQuest = $questQuery->inRandomOrder()->first();
+
+        if (!$selectedQuest) {
+            return null;
+        }
+
+        $this->update([
+            'previous_daily_quest_id' => $lastQuestId,
+            'current_daily_quest_id' => $selectedQuest->id,
+            'current_daily_quest_date' => $today,
+        ]);
+
+        $this->refresh();
+
+        return $this->currentDailyQuest;
+    }
 }

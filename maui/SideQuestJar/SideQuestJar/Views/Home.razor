@@ -5,6 +5,7 @@
 @inject JarService JarService
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JS
+@inject SideQuestJar.ViewModels.NavbarViewModel NavbarViewModel
 
 <div class="container-fluid px-0 px-md-3">
     @if (DiscoverData == null && !HasError)
@@ -57,11 +58,27 @@
                             </div>
 
                             <div class="text-center mt-3">
-                                <button type="button" class="btn home-claim-button m-2 rounded-pill blue-button shadow"
-                                        @onclick='() => OpenClaimModal(DiscoverData.MainQuest.Id)'>
-                                    Claim
-                                </button>
-                                @if (!string.IsNullOrEmpty(questMessage))
+                                @if (DiscoverData.MainQuest.CompletedToday || completedQuestIds.Contains(DiscoverData.MainQuest.Id))
+                                {
+                                    <button class="btn rounded-pill fw-bold" disabled
+                                            style="background:#1e2d1e;color:#7ecf7e;border:1.5px solid #7ecf7e; padding: 10px 40px;">
+                                        <i class="bi bi-check2-circle me-1"></i>Completed!
+                                    </button>
+                                }
+                                else if (claimingQuestId == DiscoverData.MainQuest.Id)
+                                {
+                                    <button class="btn home-claim-button m-2 rounded-pill blue-button shadow" disabled>
+                                        <span class="spinner-border spinner-border-sm me-1"></span>Claiming...
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button type="button" class="btn home-claim-button m-2 rounded-pill blue-button shadow"
+                                            @onclick='() => OpenClaimModal(DiscoverData.MainQuest.Id)'>
+                                        Claim
+                                    </button>
+                                }
+                                @if (!string.IsNullOrEmpty(questMessage) && claimingQuestId == -1)
                                 {
                                     <div class="mt-2 small fw-bold" style="color:#EAB2A0;">@questMessage</div>
                                 }
@@ -193,6 +210,7 @@
     private bool isSubmittingClaim = false;
     private string questMessage = "";
     private int claimingQuestId = -1;
+    private HashSet<int> completedQuestIds = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -248,6 +266,11 @@
 
     private void OpenClaimModal(int questId)
     {
+        if (!NavbarViewModel.IsLoggedIn)
+        {
+            NavigationManager.NavigateTo("/login");
+            return;
+        }
         modalQuestId         = questId;
         claimDescription     = null;
         selectedImageName     = null;
@@ -315,6 +338,7 @@
             questMessage = message;
             if (success)
             {
+                completedQuestIds.Add(modalQuestId);
                 if (completion != null)
                 {
                     completions.Insert(0, completion);

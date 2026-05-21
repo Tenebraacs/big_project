@@ -146,22 +146,22 @@
 
                     <div class="dropdown-divider d-md-none"></div>
 
-                    <a class="dropdown-item user-dropdown-item" href="/profile" @onclick="CloseDropdown">
+                    <a class="dropdown-item user-dropdown-item" href="javascript:void(0)" @onclick='() => NavigateToPage("/profile")'>
                         <i class="bi bi-person-circle me-2"></i> Profile
                     </a>
-                    <a class="dropdown-item user-dropdown-item" href="/friends" @onclick="CloseDropdown">
+                    <a class="dropdown-item user-dropdown-item" href="javascript:void(0)" @onclick='() => NavigateToPage("/friends")'>
                         <i class="bi bi-people-fill me-2"></i> Friends
                     </a>
-                    <a class="dropdown-item user-dropdown-item" href="/messages" @onclick="CloseDropdown">
+                    <a class="dropdown-item user-dropdown-item" href="javascript:void(0)" @onclick='() => NavigateToPage("/messages")'>
                         <i class="bi bi-chat-dots-fill me-2"></i> Chat
                     </a>
-                    <a class="dropdown-item user-dropdown-item" href="/jars/create" @onclick="CloseDropdown">
+                    <a class="dropdown-item user-dropdown-item" href="javascript:void(0)" @onclick='() => NavigateToPage("/jars/create")'>
                         <i class="bi bi-plus-circle me-2"></i> Create Jar
                     </a>
 
                     @if (ViewModel.NavbarData.User.IsAdmin)
                     {
-                        <a class="dropdown-item user-dropdown-item" href="/admin" @onclick="CloseDropdown">
+                        <a class="dropdown-item user-dropdown-item" href="javascript:void(0)" @onclick='() => NavigateToPage("/admin")'>
                             <i class="bi bi-shield-lock-fill me-2"></i> Admin Panel
                         </a>
                     }
@@ -204,6 +204,12 @@
     private void CloseDropdown()
     {
         isDropdownOpen = false;
+    }
+
+    private void NavigateToPage(string url)
+    {
+        isDropdownOpen = false;
+        NavigationManager.NavigateTo(url);
     }
 
     private async Task HandleLogout()
